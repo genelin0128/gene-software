@@ -1,0 +1,22 @@
+# Node
+node_modules/
+.pnpm-store/
+.npm/
+
+# Next.js / build
+.next/
+out/
+dist/
+
+# OS / Editor
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Env
+.env
+.env.*
+# Logs
+npm-debug.log*
+pnpm-debug.log*

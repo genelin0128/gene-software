@@ -1,0 +1,12 @@
+{
+  "slug": "projectname-b",
+  "title": "Project B — API & RDS (Coming Soon)",
+  "summary": "Will migrate to API Gateway + Lambda and Aurora Serverless v2 (Postgres).",
+  "tags": ["apigw", "lambda", "rds"],
+  "publishedAt": "2024-09-15",
+  "heroImage": "/images/projects/project-b.png",
+  "sections": [
+    { "type": "paragraph", "content": "Backend upgrade path after Track A (frontend)." },
+    { "type": "list", "items": ["Fastify + Zod", "OpenAPI", "Aurora Serverless"] }
+  ]
+}

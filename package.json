@@ -1,0 +1,15 @@
+{
+  "name": "gene-software",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Monorepo for gene-software.com (web + infra)",
+  "packageManager": "pnpm@10.17.1",
+  "scripts": {
+    "check": "echo \"(root) nothing to check yet\"",
+    "build": "echo \"(root) use -F web build later\"",
+    "clean": "git clean -xfd -e .vscode -e .git -e .gitignore"
+  },
+  "engines": {
+    "node": ">=20 <21"
+  }
+}
