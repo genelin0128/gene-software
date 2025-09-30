@@ -32,10 +32,7 @@ resource "aws_iam_role" "github_deploy" {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
         },
         StringLike = {
-          "token.actions.githubusercontent.com:sub" = [
-            "repo:${var.github_owner}/${var.github_repo}:ref:refs/heads/main",
-            "repo:${var.github_owner}/${var.github_repo}:pull_request"
-          ]
+          "token.actions.githubusercontent.com:sub" = "repo:${var.github_owner}/${var.github_repo}:ref:refs/heads/main"
         }
       }
     }]
