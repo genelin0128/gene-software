@@ -1,22 +1,38 @@
-# Node
-node_modules/
-.pnpm-store/
-.npm/
-
-# Next.js / build
-.next/
-out/
-dist/
-
-# OS / Editor
+# macOS
 .DS_Store
-.idea/
-.vscode/*
-!.vscode/extensions.json
 
-# Env
+# Editors/IDE
+.vscode/
+.idea/
+
+# Env/Secrets
 .env
-.env.*
+.env.*.local
+
+# Node/JS
+node_modules/
+web/dist/
+web/out/
+.next/
+coverage/
+
+# pnpm store (本地快取，免版控)
+.pnpm-store/
+
+# Terraform
+**/.terraform/
+**/.terraform/*
+terraform.tfstate
+terraform.tfstate.*
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
 # Logs
-npm-debug.log*
-pnpm-debug.log*
+*.log

@@ -1,0 +1,82 @@
+name: Deploy Web to Prod (S3 + CloudFront)
+
+on:
+  push:
+    branches: [ main ]
+    # 只在 web/ 或 infra/terraform/envs/prod 變動時才跑（可依需求調整/刪除）
+    paths:
+      - 'web/**'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
+      - 'pnpm-workspace.yaml'
+      - 'infra/terraform/envs/prod/**'
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write   # OIDC 必需
+  contents: read    # 讀 repo
+
+env:
+  AWS_REGION: us-east-1
+  AWS_ROLE_ARN: arn:aws:iam::098336614895:role/gene-software-github-deploy-prod
+  # 你的 S3 bucket 名稱（Terraform output）
+  SITE_BUCKET: gene-software-site-098336614895-prod
+  # 你的 CloudFront Distribution ID（Terraform output）
+  CF_DIST_ID: E193FEB9Z7X07J
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable corepack (pnpm)
+        run: corepack enable
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install deps (pnpm)
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web workspace
+        run: pnpm -F web build
+
+      # 透過 OIDC Assume 你的部署 Role（無金鑰）
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # 部署到 S3（--delete 讓刪除同步）
+      - name: Sync to S3
+        run: |
+          aws s3 sync ./web/dist "s3://${SITE_BUCKET}" \
+            --delete \
+            --only-show-errors \
+            --cache-control "public, max-age=300" \
+            --metadata-directive REPLACE
+
+      # 可選：針對 fingerprinted 檔案給較長快取（若你有 hash 檔名）
+      # - name: Long-cache for assets
+      #   run: |
+      #     aws s3 cp "s3://${SITE_BUCKET}/assets/" "s3://${SITE_BUCKET}/assets/" \
+      #       --recursive --metadata-directive REPLACE \
+      #       --cache-control "public, max-age=31536000, immutable"
+
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${CF_DIST_ID}" \
+            --paths "/*"
