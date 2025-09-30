@@ -17,6 +17,14 @@ on:
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
       - '.github/workflows/preview.yml'
+  push:
+    branches-ignore: [ main ]
+    paths:
+      - 'apps/web/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/preview.yml'
 
 permissions:
   id-token: write
@@ -67,7 +75,7 @@ jobs:
         env:
           PR_NUM: ${{ github.event.pull_request.number }}
         run: |
-          PREVIEW_PREFIX="previews/PR-${PR_NUM}"
+          PREVIEW_PREFIX="previews/branch-${GITHUB_REF_NAME}-${GITHUB_SHA::7}"
           aws s3 sync ./apps/web/out "s3://${SITE_BUCKET}/${PREVIEW_PREFIX}" \
             --delete \
             --only-show-errors \
