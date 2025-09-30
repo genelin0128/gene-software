@@ -1,4 +1,4 @@
-name: Preview Web (per PR)
+name: Preview Web (per PR or branch push)
 
 on:
   pull_request:
@@ -41,11 +41,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-and-upload:
+  # --- PR 觸發：產生 previews/PR-<num> 並在 PR 留言 ---
+  build-and-upload-pr:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 20
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -71,11 +71,11 @@ jobs:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Upload preview to S3
+      - name: Upload preview to S3 (PR)
         env:
           PR_NUM: ${{ github.event.pull_request.number }}
         run: |
-          PREVIEW_PREFIX="previews/branch-${GITHUB_REF_NAME}-${GITHUB_SHA::7}"
+          PREVIEW_PREFIX="previews/PR-${PR_NUM}"
           aws s3 sync ./apps/web/out "s3://${SITE_BUCKET}/${PREVIEW_PREFIX}" \
             --delete \
             --only-show-errors \
@@ -91,6 +91,52 @@ jobs:
           comment_tag: preview-url
           mode: upsert
 
+  # --- 非 main 的 push：產生 previews/branch-<branch>-<sha7>（不留言） ---
+  build-and-upload-branch:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable corepack (pnpm)
+        run: corepack enable
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web (Next export)
+        run: pnpm -F web build
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Upload preview to S3 (branch push)
+        env:
+          BRANCH: ${{ github.ref_name }}
+          SHA7: ${{ github.sha || github.event.after }}
+        run: |
+          SHORTSHA="${SHA7:0:7}"
+          PREVIEW_PREFIX="previews/branch-${BRANCH}-${SHORTSHA}"
+          aws s3 sync ./apps/web/out "s3://${SITE_BUCKET}/${PREVIEW_PREFIX}" \
+            --delete \
+            --only-show-errors \
+            --cache-control "public, max-age=300" \
+            --metadata-directive REPLACE
+          echo "PREVIEW_URL=https://gene-software.com/${PREVIEW_PREFIX}/index.html" >> $GITHUB_ENV
+          echo "Preview URL: ${PREVIEW_URL}"
+
+  # --- 關閉/合併 PR 時自動清理 ---
   cleanup-on-close:
     if: github.event_name == 'pull_request_target' && github.event.action == 'closed'
     runs-on: ubuntu-latest
