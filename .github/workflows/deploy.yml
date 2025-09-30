@@ -3,25 +3,23 @@ name: Deploy Web to Prod (S3 + CloudFront)
 on:
   push:
     branches: [ main ]
-    # 只在 web/ 或 infra/terraform/envs/prod 變動時才跑（可依需求調整/刪除）
+    # 只有前端或根配置變更才觸發（可依需要調整或移除）
     paths:
-      - 'web/**'
-      - 'pnpm-lock.yaml'
+      - 'apps/web/**'
       - 'package.json'
+      - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
-      - 'infra/terraform/envs/prod/**'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch: {}
 
 permissions:
   id-token: write   # OIDC 必需
-  contents: read    # 讀 repo
+  contents: read
 
 env:
   AWS_REGION: us-east-1
   AWS_ROLE_ARN: arn:aws:iam::098336614895:role/gene-software-github-deploy-prod
-  # 你的 S3 bucket 名稱（Terraform output）
   SITE_BUCKET: gene-software-site-098336614895-prod
-  # 你的 CloudFront Distribution ID（Terraform output）
   CF_DIST_ID: E193FEB9Z7X07J
 
 concurrency:
@@ -49,7 +47,8 @@ jobs:
       - name: Install deps (pnpm)
         run: pnpm install --frozen-lockfile
 
-      - name: Build web workspace
+      # Next.js 已設 output:'export'，產物會在 apps/web/out
+      - name: Build web workspace (Next export)
         run: pnpm -F web build
 
       # 透過 OIDC Assume 你的部署 Role（無金鑰）
@@ -59,21 +58,23 @@ jobs:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 部署到 S3（--delete 讓刪除同步）
-      - name: Sync to S3
+      # 先同步全部（短快取），再覆寫 _next/ 為長快取
+      - name: Sync exported site to S3 (base, short cache)
         run: |
-          aws s3 sync ./web/dist "s3://${SITE_BUCKET}" \
+          aws s3 sync ./apps/web/out "s3://${SITE_BUCKET}" \
             --delete \
             --only-show-errors \
             --cache-control "public, max-age=300" \
             --metadata-directive REPLACE
 
-      # 可選：針對 fingerprinted 檔案給較長快取（若你有 hash 檔名）
-      # - name: Long-cache for assets
-      #   run: |
-      #     aws s3 cp "s3://${SITE_BUCKET}/assets/" "s3://${SITE_BUCKET}/assets/" \
-      #       --recursive --metadata-directive REPLACE \
-      #       --cache-control "public, max-age=31536000, immutable"
+      - name: Set long cache for fingerprinted assets (_next/)
+        run: |
+          if aws s3 ls "s3://${SITE_BUCKET}/_next/" >/dev/null 2>&1; then
+            aws s3 cp "s3://${SITE_BUCKET}/_next/" "s3://${SITE_BUCKET}/_next/" \
+              --recursive \
+              --metadata-directive REPLACE \
+              --cache-control "public, max-age=31536000, immutable"
+          fi
 
       - name: Invalidate CloudFront
         run: |
