@@ -1,5 +1,9 @@
+cd "$HOME/Desktop/Visual Studio Code/gene-software"
+
+cat > .gitignore <<'EOF'
 # macOS
 .DS_Store
+__MACOSX/
 
 # Editors/IDE
 .vscode/
@@ -11,28 +15,36 @@
 
 # Node/JS
 node_modules/
-web/dist/
-web/out/
-.next/
+.pnpm-store/
+
+# Build artifacts (monorepo)
+apps/*/dist/
+apps/*/out/
+apps/*/.next/
 coverage/
 
-# pnpm store (本地快取，免版控)
-.pnpm-store/
+# Root-level fallbacks (若未來新增)
+dist/
+out/
+.next/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
 
 # Terraform
 **/.terraform/
-**/.terraform/*
 terraform.tfstate
 terraform.tfstate.*
 *.tfstate
 *.tfstate.*
-crash.log
 *.tfvars
 *.tfvars.json
+crash.log
 override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
-
-# Logs
-*.log
+EOF
