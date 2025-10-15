@@ -1,83 +1,71 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { useRef, useState, Suspense } from "react";
+
+const RotatingDodecahedron = ({ paused = false }: { paused?: boolean }) => {
+    const meshRef = useRef<THREE.Mesh>(null!);
+
+    useFrame((_, delta) => {
+        if (paused) return;
+        meshRef.current.rotation.x += 0.8 * delta;
+        meshRef.current.rotation.y += 0.8 * delta;
+    });
+
+    return (
+        <mesh ref={meshRef} position={[0, 0, 0]}>
+            <dodecahedronGeometry args={[1]} />
+            <meshLambertMaterial color="#468585" emissive="#468585" />
+        </mesh>
+    );
+};
+
+function RotatingPlane({ paused = false }: { paused?: boolean }) {
+    const meshRef = useRef<THREE.Mesh>(null!);
+
+    useFrame((_, delta) => {
+        if (paused) return;
+        meshRef.current.rotation.y += 0.8 * delta;
+    });
+
+    return (
+        <mesh ref={meshRef} position={[0, -1.5, 0]}>
+            <boxGeometry args={[2.0, 0.1, 2.0]} />
+            <meshStandardMaterial color="#B4B4B3" emissive="#B4B4B3" />
+        </mesh>
+    );
+}
 
 export default function ThreeScene() {
-    const mountRef = useRef<HTMLDivElement | null>(null);
+    const [paused, setPaused] = useState(false);
 
-    useEffect(() => {
-        const mount = mountRef.current!;
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xF0F0F0);
 
-        const camera = new THREE.PerspectiveCamera(60, mount.clientWidth / mount.clientHeight, 0.1, 1000);
-        camera.position.set(0, 0, 5);
+    return (
+        <div style={{ width: "100%", height: "60vh", borderRadius: 12, overflow: "hidden" }}>
+            <Canvas
+                dpr={[1, 2]}
+                camera={{ fov: 60, position: [0, 0, 5] }}
+            >
+                <color attach="background" args={["#F0F0F0"]} />
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(mount.clientWidth, mount.clientHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        mount.appendChild(renderer.domElement);
+                <ambientLight intensity={0.6} />
+                <spotLight color={0x006769} intensity={100} position={[1, 1, 1]} />
 
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.enableZoom = true;
-        controls.enablePan = true;
-
-        const geometry = new THREE.DodecahedronGeometry();
-        const material = new THREE.MeshLambertMaterial({ color: "#468585", emissive: "#468585" });
-        const dodecahedron = new THREE.Mesh(geometry, material);
-
-        const plane = new THREE.Mesh(
-            new THREE.BoxGeometry(2, 0.1, 2),
-            new THREE.MeshStandardMaterial({ color: "#B4B4B3", emissive: "#B4B4B3" }),
-        );
-        plane.position.y = -1.5;
-
-        scene.add(dodecahedron);
-        scene.add(plane);
-        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-        const light = new THREE.SpotLight(0x006769, 100);
-        light.position.set(1, 1, 1);
-        scene.add(light);
-
-        let raf = 0;
-        let interacting = false;
-        controls.addEventListener("start", () => (interacting = true));
-        controls.addEventListener("end", () => (interacting = false));
-        const animate = () => {
-            if (!interacting) {
-                dodecahedron.rotation.x += 0.01;
-                dodecahedron.rotation.y += 0.01;
-                plane.rotation.y += 0.01;
-            }
-
-            controls.update();
-            renderer.render(scene, camera);
-            raf = requestAnimationFrame(animate);
-        };
-        animate();
-
-        const onResize = () => {
-            const { clientWidth, clientHeight } = mount;
-            camera.aspect = clientWidth / clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(clientWidth, clientHeight);
-        };
-        window.addEventListener("resize", onResize);
-
-        return () => {
-            cancelAnimationFrame(raf);
-            controls.dispose();
-            window.removeEventListener("resize", onResize);
-            mount.removeChild(renderer.domElement);
-            renderer.dispose();
-            geometry.dispose();
-            material.dispose();
-        };
-    }, []);
-
-    return <div ref={mountRef} style={{ width: "100%", height: "60vh", borderRadius: 12, overflow: "hidden" }} />;
+                <OrbitControls
+                    enableZoom
+                    enablePan
+                    enableDamping
+                    dampingFactor={0.05}
+                    onStart={() => setPaused(true)}
+                    onEnd={() => setPaused(false)}
+                />
+                <Suspense fallback={null}>
+                    <RotatingDodecahedron paused={paused} />
+                    <RotatingPlane paused={paused} />
+                </Suspense>
+            </Canvas>
+        </div>
+    );
 }
