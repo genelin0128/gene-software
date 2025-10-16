@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Menu3DButton from "@/app/components/Menu3DButton";
 import NavItems from "@/app/components/NavItems";
-import Rotating3DText from "@/app/components/Rotating3DText";
 
 const Navbar = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
