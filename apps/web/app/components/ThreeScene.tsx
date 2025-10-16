@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, Sparkles } from "@react-three/drei";
 import * as THREE from "three";
 import { useRef, useState, Suspense } from "react";
 
@@ -18,6 +18,7 @@ const RotatingDodecahedron = ({ paused = false }: { paused?: boolean }) => {
         <mesh ref={meshRef} position={[0, 0, 0]}>
             <dodecahedronGeometry args={[1]} />
             <meshLambertMaterial color="#468585" emissive="#468585" />
+            <Sparkles count={100} scale={2} size={20} speed={0.02} noise={0.2} color="cyan" />
         </mesh>
     );
 };
