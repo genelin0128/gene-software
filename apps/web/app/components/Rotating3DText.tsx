@@ -1,7 +1,4 @@
-// Rotating3DText.tsx
-// Spins 3D text horizontally (Y axis). On hover, it eases to [0,0,0] (front).
-// When pointer leaves, it resumes spinning from 0° (front) again.
-// No clock usage — rotation integrates using frame `delta` and wraps to [-π, π].
+// Y-axis auto spin; when hovered, ease to [0,0,0]. On leave, resume spin from front.
 
 "use client";
 
@@ -12,12 +9,13 @@ import { a, useSpring } from "@react-spring/three";
 import * as THREE from "three";
 
 type Rotating3DTextProps = {
+    /** Text content to render in 3D */
     text: string;
     backgroundColor?: string;
     fontColor?: string;
     width?: number;
     height?: number;
-    /** radians per second while not hovered */
+    /** Spin speed in radians/sec when not hovered */
     speed?: number;
     fontSize?: number;
     emissiveIntensity?: number;
@@ -38,55 +36,50 @@ function SpinningTextGroup({
     speed?: number;
     hover?: boolean;
 }) {
-    // Spring-driven rotation (X,Y,Z)
-    const [{ rotation }, api] = useSpring(() => ({
-        rotation: [0, 0, 0] as [number, number, number],
+    // Per-axis springs so each prop is SpringValue<number>
+    const [{ rx, ry, rz }, api] = useSpring<{ rx: number; ry: number; rz: number }>(() => ({
+        rx: 0,
+        ry: 0,
+        rz: 0,
         config: { tension: 260, friction: 18 },
     }));
 
-    // Integrate spin with delta; keep Y angle bounded to [-π, π] to avoid long unwinds.
+    // Keep an integrated angle (bounded to [-π, π]) to avoid large unwinds.
     const angleRef = useRef<number>(0);
     const prevHover = useRef<boolean>(hover);
 
     const TWO_PI = Math.PI * 2;
     const wrapToPi = (a: number) => {
-        // Wrap any angle to [-π, π]
         a = (a + Math.PI) % TWO_PI;
         if (a < 0) a += TWO_PI;
         return a - Math.PI;
     };
 
     useFrame((_, delta) => {
-        // Transition: not-hover -> hover
+        // not-hover -> hover: snap to current angle, then ease to zero
         if (!prevHover.current && hover) {
-            // Snap spring to the current wrapped angle so the ease-to-zero takes the shortest path
             angleRef.current = wrapToPi(angleRef.current);
-            api.start({ rotation: [0, angleRef.current, 0], immediate: true });
-            // Then animate toward exact zero (front)
-            api.start({ rotation: [0, 0, 0] });
+            api.start({ rx: 0, ry: angleRef.current, rz: 0, immediate: true });
+            api.start({ rx: 0, ry: 0, rz: 0 });
         }
 
-        // Transition: hover -> not-hover
+        // hover -> not-hover: restart free spin from front
         if (prevHover.current && !hover) {
-            // Restart free spin from front
             angleRef.current = 0;
-            api.start({ rotation: [0, 0, 0], immediate: true });
+            api.start({ rx: 0, ry: 0, rz: 0, immediate: true });
         }
 
         prevHover.current = hover;
 
+        // Free spin when not hovered
         if (!hover) {
-            // Accumulate spin and keep bounded
-            angleRef.current += speed * delta;
-            angleRef.current = wrapToPi(angleRef.current);
-            // Immediate so spring follows our integrated angle exactly
-            api.start({ rotation: [0, angleRef.current, 0], immediate: true });
+            angleRef.current = wrapToPi(angleRef.current + speed * delta);
+            api.start({ ry: angleRef.current, immediate: true });
         }
-        // When hovered, spring is already easing to [0,0,0]
     });
 
     return (
-        <a.group rotation={rotation as any}>
+        <a.group rotation-x={rx} rotation-y={ry} rotation-z={rz}>
             <Text
                 anchorX="center"
                 anchorY="middle"
@@ -102,7 +95,7 @@ function SpinningTextGroup({
                     emissiveIntensity={emissiveIntensity}
                     roughness={0.35}
                     metalness={0.05}
-                    side={THREE.DoubleSide} // keep visible from the back while spinning
+                    side={THREE.DoubleSide}
                 />
             </Text>
         </a.group>
@@ -131,7 +124,7 @@ export default function Rotating3DText({
                 background: backgroundColor,
                 borderRadius: 8,
             }}
-            aria-hidden={true}
+            aria-hidden
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
         >

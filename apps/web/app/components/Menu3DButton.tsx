@@ -89,7 +89,7 @@ function BurgerX3D({ open }: { open: boolean }) {
     });
 
     return (
-        <a.group ref={g} scale={scale as any}>
+        <a.group ref={g} scale-x={scale} scale-y={scale} scale-z={scale}>
             {/* Top / Middle / Bottom bars with their initial vertical offsets */}
             <Bar y={0.36} open={open} index={0} />
             <Bar y={0} open={open} index={1} />
