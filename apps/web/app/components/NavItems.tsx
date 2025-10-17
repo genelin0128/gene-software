@@ -26,18 +26,26 @@ const NavItems = ({ variant = "desktop", onNavigate }: Props) => {
                     : "flex flex-col gap-4 pt-3"
             }
         >
+
+            {/*The width should be set manually. Open the site, resize the window to a*/}
+            {/*narrow/mobile viewport, then use the developer tools to adjust the width*/}
+            {/*until it’s perfectly left-aligned with the other elements.*/}
+            {/*Once it aligns, use that value. */}
+
+
             {/* ABOUT */}
             <Link
                 href="/about"
                 onClick={onNavigate}
                 aria-label="ABOUT"
-                className={isDesktop ? "inline-flex items-center" : "block"}
+                // className={isDesktop ? "inline-flex items-center" : "block"}
+                className="block md:inline-flex md:items-center"
             >
                 <Rotating3DText
                     text="ABOUT"
                     backgroundColor="transparent"
                     fontColor="#ffffff"
-                    width={54}
+                    width={64}
                     height={40}
                 />
                 <span className="sr-only">ABOUT</span>
@@ -48,13 +56,14 @@ const NavItems = ({ variant = "desktop", onNavigate }: Props) => {
                 href="/work"
                 onClick={onNavigate}
                 aria-label="WORK"
-                className={isDesktop ? "inline-flex items-center" : "block"}
+                // className={isDesktop ? "inline-flex items-center" : "block"}
+                className="block md:inline-flex md:items-center"
             >
                 <Rotating3DText
                     text="WORK"
                     backgroundColor="transparent"
                     fontColor="#ffffff"
-                    width={54}
+                    width={57}
                     height={40}
                 />
                 <span className="sr-only">WORK</span>
@@ -65,13 +74,14 @@ const NavItems = ({ variant = "desktop", onNavigate }: Props) => {
                 href="/contact"
                 onClick={onNavigate}
                 aria-label="CONTACT"
-                className={isDesktop ? "inline-flex items-center" : "block"}
+                // className={isDesktop ? "inline-flex items-center" : "block"}
+                className="block md:inline-flex md:items-center"
             >
                 <Rotating3DText
                     text="CONTACT"
                     backgroundColor="transparent"
                     fontColor="#ffffff"
-                    width={85}
+                    width={80}
                     height={40}
                 />
                 <span className="sr-only">CONTACT</span>
@@ -82,13 +92,14 @@ const NavItems = ({ variant = "desktop", onNavigate }: Props) => {
                 href="/projects"
                 onClick={onNavigate}
                 aria-label="PROJECTS"
-                className={isDesktop ? "inline-flex items-center" : "block"}
+                // className={isDesktop ? "inline-flex items-center" : "block"}
+                className="block md:inline-flex md:items-center"
             >
                 <Rotating3DText
                     text="PROJECTS"
                     backgroundColor="transparent"
                     fontColor="#ffffff"
-                    width={85}
+                    width={82}
                     height={40}
                 />
                 <span className="sr-only">PROJECTS</span>

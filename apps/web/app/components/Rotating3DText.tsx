@@ -73,7 +73,8 @@ function SpinningTextGroup({
 
         // Free spin when not hovered
         if (!hover) {
-            angleRef.current = wrapToPi(angleRef.current + speed * delta);
+            // angleRef.current = wrapToPi(angleRef.current + speed * delta);
+            angleRef.current = wrapToPi(angleRef.current + speed * 0);
             api.start({ ry: angleRef.current, immediate: true });
         }
     });
