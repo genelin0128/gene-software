@@ -3,17 +3,16 @@ name: Deploy Web to Prod (S3 + CloudFront)
 on:
   push:
     branches: [ main ]
-    # 只有前端或根配置變更才觸發（可依需要調整或移除）
     paths:
       - 'apps/web/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
       - '.github/workflows/deploy.yml'
-  workflow_dispatch: {}
+  workflow_dispatch: { }
 
 permissions:
-  id-token: write   # OIDC 必需
+  id-token: write
   contents: read
 
 env:
@@ -51,31 +50,37 @@ jobs:
       - name: Build web workspace (Next export)
         run: pnpm -F web build
 
-      # 透過 OIDC Assume 你的部署 Role（無金鑰）
+      # 以 OIDC 取得 IAM 權限（無金鑰）
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 先同步全部（短快取），再覆寫 _next/ 為長快取
-      - name: Sync exported site to S3 (base, short cache)
+      # 先同步「非 _next」的內容，給短快取；避免覆蓋 _next 的長快取，這裡排除 _next
+      - name: Sync static site (short cache, exclude _next/)
         run: |
           aws s3 sync ./apps/web/out "s3://${SITE_BUCKET}" \
             --delete \
             --only-show-errors \
             --cache-control "public, max-age=300" \
-            --metadata-directive REPLACE
+            --exclude "_next/*"
 
-      - name: Set long cache for fingerprinted assets (_next/)
+      # 為了修復先前錯誤的 metadata（如 Content-Type 被變成 octet-stream），
+      # 先清掉遠端 _next/，等會重新上傳即可（指紋檔名、可安全刪除）
+      - name: Clear remote _next/ to reset bad metadata
         run: |
-          if aws s3 ls "s3://${SITE_BUCKET}/_next/" >/dev/null 2>&1; then
-            aws s3 cp "s3://${SITE_BUCKET}/_next/" "s3://${SITE_BUCKET}/_next/" \
-              --recursive \
-              --metadata-directive REPLACE \
-              --cache-control "public, max-age=31536000, immutable"
-          fi
+          aws s3 rm "s3://${SITE_BUCKET}/_next" --recursive || true
 
+      # 再把本機的 _next/ 上傳，保留正確 Content-Type，並設定長快取
+      - name: Upload _next/ (long cache, preserve Content-Type)
+        run: |
+          aws s3 sync ./apps/web/out/_next "s3://${SITE_BUCKET}/_next" \
+            --delete \
+            --only-show-errors \
+            --cache-control "public, max-age=31536000, immutable"
+
+      # 失效 CDN 快取（你用全站失效即可）
       - name: Invalidate CloudFront
         run: |
           aws cloudfront create-invalidation \
