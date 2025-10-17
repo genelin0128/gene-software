@@ -12,7 +12,7 @@ on:
   workflow_dispatch: { }
 
 permissions:
-  id-token: write
+  id-token: write   # OIDC
   contents: read
 
 env:
@@ -46,7 +46,7 @@ jobs:
       - name: Install deps (pnpm)
         run: pnpm install --frozen-lockfile
 
-      # Next.js 已設 output:'export'，產物會在 apps/web/out
+      # Next.js 已設 output: 'export'，產物在 apps/web/out
       - name: Build web workspace (Next export)
         run: pnpm -F web build
 
@@ -57,32 +57,41 @@ jobs:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 先同步「非 _next」的內容，給短快取；避免覆蓋 _next 的長快取，這裡排除 _next
-      - name: Sync static site (short cache, exclude _next/)
-        run: |
-          aws s3 sync ./apps/web/out "s3://${SITE_BUCKET}" \
-            --delete \
-            --only-show-errors \
-            --cache-control "public, max-age=300" \
-            --exclude "_next/*"
-
-      # 為了修復先前錯誤的 metadata（如 Content-Type 被變成 octet-stream），
-      # 先清掉遠端 _next/，等會重新上傳即可（指紋檔名、可安全刪除）
+      # 1) 先清空遠端 _next/（避免舊錯誤 metadata 殘留）
       - name: Clear remote _next/ to reset bad metadata
         run: |
           aws s3 rm "s3://${SITE_BUCKET}/_next" --recursive || true
 
-      # 再把本機的 _next/ 上傳，保留正確 Content-Type，並設定長快取
-      - name: Upload _next/ (long cache, preserve Content-Type)
+      # 2) 上傳 _next/：長快取 + immutable（檔名帶 hash，安全）
+      - name: Upload _next/ (long cache, immutable)
         run: |
           aws s3 sync ./apps/web/out/_next "s3://${SITE_BUCKET}/_next" \
             --delete \
-            --only-show-errors \
-            --cache-control "public, max-age=31536000, immutable"
+            --cache-control "public, max-age=31536000, immutable" \
+            --only-show-errors
 
-      # 失效 CDN 快取（你用全站失效即可）
+      # 3) 上傳非 HTML 的其它靜態（排除 _next/ 與 .html）：給短快取（例如 10 分鐘）
+      - name: Upload other static (short cache)
+        run: |
+          aws s3 sync ./apps/web/out "s3://${SITE_BUCKET}" \
+            --delete \
+            --exclude "_next/*" \
+            --exclude "*.html" \
+            --cache-control "public, max-age=600" \
+            --only-show-errors
+
+      # 4) 專門覆寫 HTML 的 Cache-Control（必重驗證），確保每次改版都會拿到新頁面
+      - name: Upload HTML with no-cache headers
+        run: |
+          find ./apps/web/out -name "*.html" -print0 | xargs -0 -I {} \
+          aws s3 cp "{}" "s3://${SITE_BUCKET}/$(realpath --relative-to=./apps/web/out "{}")" \
+            --cache-control "max-age=0, s-maxage=0, must-revalidate" \
+            --content-type "text/html; charset=utf-8" \
+            --metadata-directive REPLACE
+
+      # 5) CloudFront 快取失效：HTML + Next 靜態（比全站更省也夠用）
       - name: Invalidate CloudFront
         run: |
           aws cloudfront create-invalidation \
             --distribution-id "${CF_DIST_ID}" \
-            --paths "/*"
+            --paths "/*.html" "/index.html" "/_next/static/*"
