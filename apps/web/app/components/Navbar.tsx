@@ -9,7 +9,7 @@ const Navbar = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur">
+        <header className="sticky top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur">
             <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between items-center py-5 mx-auto px-4 sm:px-0">
                     <Link
@@ -36,7 +36,7 @@ const Navbar = () => {
                 {/* Mobile sheet/panel: <sm> */}
                 {mobileOpen && (
                     <div className="sm:hidden border-t border-white/10 bg-black/95">
-                        <nav className="px-4 pb-4">
+                        <nav className="sticky px-4 pb-4">
                             <NavItems
                                 variant="mobile"
                                 onNavigate={() => setMobileOpen(false)}

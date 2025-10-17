@@ -39,7 +39,6 @@ const NavItems = ({ variant = "desktop", onNavigate }: Props) => {
                 href="/about"
                 onClick={onNavigate}
                 aria-label="ABOUT"
-                // className={isDesktop ? "inline-flex items-center" : "block"}
                 className="block md:inline-flex md:items-center"
             >
                 <Rotating3DText
@@ -57,7 +56,6 @@ const NavItems = ({ variant = "desktop", onNavigate }: Props) => {
                 href="/work"
                 onClick={onNavigate}
                 aria-label="WORK"
-                // className={isDesktop ? "inline-flex items-center" : "block"}
                 className="block md:inline-flex md:items-center"
             >
                 <Rotating3DText
@@ -75,7 +73,6 @@ const NavItems = ({ variant = "desktop", onNavigate }: Props) => {
                 href="/contact"
                 onClick={onNavigate}
                 aria-label="CONTACT"
-                // className={isDesktop ? "inline-flex items-center" : "block"}
                 className="block md:inline-flex md:items-center"
             >
                 <Rotating3DText
@@ -93,7 +90,6 @@ const NavItems = ({ variant = "desktop", onNavigate }: Props) => {
                 href="/projects"
                 onClick={onNavigate}
                 aria-label="PROJECTS"
-                // className={isDesktop ? "inline-flex items-center" : "block"}
                 className="block md:inline-flex md:items-center"
             >
                 <Rotating3DText
