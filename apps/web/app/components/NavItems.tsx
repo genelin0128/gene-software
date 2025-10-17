@@ -27,8 +27,9 @@ const NavItems = ({ variant = "desktop", onNavigate }: Props) => {
             }
         >
 
-            {/*The width should be set manually. Open the site, resize the window to a*/}
-            {/*narrow/mobile viewport, then use the developer tools to adjust the width*/}
+            {/*The width should be set manually.  Go to Rotating3DText.tsx and stop rotating.*/}
+            {/*Open the site, resize the window to a narrow/mobile viewport,*/}
+            {/*then use the developer tools to adjust the width*/}
             {/*until it’s perfectly left-aligned with the other elements.*/}
             {/*Once it aligns, use that value. */}
 
