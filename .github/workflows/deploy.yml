@@ -12,7 +12,7 @@ on:
   workflow_dispatch: { }
 
 permissions:
-  id-token: write   # OIDC
+  id-token: write
   contents: read
 
 env:
@@ -46,7 +46,7 @@ jobs:
       - name: Install deps (pnpm)
         run: pnpm install --frozen-lockfile
 
-      # Next.js 已設 output: 'export'，產物在 apps/web/out
+      # Next.js 已設 output:'export'，產物在 apps/web/out
       - name: Build web workspace (Next export)
         run: pnpm -F web build
 
@@ -57,7 +57,7 @@ jobs:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 1) 先清空遠端 _next/（避免舊錯誤 metadata 殘留）
+      # 1) 清空遠端 _next/（避免舊錯誤 metadata 殘留）
       - name: Clear remote _next/ to reset bad metadata
         run: |
           aws s3 rm "s3://${SITE_BUCKET}/_next" --recursive || true
@@ -70,7 +70,7 @@ jobs:
             --cache-control "public, max-age=31536000, immutable" \
             --only-show-errors
 
-      # 3) 上傳非 HTML 的其它靜態（排除 _next/ 與 .html）：給短快取（例如 10 分鐘）
+      # 3) 上傳非 HTML 的其它靜態（排除 _next/ 與 .html）：給短快取（10 分鐘）
       - name: Upload other static (short cache)
         run: |
           aws s3 sync ./apps/web/out "s3://${SITE_BUCKET}" \
@@ -80,16 +80,20 @@ jobs:
             --cache-control "public, max-age=600" \
             --only-show-errors
 
-      # 4) 專門覆寫 HTML 的 Cache-Control（必重驗證），確保每次改版都會拿到新頁面
+      # 4) 只覆寫 HTML 的 Cache-Control（必重驗證）
+      #    直接切到輸出資料夾，避免相對路徑問題；--recursive + include 會保留子路徑
       - name: Upload HTML with no-cache headers
+        working-directory: ./apps/web/out
         run: |
-          find ./apps/web/out -name "*.html" -print0 | xargs -0 -I {} \
-          aws s3 cp "{}" "s3://${SITE_BUCKET}/$(realpath --relative-to=./apps/web/out "{}")" \
+          aws s3 cp . "s3://${SITE_BUCKET}/" \
+            --recursive \
+            --exclude "*" \
+            --include "*.html" \
             --cache-control "max-age=0, s-maxage=0, must-revalidate" \
             --content-type "text/html; charset=utf-8" \
             --metadata-directive REPLACE
 
-      # 5) CloudFront 快取失效：HTML + Next 靜態（比全站更省也夠用）
+      # 5) CloudFront 快取失效：HTML + Next 靜態
       - name: Invalidate CloudFront
         run: |
           aws cloudfront create-invalidation \
