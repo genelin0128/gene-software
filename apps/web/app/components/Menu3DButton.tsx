@@ -104,17 +104,31 @@ function BurgerX3D({ open }: { open: boolean }) {
  * - Manages "open" state and accessibility attributes.
  * - Provides lights + environment for pleasing 3D shading in a small icon.
  */
-export default function MenuButton3D() {
-    const [open, setOpen] = useState(false);
+export default function MenuButton3D({
+                                         open,
+                                         onToggle,
+                                     }: {
+    open?: boolean;                    // controlled "open"
+    onToggle?: (next: boolean) => void; // notify parent
+}) {
 
+    const [internalOpen, setInternalOpen] = useState(false);
+    const isControlled = open !== undefined;
+    const actualOpen = isControlled ? (open as boolean) : internalOpen;
+
+    const handleClick = () => {
+        const next = !actualOpen;
+        if (isControlled) onToggle?.(next);
+        else setInternalOpen(next);
+    };
     return (
         <button
-            onClick={() => setOpen((v) => !v)}
-            aria-label={open ? "Close menu" : "Open menu"}
-            aria-expanded={open}
-            aria-pressed={open}
+            onClick={handleClick}
+            aria-label={actualOpen ? "Close menu" : "Open menu"}
+            aria-expanded={actualOpen}
+            aria-pressed={actualOpen}
             className="p-1 rounded-xl hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 sm:hidden flex"
-            style={{ width: 36, height: 36 }}              // Stable hit area
+            style={{ width: 36, height: 36 }}
         >
             <Canvas
                 // Use device pixel ratio range for crispness without overdoing GPU work
@@ -131,7 +145,7 @@ export default function MenuButton3D() {
                 {/* Image-based lighting/reflections; "city" preset gives subtle specular cues */}
                 <Environment preset="city" />
 
-                <BurgerX3D open={open} />
+                <BurgerX3D open={actualOpen} />
             </Canvas>
         </button>
     );

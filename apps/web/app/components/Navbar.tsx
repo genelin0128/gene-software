@@ -20,12 +20,10 @@ const Navbar = () => {
                     </Link>
 
                     {/* Mobile trigger: only <sm> */}
-                    <div
-                        className="flex sm:hidden"
-                        onClick={() => setMobileOpen((v) => !v)}
-                    >
-                        <Menu3DButton />
-                    </div>
+                    <Menu3DButton
+                        open={mobileOpen}
+                        onToggle={(next) => setMobileOpen(next)}
+                    />
 
                     {/* Desktop nav: >=sm */}
                     <nav className="hidden sm:flex items-center gap-6">
