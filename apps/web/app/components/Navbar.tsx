@@ -6,7 +6,7 @@ import Menu3DButton from "@/app/components/Menu3DButton";
 import NavItems from "@/app/components/NavItems";
 
 const Navbar = () => {
-    const [mobileOpen, setMobileOpen] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     return (
         <header className="sticky top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur">
@@ -21,8 +21,8 @@ const Navbar = () => {
 
                     {/* Mobile trigger: only <sm> */}
                     <Menu3DButton
-                        open={mobileOpen}
-                        onToggle={(next) => setMobileOpen(next)}
+                        open={mobileMenuOpen}
+                        onToggle={(next) => setMobileMenuOpen(next)}
                     />
 
                     {/* Desktop nav: >=sm */}
@@ -32,12 +32,12 @@ const Navbar = () => {
                 </div>
 
                 {/* Mobile sheet/panel: <sm> */}
-                {mobileOpen && (
+                {mobileMenuOpen && (
                     <div className="sm:hidden border-t border-white/10 bg-black/95">
                         <nav className="sticky px-4 pb-4">
                             <NavItems
                                 variant="mobile"
-                                onNavigate={() => setMobileOpen(false)}
+                                onNavigate={() => setMobileMenuOpen(false)}
                             />
                         </nav>
                     </div>

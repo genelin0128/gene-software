@@ -2,10 +2,11 @@
 
 import styled, { keyframes } from "styled-components";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, useGLTF } from "@react-three/drei";
+import { Billboard, OrbitControls, useGLTF } from "@react-three/drei";
 import { Suspense } from "react";
 import Custom3DModel from "@/app/components/Custom3DModel";
 import CanvasLoader from "@/app/components/CanvasLoader";
+import { useMediaQuery } from "react-responsive";
 
 const wave = keyframes`
     0% {
@@ -38,6 +39,9 @@ export const WavingHand = styled.span`
 `;
 
 export default function Hero() {
+
+    const isMobile = useMediaQuery({ maxWidth: 640 });
+
     const deg = (d: number) => (d * Math.PI) / 180;
 
     // Preload the model before rendering to speed up the first frame.
@@ -59,15 +63,15 @@ export default function Hero() {
                 <Canvas
                     className="w-full h-full"
                     dpr={[1, 2]}
-                    camera={{ fov: 60, position: [15, 0, 0] }}
+                    camera={{ fov: 65, position: [15, 0, 0] }}
                     gl={{ antialias: true, preserveDrawingBuffer: false }}
                 >
                     <axesHelper args={[100]} />
 
                     <Suspense fallback={<CanvasLoader />}>
                         {/* Lights */}
-                        <ambientLight intensity={0.9} />
-                        <directionalLight position={[6, 8, 5]} intensity={20.2} castShadow />
+                        <ambientLight intensity={0.7} />
+                        <directionalLight position={[6, 8, 5]} intensity={1} castShadow />
                         <hemisphereLight intensity={1} groundColor={"#222222"} />
 
                         {/* Controls: rotate / zoom / pan */}
@@ -77,7 +81,7 @@ export default function Hero() {
                             enableDamping
                             dampingFactor={0.06}
                             minDistance={0.9}
-                            maxDistance={15}
+                            maxDistance={25}
                             minPolarAngle={Math.PI / 2 - deg(45)}
                             maxPolarAngle={Math.PI / 2 + deg(45)}
                         />
@@ -91,8 +95,65 @@ export default function Hero() {
                             model="/models/gaming_desktop.glb"
                             position={[0, -3, -1]}
                             rotation={[0, 0, 0]}
-                            scale={1}
+                            scale={isMobile ? 0.8 : 1}
                         />
+
+                        <Custom3DModel
+                            model="/models/html_logo.glb"
+                            position={[0, 6, 7]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.01 : 0.01}
+                        />
+
+                        <Custom3DModel
+                            model="/models/css_logo.glb"
+                            position={[0, 6, 5]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.01 : 0.01}
+                        />
+
+                        <Custom3DModel
+                            model="/models/javascript_logo.glb"
+                            position={[0, 8, 3]}
+                            rotation={[0, deg(180), deg(90)]}
+                            scale={isMobile ? 0.08 : 0.08}
+                        />
+
+                        <Custom3DModel
+                            model="/models/react_logo.glb"
+                            position={[0, 5, 7.2]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.45 : 0.45}
+                        />
+
+                        <Custom3DModel
+                            model="/models/java_logo.glb"
+                            position={[0, 8, -4]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.6 : 0.6}
+                        />
+
+                        <Custom3DModel
+                            model="/models/threejs_logo.glb"
+                            position={[0, 8.2, -6.2]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.018 : 0.018}
+                        />
+
+                        <Custom3DModel
+                            model="/models/c_logo.glb"
+                            position={[0, 8.2, -1.3]}
+                            rotation={[0, 0, 0]}
+                            scale={isMobile ? 0.2 : 0.2}
+                        />
+
+                        <Custom3DModel
+                            model="/models/github_logo.glb"
+                            position={[-6, 2, -1.3]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 1 : 1}
+                        />
+
                     </Suspense>
                 </Canvas>
             </div>
