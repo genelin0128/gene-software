@@ -166,9 +166,44 @@ export default function Hero() {
 
                         <Custom3DModel
                             model="/models/github_logo.glb"
-                            position={isMobile ? [-4.7, 3.18, -1.22] : [-6, 2, -1.3]}
+                            position={isMobile ? [-4.34, 3.48, -1.16] : [-5.4, 2.7, -1.4]}
                             rotation={[0, deg(90), 0]}
-                            scale={isMobile ? 0.78 : 1}
+                            scale={isMobile ? 0.72 : 0.9}
+                        />
+
+                        <Custom3DModel
+                            model="/models/swift_logo.glb"
+                            position={isMobile ? [0, 5.0, 3.08] : [0, 4.5, 5]}
+                            rotation={[0, deg(180), 0]}
+                            scale={isMobile ? 0.9 : 1.1}
+                        />
+
+                        <Custom3DModel
+                            model="/models/docker_logo.glb"
+                            position={isMobile ? [0, 5.0, 1.08] : [0, 4.3, 2.6]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.9 : 1.1}
+                        />
+
+                        <Custom3DModel
+                            model="/models/postgreSQL_logo.glb"
+                            position={isMobile ? [0, 3.0, 1.08] : [0, 2.0, 2.6]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.8 : 1.1}
+                        />
+
+                        <Custom3DModel
+                            model="/models/tailwindcss_logo.glb"
+                            position={isMobile ? [0, 3.4, 5.1] : [0, 2.5, 7.5]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.8 : 1.1}
+                        />
+
+                        <Custom3DModel
+                            model="/models/mongoDB_logo.glb"
+                            position={isMobile ? [0, 3.0, 3.0] : [0, 2.0, 5.0]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.75 : 1.1}
                         />
 
                     </Suspense>
