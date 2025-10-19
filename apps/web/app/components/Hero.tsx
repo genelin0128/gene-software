@@ -2,11 +2,28 @@
 
 import styled, { keyframes } from "styled-components";
 import { Canvas } from "@react-three/fiber";
-import { Billboard, OrbitControls, useGLTF } from "@react-three/drei";
+import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Suspense } from "react";
 import Custom3DModel from "@/app/components/Custom3DModel";
 import CanvasLoader from "@/app/components/CanvasLoader";
 import { useMediaQuery } from "react-responsive";
+
+// ---- IMPORTANT ----
+// Preload GLTFs at the module top (outside React render).
+// This runs once on module load and will NOT cause
+// "Cannot update a component while rendering a different component".
+const MODELS = [
+    "/models/gaming_desktop.glb",
+    "/models/html_logo.glb",
+    "/models/css_logo.glb",
+    "/models/javascript_logo.glb",
+    "/models/react_logo.glb",
+    "/models/java_logo.glb",
+    "/models/threejs_logo.glb",
+    "/models/c_logo.glb",
+    "/models/github_logo.glb",
+];
+MODELS.forEach((m) => useGLTF.preload(m));
 
 const wave = keyframes`
     0% {
@@ -44,8 +61,8 @@ export default function Hero() {
 
     const deg = (d: number) => (d * Math.PI) / 180;
 
-    // Preload the model before rendering to speed up the first frame.
-    useGLTF.preload("/models/gaming_desktop.glb");
+    // // Preload the model before rendering to speed up the first frame.
+    // useGLTF.preload("/models/gaming_desktop.glb");
 
     return (
         <section className="min-h-screen w-full flex flex-col relative">
