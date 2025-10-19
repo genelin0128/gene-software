@@ -80,7 +80,7 @@ export default function Hero() {
                 <Canvas
                     className="w-full h-full"
                     dpr={[1, 2]}
-                    camera={{ fov: 65, position: [15, 0, 0] }}
+                    camera={{ fov: 65, position: isMobile ? [17, 0, 0] : [15, 0, 0] }}
                     gl={{ antialias: true, preserveDrawingBuffer: false }}
                 >
                     <axesHelper args={[100]} />
@@ -117,58 +117,58 @@ export default function Hero() {
 
                         <Custom3DModel
                             model="/models/html_logo.glb"
-                            position={[0, 6, 7]}
+                            position={isMobile ? [0, 6, 5] : [0, 6, 7]}
                             rotation={[0, deg(90), 0]}
-                            scale={isMobile ? 0.01 : 0.01}
+                            scale={isMobile ? 0.008 : 0.01}
                         />
 
                         <Custom3DModel
                             model="/models/css_logo.glb"
-                            position={[0, 6, 5]}
+                            position={isMobile ? [0, 6, 3] : [0, 6, 5]}
                             rotation={[0, deg(90), 0]}
-                            scale={isMobile ? 0.01 : 0.01}
+                            scale={isMobile ? 0.008 : 0.01}
                         />
 
                         <Custom3DModel
                             model="/models/javascript_logo.glb"
-                            position={[0, 8, 3]}
+                            position={isMobile ? [0, 7.65, 1.1] : [0, 8, 3]}
                             rotation={[0, deg(180), deg(90)]}
-                            scale={isMobile ? 0.08 : 0.08}
+                            scale={isMobile ? 0.066 : 0.08}
                         />
 
                         <Custom3DModel
                             model="/models/react_logo.glb"
-                            position={[0, 5, 7.2]}
+                            position={isMobile ? [0, 5.5, 5] : [0, 5, 7.2]}
                             rotation={[0, deg(90), 0]}
-                            scale={isMobile ? 0.45 : 0.45}
-                        />
-
-                        <Custom3DModel
-                            model="/models/java_logo.glb"
-                            position={[0, 8, -4]}
-                            rotation={[0, deg(90), 0]}
-                            scale={isMobile ? 0.6 : 0.6}
-                        />
-
-                        <Custom3DModel
-                            model="/models/threejs_logo.glb"
-                            position={[0, 8.2, -6.2]}
-                            rotation={[0, deg(90), 0]}
-                            scale={isMobile ? 0.018 : 0.018}
+                            scale={isMobile ? 0.35 : 0.45}
                         />
 
                         <Custom3DModel
                             model="/models/c_logo.glb"
-                            position={[0, 8.2, -1.3]}
+                            position={isMobile ? [0, 7.7, -1.1] : [0, 8.2, -1.3]}
                             rotation={[0, 0, 0]}
-                            scale={isMobile ? 0.2 : 0.2}
+                            scale={isMobile ? 0.155 : 0.2}
+                        />
+
+                        <Custom3DModel
+                            model="/models/java_logo.glb"
+                            position={isMobile ? [0, 7.7, -3.2] : [0, 8, -4]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.45 : 0.6}
+                        />
+
+                        <Custom3DModel
+                            model="/models/threejs_logo.glb"
+                            position={isMobile ? [0, 7.8, -5.1] : [0, 8.2, -6.2]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.013 : 0.018}
                         />
 
                         <Custom3DModel
                             model="/models/github_logo.glb"
-                            position={[-6, 2, -1.3]}
+                            position={isMobile ? [-4.7, 3.18, -1.22] : [-6, 2, -1.3]}
                             rotation={[0, deg(90), 0]}
-                            scale={isMobile ? 1 : 1}
+                            scale={isMobile ? 0.78 : 1}
                         />
 
                     </Suspense>
