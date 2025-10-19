@@ -2,7 +2,7 @@
 
 import styled, { keyframes } from "styled-components";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, useGLTF } from "@react-three/drei";
+import { Float, OrbitControls, useGLTF } from "@react-three/drei";
 import { Suspense } from "react";
 import Custom3DModel from "@/app/components/Custom3DModel";
 import CanvasLoader from "@/app/components/CanvasLoader";
@@ -20,8 +20,13 @@ const MODELS = [
     "/models/react_logo.glb",
     "/models/java_logo.glb",
     "/models/threejs_logo.glb",
+    "/models/tailwindcss_logo.glb",
     "/models/c_logo.glb",
     "/models/github_logo.glb",
+    "/models/postgreSQL_logo.glb",
+    "/models/mongoDB_logo.glb",
+    "/models/docker_logo.glb",
+    "/models/swift_logo.glb",
 ];
 MODELS.forEach((m) => useGLTF.preload(m));
 
@@ -115,96 +120,187 @@ export default function Hero() {
                             scale={isMobile ? 0.8 : 1}
                         />
 
-                        <Custom3DModel
-                            model="/models/html_logo.glb"
-                            position={isMobile ? [0, 6, 5] : [0, 6, 7]}
-                            rotation={[0, deg(90), 0]}
-                            scale={isMobile ? 0.008 : 0.01}
-                        />
+                        <Float
+                            floatIntensity={1}
+                            rotationIntensity={0.15}
+                            speed={10}
+                            floatingRange={[-0.02, 0.02]}
+                        >
+                            <Custom3DModel
+                                model="/models/html_logo.glb"
+                                position={isMobile ? [0, 6, 5] : [0, 6, 7]}
+                                rotation={[0, deg(90), 0]}
+                                scale={isMobile ? 0.008 : 0.01}
+                            />
+                        </Float>
 
-                        <Custom3DModel
-                            model="/models/css_logo.glb"
-                            position={isMobile ? [0, 6, 3] : [0, 6, 5]}
-                            rotation={[0, deg(90), 0]}
-                            scale={isMobile ? 0.008 : 0.01}
-                        />
+                        <Float
+                            floatIntensity={1}
+                            rotationIntensity={0.15}
+                            speed={10}
+                            floatingRange={[-0.02, 0.02]}
+                        >
+                            <Custom3DModel
+                                model="/models/css_logo.glb"
+                                position={isMobile ? [0, 6, 3] : [0, 6, 5]}
+                                rotation={[0, deg(90), 0]}
+                                scale={isMobile ? 0.008 : 0.01}
+                            />
+                        </Float>
 
-                        <Custom3DModel
-                            model="/models/javascript_logo.glb"
-                            position={isMobile ? [0, 7.65, 1.1] : [0, 8, 3]}
-                            rotation={[0, deg(180), deg(90)]}
-                            scale={isMobile ? 0.066 : 0.08}
-                        />
+                        <Float
+                            floatIntensity={1}
+                            rotationIntensity={0.15}
+                            speed={10}
+                            floatingRange={[-0.02, 0.02]}
+                        >
+                            <Custom3DModel
+                                model="/models/javascript_logo.glb"
+                                position={isMobile ? [0, 7.65, 1.1] : [0, 8, 3]}
+                                rotation={[0, deg(180), deg(90)]}
+                                scale={isMobile ? 0.066 : 0.08}
+                            />
+                        </Float>
 
-                        <Custom3DModel
-                            model="/models/react_logo.glb"
-                            position={isMobile ? [0, 5.5, 5] : [0, 5, 7.2]}
-                            rotation={[0, deg(90), 0]}
-                            scale={isMobile ? 0.35 : 0.45}
-                        />
+                        <Float
+                            floatIntensity={1}
+                            rotationIntensity={0.15}
+                            speed={10}
+                            floatingRange={[-0.02, 0.02]}
+                        >
+                            <Custom3DModel
+                                model="/models/react_logo.glb"
+                                position={isMobile ? [0, 5.5, 5] : [0, 5, 7.2]}
+                                rotation={[0, deg(90), 0]}
+                                scale={isMobile ? 0.35 : 0.45}
+                            />
+                        </Float>
 
-                        <Custom3DModel
-                            model="/models/c_logo.glb"
-                            position={isMobile ? [0, 7.7, -1.1] : [0, 8.2, -1.3]}
-                            rotation={[0, 0, 0]}
-                            scale={isMobile ? 0.155 : 0.2}
-                        />
+                        <Float
+                            floatIntensity={1}
+                            rotationIntensity={0.15}
+                            speed={10}
+                            floatingRange={[-0.02, 0.02]}
+                        >
+                            <Custom3DModel
+                                model="/models/c_logo.glb"
+                                position={isMobile ? [0, 7.7, -1.1] : [0, 8.2, -1.3]}
+                                rotation={[0, 0, 0]}
+                                scale={isMobile ? 0.155 : 0.2}
+                            />
+                        </Float>
 
-                        <Custom3DModel
-                            model="/models/java_logo.glb"
-                            position={isMobile ? [0, 7.7, -3.2] : [0, 8, -4]}
-                            rotation={[0, deg(90), 0]}
-                            scale={isMobile ? 0.45 : 0.6}
-                        />
+                        <Float
+                            floatIntensity={1}
+                            rotationIntensity={0.15}
+                            speed={10}
+                            floatingRange={[-0.02, 0.02]}
+                        >
+                            <Custom3DModel
+                                model="/models/java_logo.glb"
+                                position={isMobile ? [0, 7.7, -3.2] : [0, 8, -4]}
+                                rotation={[0, deg(90), 0]}
+                                scale={isMobile ? 0.45 : 0.6}
+                            />
+                        </Float>
 
-                        <Custom3DModel
-                            model="/models/threejs_logo.glb"
-                            position={isMobile ? [0, 7.8, -5.1] : [0, 8.2, -6.2]}
-                            rotation={[0, deg(90), 0]}
-                            scale={isMobile ? 0.013 : 0.018}
-                        />
+                        <Float
+                            floatIntensity={1}
+                            rotationIntensity={0.15}
+                            speed={10}
+                            floatingRange={[-0.02, 0.02]}
+                        >
+                            <Custom3DModel
+                                model="/models/threejs_logo.glb"
+                                position={isMobile ? [0, 7.8, -5.1] : [0, 8.2, -6.2]}
+                                rotation={[0, deg(90), 0]}
+                                scale={isMobile ? 0.013 : 0.018}
+                            />
+                        </Float>
 
-                        <Custom3DModel
-                            model="/models/github_logo.glb"
-                            position={isMobile ? [-4.34, 3.48, -1.16] : [-5.4, 2.7, -1.4]}
-                            rotation={[0, deg(90), 0]}
-                            scale={isMobile ? 0.72 : 0.9}
-                        />
+                        <Float
+                            floatIntensity={1}
+                            rotationIntensity={0.15}
+                            speed={10}
+                            floatingRange={[-0.02, 0.02]}
+                        >
+                            <Custom3DModel
+                                model="/models/github_logo.glb"
+                                position={isMobile ? [-4.34, 3.48, -1.16] : [-5.4, 2.7, -1.4]}
+                                rotation={[0, deg(90), 0]}
+                                scale={isMobile ? 0.72 : 0.9}
+                            />
+                        </Float>
 
-                        <Custom3DModel
-                            model="/models/swift_logo.glb"
-                            position={isMobile ? [0, 5.0, 3.08] : [0, 4.5, 5]}
-                            rotation={[0, deg(180), 0]}
-                            scale={isMobile ? 0.9 : 1.1}
-                        />
+                        <Float
+                            floatIntensity={1}
+                            rotationIntensity={0.15}
+                            speed={10}
+                            floatingRange={[-0.02, 0.02]}
+                        >
+                            <Custom3DModel
+                                model="/models/swift_logo.glb"
+                                position={isMobile ? [0, 5.0, 3.08] : [0, 4.5, 5]}
+                                rotation={[0, deg(180), 0]}
+                                scale={isMobile ? 0.9 : 1.1}
+                            />
+                        </Float>
 
-                        <Custom3DModel
-                            model="/models/docker_logo.glb"
-                            position={isMobile ? [0, 5.0, 1.08] : [0, 4.3, 2.6]}
-                            rotation={[0, deg(90), 0]}
-                            scale={isMobile ? 0.9 : 1.1}
-                        />
+                        <Float
+                            floatIntensity={1}
+                            rotationIntensity={0.15}
+                            speed={10}
+                            floatingRange={[-0.02, 0.02]}
+                        >
+                            <Custom3DModel
+                                model="/models/docker_logo.glb"
+                                position={isMobile ? [0, 5.0, 1.08] : [0, 4.3, 2.6]}
+                                rotation={[0, deg(90), 0]}
+                                scale={isMobile ? 0.9 : 1.1}
+                            />
+                        </Float>
 
-                        <Custom3DModel
-                            model="/models/postgreSQL_logo.glb"
-                            position={isMobile ? [0, 3.0, 1.08] : [0, 2.0, 2.6]}
-                            rotation={[0, deg(90), 0]}
-                            scale={isMobile ? 0.8 : 1.1}
-                        />
+                        <Float
+                            floatIntensity={1}
+                            rotationIntensity={0.15}
+                            speed={10}
+                            floatingRange={[-0.02, 0.02]}
+                        >
+                            <Custom3DModel
+                                model="/models/postgreSQL_logo.glb"
+                                position={isMobile ? [0, 3.0, 1.08] : [0, 2.0, 2.6]}
+                                rotation={[0, deg(90), 0]}
+                                scale={isMobile ? 0.8 : 1.1}
+                            />
+                        </Float>
 
-                        <Custom3DModel
-                            model="/models/tailwindcss_logo.glb"
-                            position={isMobile ? [0, 3.4, 5.1] : [0, 2.5, 7.5]}
-                            rotation={[0, deg(90), 0]}
-                            scale={isMobile ? 0.8 : 1.1}
-                        />
+                        <Float
+                            floatIntensity={1}
+                            rotationIntensity={0.15}
+                            speed={10}
+                            floatingRange={[-0.02, 0.02]}
+                        >
+                            <Custom3DModel
+                                model="/models/tailwindcss_logo.glb"
+                                position={isMobile ? [0, 3.4, 5.1] : [0, 2.5, 7.5]}
+                                rotation={[0, deg(90), 0]}
+                                scale={isMobile ? 0.8 : 1.1}
+                            />
+                        </Float>
 
-                        <Custom3DModel
-                            model="/models/mongoDB_logo.glb"
-                            position={isMobile ? [0, 3.0, 3.0] : [0, 2.0, 5.0]}
-                            rotation={[0, deg(90), 0]}
-                            scale={isMobile ? 0.75 : 1.1}
-                        />
+                        <Float
+                            floatIntensity={1}
+                            rotationIntensity={0.15}
+                            speed={10}
+                            floatingRange={[-0.02, 0.02]}
+                        >
+                            <Custom3DModel
+                                model="/models/mongoDB_logo.glb"
+                                position={isMobile ? [0, 3.0, 3.0] : [0, 2.0, 5.0]}
+                                rotation={[0, deg(90), 0]}
+                                scale={isMobile ? 0.75 : 1.1}
+                            />
+                        </Float>
 
                     </Suspense>
                 </Canvas>
