@@ -48,4 +48,3 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 EOF
-apps/web/public/models/
