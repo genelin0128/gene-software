@@ -8,12 +8,12 @@ type Vec3 = [number, number, number];
 type Props = {
     /** GLB path (under /public, use absolute path like "/models/foo.glb") */
     model: string;
-    /** Model scale (number or [x, y, z]) */
-    scale?: number | Vec3;
     /** Model position */
     position?: Vec3;
     /** Model rotation (radians) */
     rotation?: Vec3;
+    /** Model scale (number or [x, y, z]) */
+    scale?: number | Vec3;
 } & Omit<ThreeElements["group"], "position" | "rotation" | "scale">;
 
 export default function Custom3DModel({

@@ -66,9 +66,6 @@ export default function Hero() {
 
     const deg = (d: number) => (d * Math.PI) / 180;
 
-    // // Preload the model before rendering to speed up the first frame.
-    // useGLTF.preload("/models/gaming_desktop.glb");
-
     return (
         <section className="min-h-screen w-full flex flex-col relative">
             <div className="w-full mx-auto flex flex-col gap-2 pointer-events-none select-none">
