@@ -11,6 +11,7 @@
 		"lint:fix": "next lint --fix"
 	},
 	"dependencies": {
+		"@gsap/react": "^2.1.2",
 		"@react-spring/three": "^10.0.3",
 		"@react-spring/web": "^10.0.3",
 		"@react-three/drei": "^10.7.6",
