@@ -30,7 +30,7 @@ type Props = {
     }) => gsap.core.Timeline | void;
 
     /** Optional dependency list for re-running `animate` */
-    animateDeps?: any[];
+    animateDeps?: ReadonlyArray<unknown>
 } & Omit<ThreeElements["group"], "position" | "rotation" | "scale">;
 
 export default function Custom3DModel({
@@ -56,7 +56,10 @@ export default function Custom3DModel({
             };
         },
         // scope ensures selector-based animations (if any) are scoped to the group
-        { scope: groupRef, dependencies: animateDeps },
+        {
+            scope: groupRef,
+            dependencies: animateDeps ? [...animateDeps] : undefined,
+        },
     );
 
 
