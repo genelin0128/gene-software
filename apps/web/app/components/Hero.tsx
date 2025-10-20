@@ -2,11 +2,12 @@
 
 import styled, { keyframes } from "styled-components";
 import { Canvas } from "@react-three/fiber";
-import { Float, OrbitControls, useGLTF } from "@react-three/drei";
+import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Suspense } from "react";
 import Custom3DModel from "@/app/components/Custom3DModel";
 import CanvasLoader from "@/app/components/CanvasLoader";
 import { useMediaQuery } from "react-responsive";
+import * as effects from "@/app/components/effects";
 
 // ---- IMPORTANT ----
 // Preload GLTFs at the module top (outside React render).
@@ -80,13 +81,13 @@ export default function Hero() {
             {/* 3D stage */}
             <div className="w-full mt-10 h-[70vh]">
                 <Canvas
+                    key={isMobile ? "mobile" : "desktop"}
                     className="w-full h-full"
                     dpr={[1, 2]}
-                    camera={{ fov: 65, position: isMobile ? [17, 0, 0] : [15, 0, 0] }}
+                    camera={{ fov: 65, position: isMobile ? [20, 0, 0] : [15, 0, 0] }}
                     gl={{ antialias: true, preserveDrawingBuffer: false }}
                 >
                     <axesHelper args={[100]} />
-
                     <Suspense fallback={<CanvasLoader />}>
                         {/* Lights */}
                         <ambientLight intensity={0.7} />
@@ -117,188 +118,135 @@ export default function Hero() {
                             scale={isMobile ? 0.8 : 1}
                         />
 
-                        <Float
-                            floatIntensity={1}
-                            rotationIntensity={0.15}
-                            speed={10}
-                            floatingRange={[-0.02, 0.02]}
-                        >
-                            <Custom3DModel
-                                model="/models/html_logo.glb"
-                                position={isMobile ? [0, 6, 5] : [0, 6, 7]}
-                                rotation={[0, deg(90), 0]}
-                                scale={isMobile ? 0.008 : 0.01}
-                            />
-                        </Float>
+                        {/* HTML: page flip + gentle vertical drift */}
+                        <Custom3DModel
+                            model="/models/html_logo.glb"
+                            position={isMobile ? [0, 6, 5] : [0, 6, 7]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.008 : 0.01}
+                            animate={effects.html}
+                            animateDeps={[isMobile]}
+                        />
 
-                        <Float
-                            floatIntensity={1}
-                            rotationIntensity={0.15}
-                            speed={10}
-                            floatingRange={[-0.02, 0.02]}
-                        >
-                            <Custom3DModel
-                                model="/models/css_logo.glb"
-                                position={isMobile ? [0, 6, 3] : [0, 6, 5]}
-                                rotation={[0, deg(90), 0]}
-                                scale={isMobile ? 0.008 : 0.01}
-                            />
-                        </Float>
+                        {/* CSS: wiggle/reshape vibe (roll + subtle x-shear simulated by alternating rotations) */}
+                        <Custom3DModel
+                            model="/models/css_logo.glb"
+                            position={isMobile ? [0, 6, 3] : [0, 6, 5]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.008 : 0.01}
+                            animate={effects.css}
+                            animateDeps={[isMobile]}
+                        />
 
-                        <Float
-                            floatIntensity={1}
-                            rotationIntensity={0.15}
-                            speed={10}
-                            floatingRange={[-0.02, 0.02]}
-                        >
-                            <Custom3DModel
-                                model="/models/javascript_logo.glb"
-                                position={isMobile ? [0, 7.65, 1.1] : [0, 8, 3]}
-                                rotation={[0, deg(180), deg(90)]}
-                                scale={isMobile ? 0.066 : 0.08}
-                            />
-                        </Float>
+                        {/* JavaScript: energetic tumble (x/y/z spins with slightly different periods) */}
+                        <Custom3DModel
+                            model="/models/javascript_logo.glb"
+                            position={isMobile ? [0, 7.65, 1.1] : [0, 8, 3]}
+                            rotation={[0, deg(180), deg(90)]}
+                            scale={isMobile ? 0.066 : 0.08}
+                            animate={effects.javaScript}
+                            animateDeps={[isMobile]}
+                        />
 
-                        <Float
-                            floatIntensity={1}
-                            rotationIntensity={0.15}
-                            speed={10}
-                            floatingRange={[-0.02, 0.02]}
-                        >
-                            <Custom3DModel
-                                model="/models/react_logo.glb"
-                                position={isMobile ? [0, 5.5, 5] : [0, 5, 7.2]}
-                                rotation={[0, deg(90), 0]}
-                                scale={isMobile ? 0.35 : 0.45}
-                            />
-                        </Float>
+                        {/* React: atomic spin + breathing scale (reactive pulse) */}
+                        <Custom3DModel
+                            model="/models/react_logo.glb"
+                            position={isMobile ? [0, 5.5, 5] : [0, 5, 7.2]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.35 : 0.45}
+                            animate={effects.react}
+                            animateDeps={[isMobile]}
+                        />
 
-                        <Float
-                            floatIntensity={1}
-                            rotationIntensity={0.15}
-                            speed={10}
-                            floatingRange={[-0.02, 0.02]}
-                        >
-                            <Custom3DModel
-                                model="/models/c_logo.glb"
-                                position={isMobile ? [0, 7.7, -1.1] : [0, 8.2, -1.3]}
-                                rotation={[0, 0, 0]}
-                                scale={isMobile ? 0.155 : 0.2}
-                            />
-                        </Float>
+                        {/* C: "coin spin" (classic systems/low-level vibe) */}
+                        <Custom3DModel
+                            model="/models/c_logo.glb"
+                            position={isMobile ? [0, 7.7, -1.1] : [0, 8.2, -1.3]}
+                            rotation={[0, 0, 0]}
+                            scale={isMobile ? 0.155 : 0.2}
+                            animate={effects.c}
+                            animateDeps={[isMobile]}
+                        />
 
-                        <Float
-                            floatIntensity={1}
-                            rotationIntensity={0.15}
-                            speed={10}
-                            floatingRange={[-0.02, 0.02]}
-                        >
-                            <Custom3DModel
-                                model="/models/java_logo.glb"
-                                position={isMobile ? [0, 7.7, -3.2] : [0, 8, -4]}
-                                rotation={[0, deg(90), 0]}
-                                scale={isMobile ? 0.45 : 0.6}
-                            />
-                        </Float>
+                        {/* Java: steam swirl (orbit-like arc + gentle sway) */}
+                        <Custom3DModel
+                            model="/models/java_logo.glb"
+                            position={isMobile ? [0, 7.7, -3.2] : [0, 8, -4]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.45 : 0.6}
+                            animate={effects.java}
+                            animateDeps={[isMobile]}
+                        />
 
-                        <Float
-                            floatIntensity={1}
-                            rotationIntensity={0.15}
-                            speed={10}
-                            floatingRange={[-0.02, 0.02]}
-                        >
-                            <Custom3DModel
-                                model="/models/threejs_logo.glb"
-                                position={isMobile ? [0, 7.8, -5.1] : [0, 8.2, -6.2]}
-                                rotation={[0, deg(90), 0]}
-                                scale={isMobile ? 0.013 : 0.018}
-                            />
-                        </Float>
+                        {/* three.js: axial spin (about Z) + hover (graphics axis play) */}
+                        <Custom3DModel
+                            model="/models/threejs_logo.glb"
+                            position={isMobile ? [0, 7.8, -5.1] : [0, 8.2, -6.2]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.013 : 0.018}
+                            animate={effects.threejs}
+                            animateDeps={[isMobile]}
+                        />
 
-                        <Float
-                            floatIntensity={1}
-                            rotationIntensity={0.15}
-                            speed={10}
-                            floatingRange={[-0.02, 0.02]}
-                        >
-                            <Custom3DModel
-                                model="/models/github_logo.glb"
-                                position={isMobile ? [-4.34, 3.48, -1.16] : [-5.4, 2.7, -1.4]}
-                                rotation={[0, deg(90), 0]}
-                                scale={isMobile ? 0.72 : 0.9}
-                            />
-                        </Float>
+                        {/* GitHub: arrival pop + slow lateral drift (mascot drifting in) */}
+                        <Custom3DModel
+                            model="/models/github_logo.glb"
+                            position={isMobile ? [-4.34, 3.48, -1.16] : [-5.4, 2.7, -1.4]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.72 : 0.9}
+                            animate={effects.github}
+                            animateDeps={[isMobile]}
+                        />
 
-                        <Float
-                            floatIntensity={1}
-                            rotationIntensity={0.15}
-                            speed={10}
-                            floatingRange={[-0.02, 0.02]}
-                        >
-                            <Custom3DModel
-                                model="/models/swift_logo.glb"
-                                position={isMobile ? [0, 5.0, 3.08] : [0, 4.5, 5]}
-                                rotation={[0, deg(180), 0]}
-                                scale={isMobile ? 0.9 : 1.1}
-                            />
-                        </Float>
+                        {/* Swift: bird-like swoop (figure-8 in x/y) + slight yaw */}
+                        <Custom3DModel
+                            model="/models/swift_logo.glb"
+                            position={isMobile ? [0, 5.0, 3.08] : [0, 4.5, 5]}
+                            rotation={[0, deg(180), 0]}
+                            scale={isMobile ? 0.9 : 1.1}
+                            animate={effects.swift}
+                            animateDeps={[isMobile]}
+                        />
 
-                        <Float
-                            floatIntensity={1}
-                            rotationIntensity={0.15}
-                            speed={10}
-                            floatingRange={[-0.02, 0.02]}
-                        >
-                            <Custom3DModel
-                                model="/models/docker_logo.glb"
-                                position={isMobile ? [0, 5.0, 1.08] : [0, 4.3, 2.6]}
-                                rotation={[0, deg(90), 0]}
-                                scale={isMobile ? 0.9 : 1.1}
-                            />
-                        </Float>
+                        {/* Docker: ship bobbing (roll/pitch) + buoyant up/down */}
+                        <Custom3DModel
+                            model="/models/docker_logo.glb"
+                            position={isMobile ? [0, 5.0, 1.08] : [0, 4.3, 2.6]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.9 : 1.1}
+                            animate={effects.docker}
+                            animateDeps={[isMobile]}
+                        />
 
-                        <Float
-                            floatIntensity={1}
-                            rotationIntensity={0.15}
-                            speed={10}
-                            floatingRange={[-0.02, 0.02]}
-                        >
-                            <Custom3DModel
-                                model="/models/postgreSQL_logo.glb"
-                                position={isMobile ? [0, 3.0, 1.08] : [0, 2.0, 2.6]}
-                                rotation={[0, deg(90), 0]}
-                                scale={isMobile ? 0.8 : 1.1}
-                            />
-                        </Float>
+                        {/* PostgreSQL: elephant head "nod" + curious peek in/out */}
+                        <Custom3DModel
+                            model="/models/postgreSQL_logo.glb"
+                            position={isMobile ? [0, 3.0, 1.08] : [0, 2.0, 2.6]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.8 : 1.1}
+                            animate={effects.postgreSQL}
+                            animateDeps={[isMobile]}
+                        />
 
-                        <Float
-                            floatIntensity={1}
-                            rotationIntensity={0.15}
-                            speed={10}
-                            floatingRange={[-0.02, 0.02]}
-                        >
-                            <Custom3DModel
-                                model="/models/tailwindcss_logo.glb"
-                                position={isMobile ? [0, 3.4, 5.1] : [0, 2.5, 7.5]}
-                                rotation={[0, deg(90), 0]}
-                                scale={isMobile ? 0.8 : 1.1}
-                            />
-                        </Float>
+                        {/* Tailwind: flowing current (x sine-like drift) + smooth spin */}
+                        <Custom3DModel
+                            model="/models/tailwindcss_logo.glb"
+                            position={isMobile ? [0, 3.4, 5.1] : [0, 2.5, 7.5]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.8 : 1.1}
+                            animate={effects.tailwindcss}
+                            animateDeps={[isMobile]}
+                        />
 
-                        <Float
-                            floatIntensity={1}
-                            rotationIntensity={0.15}
-                            speed={10}
-                            floatingRange={[-0.02, 0.02]}
-                        >
-                            <Custom3DModel
-                                model="/models/mongoDB_logo.glb"
-                                position={isMobile ? [0, 3.0, 3.0] : [0, 2.0, 5.0]}
-                                rotation={[0, deg(90), 0]}
-                                scale={isMobile ? 0.75 : 1.1}
-                            />
-                        </Float>
-
+                        {/* MongoDB: leaf sprout (grow/shrink) + gentle rise/fall */}
+                        <Custom3DModel
+                            model="/models/mongoDB_logo.glb"
+                            position={isMobile ? [0, 3.0, 3.0] : [0, 2.0, 5.0]}
+                            rotation={[0, deg(90), 0]}
+                            scale={isMobile ? 0.75 : 1.1}
+                            animate={effects.mongoDB}
+                            animateDeps={[isMobile]}
+                        />
                     </Suspense>
                 </Canvas>
             </div>
