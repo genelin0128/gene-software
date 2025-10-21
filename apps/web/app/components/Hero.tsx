@@ -73,9 +73,9 @@ export default function Hero() {
                 <p className="sm:text-3xl text-2xl font-medium text-black text-center">
                     Hi, I am Gene <WavingHand>👋</WavingHand>
                 </p>
-                <p className="text-gray-600 text-3xl font-bold text-center">
-                    Building Products & Brands
-                </p>
+                {/*<p className="text-gray-600 text-3xl font-bold text-center">*/}
+                {/*    Building Products & Brands*/}
+                {/*</p>*/}
             </div>
 
             {/* 3D stage */}
