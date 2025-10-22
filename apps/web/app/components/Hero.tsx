@@ -68,7 +68,7 @@ export default function Hero() {
     const deg = (d: number) => (d * Math.PI) / 180;
 
     return (
-        <section className="min-h-screen w-full flex flex-col relative">
+        <section className="border-2 w-full flex flex-col relative">
             <div className="w-full mx-auto flex flex-col gap-2 pointer-events-none select-none">
                 <p className="sm:text-3xl text-2xl font-medium text-black text-center">
                     Hi, I am Gene <WavingHand>👋</WavingHand>
@@ -79,12 +79,12 @@ export default function Hero() {
             </div>
 
             {/* 3D stage */}
-            <div className="w-full mt-10 h-[70vh]">
+            <div className="w-full mt-3 sm:mt-10 h-[40vh] sm:h-[60vh]">
                 <Canvas
                     key={isMobile ? "mobile" : "desktop"}
                     className="w-full h-full"
                     dpr={[1, 2]}
-                    camera={{ fov: 65, position: isMobile ? [20, 0, 0] : [15, 0, 0] }}
+                    camera={{ fov: isMobile ? 60 : 65, position: [16, 0, 0] }}
                     gl={{ antialias: true, preserveDrawingBuffer: false }}
                 >
                     <axesHelper args={[100]} />
@@ -113,7 +113,7 @@ export default function Hero() {
                         */}
                         <Custom3DModel
                             model="/models/gaming_desktop.glb"
-                            position={[0, -3, -1]}
+                            position={[0, -3, -1.55]}
                             rotation={[0, 0, 0]}
                             scale={isMobile ? 0.8 : 1}
                         />
