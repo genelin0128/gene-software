@@ -87,7 +87,7 @@ export default function Hero() {
                     camera={{ fov: isMobile ? 60 : 65, position: [16, 0, 0] }}
                     gl={{ antialias: true, preserveDrawingBuffer: false }}
                 >
-                    <axesHelper args={[100]} />
+                    {/*<axesHelper args={[100]} />*/}
                     <Suspense fallback={<CanvasLoader />}>
                         {/* Lights */}
                         <ambientLight intensity={0.7} />
