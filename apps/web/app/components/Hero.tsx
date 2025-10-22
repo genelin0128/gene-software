@@ -68,7 +68,7 @@ export default function Hero() {
     const deg = (d: number) => (d * Math.PI) / 180;
 
     return (
-        <section className="w-full flex flex-col relative">
+        <section className=" w-full flex flex-col relative">
             <div className="w-full mx-auto flex flex-col gap-2 pointer-events-none select-none">
                 <p className="sm:text-3xl text-2xl font-medium text-black text-center">
                     Hi, I am Gene <WavingHand>👋</WavingHand>
