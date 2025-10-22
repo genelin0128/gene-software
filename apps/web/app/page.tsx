@@ -6,7 +6,7 @@ import About from "@/app/components/About";
 
 export default function Page() {
     return (
-        <main className="mx-auto max-w-6xl p-6">
+        <main className="mx-auto max-w-[1680] p-6">
             {/*<h1 className="text-3xl font-bold">Gene Software</h1>*/}
             {/*<h1 className="text-3xl font-bold">Gene</h1>*/}
             <Hero />
