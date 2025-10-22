@@ -4,8 +4,8 @@ const About = () => {
             <div className="grid xl:grid-rows-6 md:grid-cols-2 grid-cols-1 gap-5 h-full">
                 <div className="col-span-1 xl:row-span-3">
                     <div
-                        className="w-full h-full border border-[#1f2937] bg-[#374151] rounded-lg p-4 sm:p-7 flex flex-col gap-4">
-
+                        className="w-full h-full border border-[#1f2937] bg-[#374151] rounded-lg p-4 sm:p-7 flex flex-col gap-4"
+                    >
                         {/* Image stack: background + centered circular avatar */}
                         <div className="relative w-full h-[260px] sm:h-[420px] rounded-xl overflow-hidden">
                             {/* Background image covers the container; slight blur and dim for contrast */}
