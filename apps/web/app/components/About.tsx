@@ -7,6 +7,7 @@ import { Canvas } from "@react-three/fiber";
 import { useMediaQuery } from "react-responsive";
 import Image from "next/image";
 import TechStack from "@/app/components/TechStack";
+import Custom3DModel from "@/app/components/Custom3DModel";
 
 const About = () => {
     const isMobile = useMediaQuery({ maxWidth: 640 });
@@ -159,10 +160,67 @@ const About = () => {
                                     </p>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
+
+
+                <div className="col-span-1 xl:row-span-3">
+                    <div
+                        className="w-full h-full border border-[#1f2937] bg-[#374151] rounded-lg p-4 sm:p-7 flex flex-col gap-4"
+                    >
+                        <div className="relative w-full h-[260px] sm:h-[420px] rounded-xl overflow-hidden">
+                            <Canvas
+                                key={isMobile ? "mobile" : "desktop"}
+                                className="w-full h-full"
+                                dpr={[1, 2]}
+                                camera={{ fov: 65, position: isMobile ? [0, 0, 10] : [0, 0, 15] }}
+                                gl={{ antialias: true, preserveDrawingBuffer: false }}
+                            >
+                                <Suspense fallback={<CanvasLoader />}>
+                                    <ambientLight intensity={4.0} />
+                                    <directionalLight position={[6, 8, 5]} intensity={1} castShadow />
+                                    <hemisphereLight intensity={0.7} groundColor={"#222"} />
+
+                                    <Custom3DModel
+                                        model="/models/classroom.glb"
+                                        position={isMobile ? [0, 5, 0] : [0, -55, -30]}
+                                        rotation={[0, deg(180), 0]}
+                                        scale={isMobile ? 0.45 : 0.6}
+                                        animateDeps={[isMobile]}
+                                    />
+
+                                    <OrbitControls
+                                        enableZoom
+                                        enablePan={false}
+                                        enableDamping
+                                        dampingFactor={0.06}
+                                        minDistance={4}
+                                        maxDistance={25}
+                                        minPolarAngle={Math.PI / 2}
+                                        maxPolarAngle={Math.PI / 2}
+                                    />
+                                </Suspense>
+                            </Canvas>
+                        </div>
+
+                        <div className="px-3 flex flex-col gap-2">
+                            <p className="text-xl font-semibold text-white">Education</p>
+                            <div className="text-base text-[#afb0b6] leading-relaxed max-w-prose space-y-1.5">
+                                <p>
+                                    <span className="font-semibold text-white">Rice University</span> — Master of
+                                    Computer Science (MCS), December 2025 · Houston, TX
+                                </p>
+                                <p>
+                                    <span className="font-semibold text-white">Feng Chia University</span> — Bachelor of
+                                    Information Engineering &amp; Computer Science, June 2024 · Taichung, Taiwan
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
         </section>
     );
