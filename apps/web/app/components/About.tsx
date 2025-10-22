@@ -184,7 +184,7 @@ const About = () => {
 
                                     <Custom3DModel
                                         model="/models/classroom.glb"
-                                        position={isMobile ? [0, 5, 0] : [0, -55, -30]}
+                                        position={isMobile ? [-10, -50, -30] : [0, -55, -30]}
                                         rotation={[0, deg(180), 0]}
                                         scale={isMobile ? 0.45 : 0.6}
                                         animateDeps={[isMobile]}
@@ -196,7 +196,7 @@ const About = () => {
                                         enableDamping
                                         dampingFactor={0.06}
                                         minDistance={4}
-                                        maxDistance={25}
+                                        maxDistance={50}
                                         minPolarAngle={Math.PI / 2}
                                         maxPolarAngle={Math.PI / 2}
                                     />
