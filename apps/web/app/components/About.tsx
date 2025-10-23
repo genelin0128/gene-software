@@ -59,7 +59,7 @@ const About = () => {
                     <div
                         className="w-full h-full border border-[#565a5e] bg-[#565a5e] rounded-lg p-2 sm:p-4 flex flex-col gap-3"
                     >
-                        <div className="relative w-full h-[260px] sm:h-[420px] rounded-xl overflow-hidden">
+                        <div className="relative w-full h-[260px] sm:h-[300px] rounded-xl overflow-hidden">
                             <Image
                                 src="/images/background.jpeg"
                                 alt="background"
@@ -102,7 +102,7 @@ const About = () => {
                     <div
                         className="w-full h-full border border-[#565a5e] bg-[#565a5e] rounded-lg p-2 sm:p-4 flex flex-col gap-3"
                     >
-                        <div className="relative w-full h-[260px] sm:h-[420px] rounded-xl overflow-hidden">
+                        <div className="relative w-full h-[260px] sm:h-[300px] rounded-xl overflow-hidden">
                             <Canvas
                                 key={isMobile ? "mobile" : "desktop"}
                                 className="w-full h-full"
@@ -159,7 +159,7 @@ const About = () => {
                     <div
                         className="w-full h-full border border-[#565a5e] bg-[#565a5e] rounded-lg p-2 sm:p-4 flex flex-col gap-3"
                     >
-                        <div className="relative w-full h-[260px] sm:h-[420px] rounded-xl overflow-hidden">
+                        <div className="relative w-full h-[260px] sm:h-[300px] rounded-xl overflow-hidden">
                             <Canvas
                                 key={isMobile ? "mobile" : "desktop"}
                                 className="w-full h-full"
@@ -256,7 +256,7 @@ const About = () => {
                     <div
                         className="w-full h-full border border-[#565a5e] bg-[#565a5e] rounded-lg p-2 sm:p-4 flex flex-col gap-3"
                     >
-                        <div className="relative w-full h-[260px] sm:h-[420px] rounded-xl overflow-hidden">
+                        <div className="relative w-full h-[260px] sm:h-[300px] rounded-xl overflow-hidden">
                             <Canvas
                                 key={isMobile ? "mobile" : "desktop"}
                                 className="w-full h-full"
