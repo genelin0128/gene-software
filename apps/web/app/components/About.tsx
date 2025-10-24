@@ -52,8 +52,9 @@ const About = () => {
 
     return (
         <section className="mt-5">
-            <div className="grid gap-3 grid-cols-1 lg:grid-cols-7 md:grid-cols-4 lg:grid-rows-2 md:grid-rows-3 h-full">
-
+            <div
+                className="grid gap-3 grid-cols-1 lg:grid-cols-7 md:grid-cols-4 lg:grid-rows-2 md:grid-rows-3 h-full"
+            >
                 {/* Me */}
                 <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 md:col-span-2">
                     <div
