@@ -51,7 +51,7 @@ const About = () => {
     const deg = (d: number) => (d * Math.PI) / 180;
 
     return (
-        <section className="mt-5">
+        <section className="mt-5 px-1">
             <div
                 className="grid gap-3 grid-cols-1 lg:grid-cols-7 md:grid-cols-4 lg:grid-rows-2 md:grid-rows-3 h-full"
             >

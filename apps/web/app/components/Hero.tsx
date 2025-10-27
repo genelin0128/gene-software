@@ -8,6 +8,7 @@ import Custom3DModel from "@/app/components/Custom3DModel";
 import CanvasLoader from "@/app/components/CanvasLoader";
 import { useMediaQuery } from "react-responsive";
 import * as effects from "@/app/components/effects";
+import { useBreakpoint } from "@/lib/hooks/useBreakpoint";
 
 // ---- IMPORTANT ----
 // Preload GLTFs at the module top (outside React render).
@@ -63,7 +64,8 @@ export const WavingHand = styled.span`
 
 export default function Hero() {
 
-    const isMobile = useMediaQuery({ maxWidth: 640 });
+    const { sm } = useBreakpoint();
+    const isMobile = sm;
 
     const deg = (d: number) => (d * Math.PI) / 180;
 

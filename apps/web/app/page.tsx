@@ -9,7 +9,7 @@ export default function Page() {
         <main className="mx-auto max-w-[1680] p-6">
             <Hero />
             <About />
-            {/*<Projects />*/}
+            <Projects />
         </main>
     );
 }
