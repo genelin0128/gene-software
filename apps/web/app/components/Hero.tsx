@@ -6,7 +6,6 @@ import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Suspense } from "react";
 import Custom3DModel from "@/app/components/Custom3DModel";
 import CanvasLoader from "@/app/components/CanvasLoader";
-import { useMediaQuery } from "react-responsive";
 import * as effects from "@/app/components/effects";
 import { useBreakpoint } from "@/lib/hooks/useBreakpoint";
 
