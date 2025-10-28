@@ -51,14 +51,14 @@ const About = () => {
     const deg = (d: number) => (d * Math.PI) / 180;
 
     return (
-        <section className="mt-5 px-1">
+        <section className="mt-3 px-1">
             <div
                 className="grid gap-3 grid-cols-1 lg:grid-cols-7 md:grid-cols-4 lg:grid-rows-2 md:grid-rows-3 h-full"
             >
                 {/* Me */}
                 <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 md:col-span-2">
                     <div
-                        className="w-full h-full border border-[#565a5e] bg-[#565a5e] rounded-lg p-2 sm:p-4 flex flex-col gap-3"
+                        className="w-full h-full border border-[#e3fffc] bg-[#e3fffc]  rounded-lg p-2 sm:p-4 flex flex-col gap-3"
                     >
                         <div className="relative w-full h-[260px] sm:h-[300px] rounded-xl overflow-hidden">
                             <Image
@@ -86,8 +86,8 @@ const About = () => {
                             </div>
                         </div>
                         <div className="px-3 flex flex-col gap-2">
-                            <p className="text-xl font-semibold text-white">Hi, I’m Gene</p>
-                            <p className="text-base text-[#afb0b6] leading-relaxed">
+                            <p className="text-xl font-semibold text-black">About</p>
+                            <p className="text-base leading-relaxed">
                                 I’m a Master of Computer Science candidate at Rice University graduating December 2025.
                                 I focus on modern web development with TypeScript, React, and Next.js, and I use Node
                                 for APIs. Recently I’ve been exploring Three.js for interactive 3D on the web. I’m also
@@ -101,7 +101,7 @@ const About = () => {
                 {/* Education */}
                 <div className="lg:col-span-2  lg:row-start-1  md:col-span-2">
                     <div
-                        className="w-full h-full border border-[#565a5e] bg-[#565a5e] rounded-lg p-2 sm:p-4 flex flex-col gap-3"
+                        className="w-full h-full border border-[#e3fffc] bg-[#e3fffc]  rounded-lg p-2 sm:p-4 flex flex-col gap-3"
                     >
                         <div className="relative w-full h-[260px] sm:h-[300px] rounded-xl overflow-hidden">
                             <Canvas
@@ -139,14 +139,14 @@ const About = () => {
                         </div>
 
                         <div className="px-3 flex flex-col gap-2">
-                            <p className="text-xl font-semibold text-white">Education</p>
-                            <div className="text-base text-[#afb0b6] leading-relaxed space-y-1.5">
+                            <p className="text-xl font-semibold text-black">Education</p>
+                            <div className="text-base leading-relaxed space-y-1.5">
                                 <p>
-                                    <span className="font-semibold text-white">Rice University</span> <br />
+                                    <span className="font-semibold text-black">Rice University</span> <br />
                                     Master of Computer Science, December 2025, Houston, TX
                                 </p>
                                 <p>
-                                    <span className="font-semibold text-white">Feng Chia University</span> <br />
+                                    <span className="font-semibold text-black">Feng Chia University</span> <br />
                                     Bachelor of Information Engineering &amp; Computer Science, June 2024, Taichung,
                                     Taiwan
                                 </p>
@@ -158,19 +158,19 @@ const About = () => {
                 {/* Work Experience */}
                 <div className="lg:col-span-3 lg:row-start-1 lg:row-span-2 md:col-span-4">
                     <div
-                        className="w-full h-full border border-[#565a5e] bg-[#565a5e] rounded-lg p-2 sm:p-4 flex flex-col gap-3"
+                        className="w-full h-full border border-[#e3fffc] bg-[#e3fffc]  rounded-lg p-2 sm:p-4 flex flex-col gap-3"
                     >
                         <div className="relative w-full h-[260px] sm:h-[300px] rounded-xl overflow-hidden">
                             <Canvas
                                 key={isMobile ? "mobile" : "desktop"}
-                                className="w-full h-full"
+                                className="w-full h-full bg-white"
                                 dpr={[1, 2]}
                                 camera={{ fov: 60, position: isMobile ? [0, 0, 8] : [0, 0, 9] }}
                                 gl={{ antialias: true, preserveDrawingBuffer: false }}
                             >
                                 <Suspense fallback={<CanvasLoader />}>
                                     <ambientLight intensity={4.0} />
-                                    <directionalLight position={[6, 8, 5]} intensity={1} castShadow />
+                                    <directionalLight position={[6, 8, 5]} intensity={8} castShadow />
                                     <hemisphereLight intensity={0.7} groundColor={"#222"} />
 
                                     <Custom3DModel
@@ -196,18 +196,19 @@ const About = () => {
                         </div>
 
                         <div className="px-3 flex flex-col gap-2">
-                            <p className="text-xl font-semibold text-white">Work Experience</p>
-                            <div className="text-base text-[#afb0b6] leading-relaxed space-y-1.5">
+                            <p className="text-xl font-semibold text-black">Work Experience</p>
+                            <div className="text-base leading-relaxed space-y-1.5">
                                 {/* Paycom */}
                                 <div>
                                     {/* Row 1: Company */}
-                                    <p><span className="font-semibold text-white">Paycom</span></p>
+                                    <p><span className="font-semibold text-black">Paycom</span></p>
 
                                     {/* Row 2: Role */}
-                                    <p className="text-white font-medium">Software Development Intern</p>
+                                    <p className="text-black font-medium">Software Development Intern</p>
 
                                     {/* Row 3: Tech */}
-                                    <p>Tech: React, TypeScript, Next.js, Redux Toolkit, Docker</p>
+                                    <p>Tech: React, TypeScript, Next.js, Redux
+                                        Toolkit, Docker</p>
 
                                     {/* Row 4: Work bullets */}
                                     <ul className="list-disc pl-5 mt-1 space-y-1">
@@ -226,11 +227,11 @@ const About = () => {
                                 {/* SXB Liberal Arts & Science Tutoring Center */}
                                 <div>
                                     {/* Row 1: Company */}
-                                    <p><span className="font-semibold text-white">SXB Liberal Arts &amp; Science Tutoring Center</span>
+                                    <p><span className="font-semibold text-black">SXB Liberal Arts &amp; Science Tutoring Center</span>
                                     </p>
 
                                     {/* Row 2: Role */}
-                                    <p className="text-white font-medium">Software Engineer Intern</p>
+                                    <p className="text-black font-medium">Software Engineer Intern</p>
 
                                     {/* Row 3: Tech */}
                                     <p>Tech: Python, SQL, Vue.js, HTML/CSS, JavaScript, MySQL</p>
@@ -255,12 +256,12 @@ const About = () => {
                 {/* Tech Stack */}
                 <div className="lg:col-span-4 lg:col-start-1 lg:row-start-2 md:col-span-4">
                     <div
-                        className="w-full h-full border border-[#565a5e] bg-[#565a5e] rounded-lg p-2 sm:p-4 flex flex-col gap-3"
+                        className="w-full h-full border border-[#e3fffc] bg-[#e3fffc] rounded-lg p-2 sm:p-4 flex flex-col gap-3"
                     >
                         <div className="relative w-full h-[260px] sm:h-[300px] rounded-xl overflow-hidden">
                             <Canvas
                                 key={isMobile ? "mobile" : "desktop"}
-                                className="w-full h-full"
+                                className="w-full h-full bg-white"
                                 dpr={[1, 2]}
                                 camera={{ fov: 65, position: isMobile ? [0, 0, 10] : [0, 0, 15] }}
                                 gl={{ antialias: true, preserveDrawingBuffer: false }}
@@ -293,24 +294,23 @@ const About = () => {
                         </div>
 
                         <div className="px-3 flex flex-col gap-2">
-                            <p className="text-xl font-semibold text-white">Tech Stack</p>
-                            <div className="text-base text-[#afb0b6] leading-relaxed space-y-1.5">
+                            <p className="text-xl font-semibold text-black">Tech Stack</p>
+                            <div className="text-base leading-relaxed space-y-1.5">
                                 <p>
-                                        <span
-                                            className="font-semibold text-white">Programming Languages:</span> TypeScript,
+                                    <span className="font-semibold text-black">Programming Languages:</span> TypeScript,
                                     JavaScript, Python, Java, SQL, HTML5/CSS3, Swift, C, C++.
                                 </p>
                                 <p>
-                                    <span className="font-semibold text-white">Frameworks & Libraries:</span> React,
+                                    <span className="font-semibold text-black">Frameworks & Libraries:</span> React,
                                     Next.js, Three.js, Redux Toolkit, Node.js, Express, Spring Boot, Vue.js,
                                     Angular, SwiftUI, Bootstrap, Tailwind CSS, Monaco Editor.
                                 </p>
                                 <p>
-                                    <span className="font-semibold text-white">Testing & Databases:</span> Jest,
+                                    <span className="font-semibold text-black">Testing & Databases:</span> Jest,
                                     Vitest, React Testing Library, MongoDB, MySQL, PostgreSQL.
                                 </p>
                                 <p>
-                                    <span className="font-semibold text-white">Developer Tools:</span> Docker,
+                                    <span className="font-semibold text-black">Developer Tools:</span> Docker,
                                     CI/CD, Git, Unix/Linux, Postman, Jira, RESTful APIs, AWS Amplify.
                                 </p>
                             </div>

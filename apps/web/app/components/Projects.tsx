@@ -125,12 +125,12 @@ const Projects = () => {
 
     return (
         <section className="my-5">
-            <p className="sm:text-4xl text-3xl font-semibold text-gray_gradient mb-5">
+            <p className="sm:text-4xl text-3xl font-semibold mb-5">
                 My Work
             </p>
             <div className="grid md:grid-cols-2 grid-cols-1 gap-3 w-full">
                 <div
-                    className="flex flex-col gap-3 relative sm:p-8 p-5 shadow-2xl shadow-black-200 rounded-lg"
+                    className="flex flex-col gap-3 border-[#e3fffc] bg-[#e3fffc] relative sm:p-8 p-5 shadow-2xl shadow-black-200 rounded-lg"
                 >
                     <div className="absolute top-0 right-0 z-0 pointer-events-none">
                         <Image
