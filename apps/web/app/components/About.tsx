@@ -86,7 +86,7 @@ const About = () => {
                             </div>
                         </div>
                         <div className="px-3 flex flex-col gap-2">
-                            <p className="text-xl font-semibold text-black">About</p>
+                            <p className="text-xl font-semibold text-black">About Me</p>
                             <p className="text-base leading-relaxed">
                                 I’m a Master of Computer Science candidate at Rice University graduating December 2025.
                                 I focus on modern web development with TypeScript, React, and Next.js, and I use Node
