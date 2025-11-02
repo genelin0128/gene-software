@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function ProjectsPage() {
     return (
-        <main className="mx-auto max-w-4xl p-6">
+        <main className="mx-auto max-w-[1680] p-6">
             <h1 className="text-3xl font-bold mb-6">Projects</h1>
             <ul className="space-y-3">
                 <li className="border p-4 rounded-lg">
