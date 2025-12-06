@@ -33,6 +33,7 @@ export default function ContactForm({ isDark }: ContactFormProps) {
     const [status, setStatus] = useState<FormStatus>("idle");
     const [focusedField, setFocusedField] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const apiUrl = process.env.NEXT_PUBLIC_CONTACT_API;
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -56,7 +57,6 @@ export default function ContactForm({ isDark }: ContactFormProps) {
             return;
         }
 
-        const apiUrl = process.env.NEXT_PUBLIC_CONTACT_API;
         if (!apiUrl) {
             setErrorMessage("Contact service not configured.");
             return;
