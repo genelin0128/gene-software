@@ -67,7 +67,11 @@ export default function ScrollProgress({ isDark }: ScrollProgressProps) {
                         document.documentElement.scrollTop = 0;
                     }
                 }}
-                className={`fixed bottom-6 right-6 z-40 p-3 rounded-full shadow-lg transition-all duration-300 ${isDark ? "bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20" : "bg-white border border-slate-200 hover:bg-slate-50"}`}
+                className={`fixed right-6 z-40 p-3 rounded-full shadow-lg transition-all duration-300 touch-manipulation ${isDark ? "bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20" : "bg-white border border-slate-200 hover:bg-slate-50"}`}
+                style={{
+                    // Lift above mobile browser toolbars (safe areas) and keep reachable
+                    bottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))",
+                }}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: isVisible ? 1 : 0, scale: isVisible ? 1 : 0 }}
                 whileHover={{ scale: 1.1 }}
