@@ -19,31 +19,75 @@ interface ContactFormProps {
     isDark: boolean;
 }
 
-type FormStatus = "idle" | "sending" | "sent";
+type FormStatus = "idle" | "sending" | "sent" | "error";
 
 interface FormData {
     name: string;
     email: string;
     message: string;
+    company: string; // Honeypot field
 }
 
 export default function ContactForm({ isDark }: ContactFormProps) {
-    const [formData, setFormData] = useState<FormData>({ name: "", email: "", message: "" });
+    const [formData, setFormData] = useState<FormData>({ name: "", email: "", message: "", company: "" });
     const [status, setStatus] = useState<FormStatus>("idle");
     const [focusedField, setFocusedField] = useState<string | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setErrorMessage(null);
+
+        const trimmed = {
+            name: formData.name.trim(),
+            email: formData.email.trim(),
+            message: formData.message.trim(),
+            company: formData.company.trim(),
+        };
+
+        const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+        if (!trimmed.name || !trimmed.email || !trimmed.message) {
+            setErrorMessage("Please fill in all required fields.");
+            return;
+        }
+
+        if (!emailRegex.test(trimmed.email)) {
+            setErrorMessage("Please enter a valid email address.");
+            return;
+        }
+
+        const apiUrl = process.env.NEXT_PUBLIC_CONTACT_API;
+        if (!apiUrl) {
+            setErrorMessage("Contact service not configured.");
+            return;
+        }
+
         setStatus("sending");
 
-        // Simulate form submission
-        await new Promise<void>((resolve) => setTimeout(resolve, 2000));
-        setStatus("sent");
+        try {
+            const res = await fetch(apiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(trimmed),
+            });
 
-        setTimeout(() => {
-            setStatus("idle");
-            setFormData({ name: "", email: "", message: "" });
-        }, 3000);
+            const data = (await res.json().catch(() => null)) as { success?: boolean; error?: string } | null;
+
+            if (!res.ok || !data?.success) {
+                throw new Error(data?.error || "Failed to send message.");
+            }
+
+            setStatus("sent");
+            setFormData({ name: "", email: "", message: "", company: "" });
+
+            setTimeout(() => {
+                setStatus("idle");
+            }, 3000);
+        } catch (err) {
+            setStatus("error");
+            setErrorMessage(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+            setTimeout(() => setStatus("idle"), 3000);
+        }
     };
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -68,6 +112,18 @@ export default function ContactForm({ isDark }: ContactFormProps) {
             onSubmit={handleSubmit}
             className="relative"
         >
+            {/* Honeypot field for bots */}
+            <input
+                type="text"
+                name="company"
+                value={formData.company}
+                onChange={handleChange}
+                className="hidden"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+            />
+
             {/* Background glow */}
             <div
                 className={`absolute inset-0 rounded-2xl blur-2xl ${isDark ? "bg-gradient-to-r from-cyan-500/5 to-emerald-500/5" : "bg-gradient-to-r from-emerald-500/5 to-cyan-500/5"}`} />
@@ -146,6 +202,12 @@ export default function ContactForm({ isDark }: ContactFormProps) {
                         required
                     />
                 </motion.div>
+
+                {errorMessage && (
+                    <div className="text-sm text-red-500">
+                        {errorMessage}
+                    </div>
+                )}
 
                 {/* Submit button with animated states */}
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
