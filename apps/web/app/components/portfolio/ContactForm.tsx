@@ -110,7 +110,7 @@ export default function ContactForm({ isDark }: ContactFormProps) {
                     const wait = Math.max(0, Math.round(data.retryAfter));
                     setCooldownSeconds(wait);
                     setStatus("cooldown");
-                    setErrorMessage("You're sending messages too quickly. Please retry shortly.");
+                    setErrorMessage("You're sending messages too quickly.");
                     setIsCooldownError(true);
                     return;
                 }
