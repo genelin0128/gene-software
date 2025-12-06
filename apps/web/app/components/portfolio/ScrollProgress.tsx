@@ -55,7 +55,18 @@ export default function ScrollProgress({ isDark }: ScrollProgressProps) {
 
             {/* Scroll to top button */}
             <motion.button
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                onClick={() => {
+                    // iOS Safari before 15.4 does not support scroll behavior option
+                    // so fall back to instant scroll when smooth scrolling isn't available
+                    const supportsSmoothScroll = "scrollBehavior" in document.documentElement.style;
+                    if (supportsSmoothScroll) {
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                    } else {
+                        window.scrollTo(0, 0);
+                        document.body.scrollTop = 0;
+                        document.documentElement.scrollTop = 0;
+                    }
+                }}
                 className={`fixed bottom-6 right-6 z-40 p-3 rounded-full shadow-lg transition-all duration-300 ${isDark ? "bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20" : "bg-white border border-slate-200 hover:bg-slate-50"}`}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: isVisible ? 1 : 0, scale: isVisible ? 1 : 0 }}
