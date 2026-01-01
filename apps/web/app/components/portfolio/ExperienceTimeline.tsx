@@ -63,23 +63,37 @@ const detailContent: Record<NonNullable<Experience["slug"]>, ExperienceDetail> =
     },
     sxb: {
         badge: { text: "Billing & Reconciliation Platform", tone: "emerald" },
-        title: "Automated invoicing and reconciliation to shrink manual overhead",
+        title: "Automated billing, reconciliation, and secure staff administration",
         summary:
-            "Created a full billing workflow on MySQL with Python ETL to migrate legacy data, then shipped Vue.js admin views and parameterized SQL endpoints so staff could manage invoices and payments confidently.",
-        tech: ["Python", "SQL", "Vue.js", "JavaScript", "HTML/CSS", "MySQL"],
+            "Delivered an in-house billing and reconciliation platform backed by a normalized MySQL RDBMS. Automated invoice generation and payment tracking, migrated legacy data via Python ETL, and shipped secure, responsive Vue.js admin dashboards powered by RESTful APIs and parameterized SQL.",
+        tech: [
+            "Python",
+            "SQL",
+            "MySQL",
+            "Vue.js",
+            "JavaScript",
+            "HTML/CSS",
+            "OAuth 2.0",
+            "OpenID Connect",
+            "JWT",
+        ],
         image: "https://images.unsplash.com/photo-1556740749-887f6717d7e4?w=1200&q=80",
-        imageLabel: "Admin dashboards for billing and reconciliation",
+        imageLabel: "Secure admin dashboards for billing and reconciliation",
         highlights: [
-            "Built an in-house billing and reconciliation system that automated invoices and payment tracking.",
-            "Designed a normalized MySQL schema and wrote Python ETL jobs to migrate legacy data cleanly.",
-            "Delivered Vue.js admin views backed by RESTful, parameterized SQL endpoints to keep data accurate and auditable.",
+            "Built an in-house billing and reconciliation system on a MySQL RDBMS to automate invoice generation and payment tracking.",
+            "Designed and implemented RESTful API endpoints with parameterized SQL queries to ensure accuracy, security, and maintainability.",
+            "Migrated legacy records into a normalized schema using Python ETL workflows with sets and maps to improve data quality and auditability.",
+            "Delivered responsive Vue.js admin views with reusable components and client-side input validation.",
+            "Implemented staff authentication using OAuth 2.0 / OpenID Connect with JWT, including token validation, secure cookie settings, and structured logging for auditability.",
         ],
         impact: [
-            "Reduced manual billing work and operating costs by roughly 15%.",
-            "Improved payment accuracy and audit readiness with clean data migrations.",
-            "Gave staff an intuitive admin UI to manage invoices and reconciliation tasks.",
+            "Eliminated manual billing processes and reduced operating expenses by approximately 15%.",
+            "Improved payment accuracy, data integrity, and audit readiness through clean data migrations and enforced constraints.",
+            "Strengthened production security with standards-based authentication and auditable authorization flows.",
+            "Enabled staff to manage invoices and reconciliation tasks confidently through an intuitive admin UI.",
         ],
-        metric: "Automated invoicing and reconciliation cut manual work and reduced operating costs by about 15%.",
+        metric:
+            "Automated invoicing and reconciliation eliminated manual workflows and reduced operating costs by ~15%, while improving security and auditability.",
     },
 };
 
@@ -141,7 +155,7 @@ export default function ExperienceTimeline({ experiences, isDark }: ExperienceTi
                     >
                         <motion.div
                             className={`relative w-full max-w-5xl max-h-[85vh] overflow-y-auto rounded-3xl border ${isDark ? "border-white/10 bg-[#0b1224]/95" : "border-slate-200 bg-white/95"
-                                } p-6 shadow-2xl`}
+                            } p-6 shadow-2xl`}
                             initial={{ y: 30, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             exit={{ y: 30, opacity: 0 }}
@@ -173,9 +187,9 @@ export default function ExperienceTimeline({ experiences, isDark }: ExperienceTi
                                                 whileHover={{ scale: 1.08 }}
                                                 whileTap={{ scale: 0.95 }}
                                                 className={`relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border transition-all duration-300 ${isDark
-                                                        ? "bg-slate-800/50 border-white/15 hover:border-cyan-500/50"
-                                                        : "bg-white/80 border-slate-200 hover:border-emerald-500/50 shadow-lg"
-                                                    }`}
+                                                    ? "bg-slate-800/50 border-white/15 hover:border-cyan-500/50"
+                                                    : "bg-white/80 border-slate-200 hover:border-emerald-500/50 shadow-lg"
+                                                }`}
                                             >
                                                 <motion.div
                                                     className={`absolute inset-0 rounded-full blur-xl opacity-50 ${isDark ? "bg-cyan-500" : "bg-emerald-400"}`}
@@ -235,12 +249,14 @@ export default function ExperienceTimeline({ experiences, isDark }: ExperienceTi
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 transition={{ duration: 0.4 }}
                                                 className={`relative overflow-hidden rounded-2xl border ${isDark
-                                                        ? "border-white/10 bg-gradient-to-br from-cyan-500/10 via-emerald-500/10 to-transparent"
-                                                        : "border-slate-200 bg-gradient-to-br from-cyan-50 via-emerald-50 to-white"
-                                                    }`}
+                                                    ? "border-white/10 bg-gradient-to-br from-cyan-500/10 via-emerald-500/10 to-transparent"
+                                                    : "border-slate-200 bg-gradient-to-br from-cyan-50 via-emerald-50 to-white"
+                                                }`}
                                             >
-                                                <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
-                                                <img src={detail.image} alt={detail.imageLabel} className="h-full w-full object-cover" />
+                                                <div
+                                                    className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
+                                                <img src={detail.image} alt={detail.imageLabel}
+                                                     className="h-full w-full object-cover" />
                                                 <div className="absolute bottom-0 left-0 right-0 p-4">
                                                     <p className="text-sm text-white/80">{detail.imageLabel}</p>
                                                 </div>
@@ -248,7 +264,8 @@ export default function ExperienceTimeline({ experiences, isDark }: ExperienceTi
 
                                             <div className="space-y-4">
                                                 <div className={`rounded-2xl border p-6 ${panelSurface}`}>
-                                                    <h4 className={`mb-3 text-lg font-semibold ${textPrimary}`}>Tech Stack</h4>
+                                                    <h4 className={`mb-3 text-lg font-semibold ${textPrimary}`}>Tech
+                                                        Stack</h4>
                                                     <div className="flex flex-wrap gap-2">
                                                         {detail.tech.map((tech) => (
                                                             <motion.span
@@ -259,9 +276,9 @@ export default function ExperienceTimeline({ experiences, isDark }: ExperienceTi
                                                                 transition={{ duration: 0.2 }}
                                                                 key={tech}
                                                                 className={`rounded-full px-2.5 py-1 text-xs font-medium cursor-default ${isDark
-                                                                        ? "bg-cyan-500/10 text-cyan-400"
-                                                                        : "bg-emerald-100 text-emerald-600"
-                                                                    }`}
+                                                                    ? "bg-cyan-500/10 text-cyan-400"
+                                                                    : "bg-emerald-100 text-emerald-600"
+                                                                }`}
                                                             >
                                                                 {tech}
                                                             </motion.span>
@@ -271,28 +288,33 @@ export default function ExperienceTimeline({ experiences, isDark }: ExperienceTi
                                                 <div className={`rounded-2xl border p-6 ${panelSurface}`}>
                                                     <h4 className={`text-lg font-semibold ${textPrimary}`}>Impact</h4>
                                                     <div className="mt-3 space-y-3 text-sm">
-                                                    {detail.impact.map((item, idx) => (
-                                                        <div
-                                                            key={item}
-                                                            className={`flex items-start gap-3 ${isDark ? "text-white/80" : "text-slate-700"}`}
-                                                        >
-                                                            <motion.span
-                                                                className={bulletDot("cyan")}
-                                                                style={{ boxShadow: bulletRing("cyan", 6) }}
-                                                                animate={{
-                                                                    scale: [1, 1.28, 1],
-                                                                    opacity: [1, 0.65, 1],
-                                                                    boxShadow: [bulletRing("cyan", 4), bulletRing("cyan", 7), bulletRing("cyan", 4)],
-                                                                }}
-                                                                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: idx * 0.08 }}
-                                                            />
-                                                            <span>{item}</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                                <div
+                                                        {detail.impact.map((item, idx) => (
+                                                            <div
+                                                                key={item}
+                                                                className={`flex items-start gap-3 ${isDark ? "text-white/80" : "text-slate-700"}`}
+                                                            >
+                                                                <motion.span
+                                                                    className={bulletDot("cyan")}
+                                                                    style={{ boxShadow: bulletRing("cyan", 6) }}
+                                                                    animate={{
+                                                                        scale: [1, 1.28, 1],
+                                                                        opacity: [1, 0.65, 1],
+                                                                        boxShadow: [bulletRing("cyan", 4), bulletRing("cyan", 7), bulletRing("cyan", 4)],
+                                                                    }}
+                                                                    transition={{
+                                                                        duration: 2.2,
+                                                                        repeat: Infinity,
+                                                                        ease: "easeInOut",
+                                                                        delay: idx * 0.08,
+                                                                    }}
+                                                                />
+                                                                <span>{item}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <div
                                                         className={`mt-6 rounded-xl border px-4 py-3 text-sm ${isDark ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-100" : "border-emerald-200 bg-emerald-50 text-emerald-700"
-                                                            }`}
+                                                        }`}
                                                     >
                                                         {detail.metric}
                                                     </div>
@@ -302,7 +324,8 @@ export default function ExperienceTimeline({ experiences, isDark }: ExperienceTi
 
                                         <div className="grid gap-6">
                                             <div className={`rounded-2xl border p-6 ${panelSurface}`}>
-                                                <h3 className={`mb-3 text-xl font-semibold ${textPrimary}`}>What I built</h3>
+                                                <h3 className={`mb-3 text-xl font-semibold ${textPrimary}`}>What I
+                                                    built</h3>
                                                 <div className="space-y-3 text-sm">
                                                     {detail.highlights.map((item, idx) => (
                                                         <div
@@ -317,7 +340,12 @@ export default function ExperienceTimeline({ experiences, isDark }: ExperienceTi
                                                                     opacity: [1, 0.65, 1],
                                                                     boxShadow: [bulletRing("emerald", 4), bulletRing("emerald", 7), bulletRing("emerald", 4)],
                                                                 }}
-                                                                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: idx * 0.08 }}
+                                                                transition={{
+                                                                    duration: 2.2,
+                                                                    repeat: Infinity,
+                                                                    ease: "easeInOut",
+                                                                    delay: idx * 0.08,
+                                                                }}
                                                             />
                                                             <span>{item}</span>
                                                         </div>
