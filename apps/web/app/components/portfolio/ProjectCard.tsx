@@ -73,8 +73,8 @@ const projectDetails: Record<NonNullable<Project["slug"]>, ProjectDetail> = {
             "OAuth 2.0 PKCE",
             "AWS SAM",
         ],
-        image: "/projects/poker/poker-1.svg",
-        gallery: ["/projects/poker/poker-1.svg", "/projects/poker/poker-2.png"],
+        image: "/projects/poker/poker-1.png",
+        gallery: ["/projects/poker/poker-1.png", "/projects/poker/poker-2.png"],
         imageLabel: "iOS poker session tracking and social analytics workflow",
         features: [
             "Built a Swift iOS app with MVVM for poker session tracking, hand history logging, and interactive analytics workflows.",
