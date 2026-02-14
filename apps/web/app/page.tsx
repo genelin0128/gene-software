@@ -567,7 +567,7 @@ export default function Home() {
 
                                 {/* Email card */}
                                 <motion.a
-                                    href="mailto:chingyao.work@gmail.com"
+                                    href="mailto:genelin@gene-software.com"
                                     className={`
                                         flex items-center gap-4 p-4 rounded-xl transition-all duration-300 group
                                         ${isDark
@@ -602,7 +602,7 @@ export default function Home() {
                                             }`}
                                             aria-live="polite"
                                         >
-                                            {isEmailRevealed ? "chingyao.work@gmail.com" : "chingyao.work [at] gmail.com"}
+                                            {isEmailRevealed ? "genelin@gene-software.com" : "genelin [at] gene-software.com"}
                                         </p>
                                         {!isEmailRevealed && (
                                             <p className="text-xs text-cyan-400/80">Click to reveal</p>
