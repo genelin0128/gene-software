@@ -114,7 +114,6 @@ const projects: Project[] = [
             "Express",
             "Jest",
             "MongoDB",
-            "Tailwind CSS",
         ],
         liveUrl: "https://cardz.surge.sh/",
         githubUrl: "https://github.com/genelin0128/Cardz",
