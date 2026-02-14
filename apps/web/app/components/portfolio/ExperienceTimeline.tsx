@@ -41,59 +41,61 @@ interface ExperienceDetail {
 
 const detailContent: Record<NonNullable<Experience["slug"]>, ExperienceDetail> = {
     paycom: {
-        badge: { text: "Internal UI Playroom", tone: "cyan" },
-        title: "Designed and built a drag-and-drop UI Playroom for faster product decisions",
+        badge: { text: "IDE-Style UI Playroom", tone: "cyan" },
+        title: "Built an internal prototyping platform to accelerate UI iteration",
         summary:
-            "An internal prototyping workspace where engineers and designers compose screens visually, tune props with Monaco, and publish stable demo links for async reviews.",
-        tech: ["React", "TypeScript", "Next.js", "Redux Toolkit", "Docker", "Monaco Editor"],
+            "Designed and shipped an IDE-style prototyping workspace where teams compose screens visually, tune components in Monaco, and release quickly through Dockerized CI/CD on AWS Amplify.",
+        tech: ["React", "TypeScript", "Next.js", "Redux Toolkit", "Docker", "AWS Amplify", "Monaco Editor"],
         image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&q=80",
         imageLabel: "Playroom canvas for internal UI prototyping",
         highlights: [
-            "Drag-and-drop component gallery and canvas so engineers and designers can sketch screens without writing code.",
-            "Integrated Monaco editor for advanced teammates who want to tweak props or extend components inline.",
-            "Performance profiling trimmed startup work, cutting initial load and render time by ~45%.",
-            "Shareable demo links so reviewers can open the exact state of a screen and make decisions faster.",
+            "Designed an IDE-style internal platform that embeds Monaco for real-time rendering and fast prototyping loops.",
+            "Owned end-to-end delivery of a drag-and-drop UI Playroom used by engineers and designers in cross-functional Agile workflows.",
+            "Optimized render performance with Redux Toolkit, reducing load latency by roughly 45%.",
+            "Containerized the app with Docker and wired CI/CD pipelines on AWS Amplify for more predictable deployments.",
+            "Introduced operational guardrails that reduced release failures by around 80% in production.",
         ],
         impact: [
-            "Faster iteration loops for cross-functional UI/UX reviews.",
-            "Clearer handoff between design and engineering teams.",
-            "Stable demo links reduced meeting overhead for feedback.",
+            "Accelerated product iteration and cross-functional review cycles.",
+            "Improved reliability across SDLC handoffs from development to deployment.",
+            "Raised production stability with consistent release automation.",
         ],
-        metric: "Performance profiling cut initial load by about 45%, keeping the Playroom snappy even with a full component catalog.",
+        metric:
+            "Redux optimization cut UI load latency by 45%, and Docker + AWS Amplify CI/CD reduced release failures by 80%.",
     },
     sxb: {
         badge: { text: "Billing & Reconciliation Platform", tone: "emerald" },
-        title: "Automated billing, reconciliation, and secure staff administration",
+        title: "Delivered a production billing system with secure backend workflows",
         summary:
-            "Delivered an in-house billing and reconciliation platform backed by a normalized MySQL RDBMS. Automated invoice generation and payment tracking, migrated legacy data via Python ETL, and shipped secure, responsive Vue.js admin dashboards powered by RESTful APIs and parameterized SQL.",
+            "Built and deployed a production-grade billing and reconciliation platform on MySQL with OAuth 2.0 / OpenID Connect authentication, JWT session controls, and Python-driven ETL modernization.",
         tech: [
             "Python",
             "SQL",
             "MySQL",
             "Vue.js",
-            "JavaScript",
-            "HTML/CSS",
+            "RESTful APIs",
             "OAuth 2.0",
             "OpenID Connect",
             "JWT",
+            "Structured Logging",
         ],
         image: "https://images.unsplash.com/photo-1556740749-887f6717d7e4?w=1200&q=80",
         imageLabel: "Secure admin dashboards for billing and reconciliation",
         highlights: [
-            "Built an in-house billing and reconciliation system on a MySQL RDBMS to automate invoice generation and payment tracking.",
-            "Designed and implemented RESTful API endpoints with parameterized SQL queries to ensure accuracy, security, and maintainability.",
-            "Migrated legacy records into a normalized schema using Python ETL workflows with sets and maps to improve data quality and auditability.",
-            "Delivered responsive Vue.js admin views with reusable components and client-side input validation.",
-            "Implemented staff authentication using OAuth 2.0 / OpenID Connect with JWT, including token validation, secure cookie settings, and structured logging for auditability.",
+            "Automated invoice generation and payment tracking through a normalized MySQL-backed reconciliation workflow.",
+            "Implemented backend authentication using OAuth 2.0 / OpenID Connect with JWT-based session management.",
+            "Added structured logging and secure API patterns to strengthen production auditability.",
+            "Shipped Vue.js internal tools with RESTful APIs for billing operations and staff administration.",
+            "Led Python ETL migrations to modernize legacy datasets and improve data integrity.",
         ],
         impact: [
-            "Eliminated manual billing processes and reduced operating expenses by approximately 15%.",
-            "Improved payment accuracy, data integrity, and audit readiness through clean data migrations and enforced constraints.",
-            "Strengthened production security with standards-based authentication and auditable authorization flows.",
-            "Enabled staff to manage invoices and reconciliation tasks confidently through an intuitive admin UI.",
+            "Reduced operating expenses by about 15% by eliminating manual reconciliation work.",
+            "Improved data quality and operational consistency across migrated historical records.",
+            "Strengthened production security and audit readiness with standards-based auth controls.",
+            "Enabled staff to run billing workflows faster through purpose-built internal tooling.",
         ],
         metric:
-            "Automated invoicing and reconciliation eliminated manual workflows and reduced operating costs by ~15%, while improving security and auditability.",
+            "Production automation reduced operating costs by 15% while improving security posture and billing data integrity.",
     },
 };
 
@@ -107,17 +109,6 @@ export default function ExperienceTimeline({ experiences, isDark }: ExperienceTi
         window.addEventListener("keydown", handleEsc);
         return () => window.removeEventListener("keydown", handleEsc);
     }, []);
-
-    const badgeTone = (tone: ExperienceDetail["badge"]["tone"]) => {
-        if (tone === "emerald") {
-            return isDark
-                ? "border-emerald-300/60 bg-emerald-500/15 text-emerald-200"
-                : "border-emerald-200 bg-emerald-50 text-emerald-700";
-        }
-        return isDark
-            ? "border-cyan-300/60 bg-cyan-500/15 text-cyan-200"
-            : "border-cyan-200 bg-cyan-50 text-cyan-700";
-    };
 
     const textPrimary = isDark ? "text-white" : "text-slate-800";
     const textSecondary = isDark ? "text-white/70" : "text-slate-600";

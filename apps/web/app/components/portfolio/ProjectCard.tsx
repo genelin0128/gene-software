@@ -10,7 +10,7 @@
 
 import { useEffect, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ExternalLink, Github, ArrowUpRight, CheckCircle2, X, Check, ChevronLeft, ChevronRight, Ban } from "lucide-react";
+import { ExternalLink, Github, ArrowUpRight, X, Check, ChevronLeft, ChevronRight, Ban } from "lucide-react";
 
 interface Project {
     title: string;
@@ -19,7 +19,7 @@ interface Project {
     tech: string[];
     liveUrl: string;
     githubUrl: string;
-    slug?: "cardz" | "baccarat" | "portfolio" | "travel";
+    slug?: "cardz" | "baccarat" | "portfolio" | "travel" | "poker";
 }
 
 interface ProjectDetail {
@@ -57,55 +57,74 @@ const projectDetails: Record<NonNullable<Project["slug"]>, ProjectDetail> = {
             "Keyboard-accessible cards, ESC-to-close modals, and responsive layouts that hold up across breakpoints.",
         ],
     },
+    poker: {
+        badge: { text: "iOS + AWS Serverless", tone: "emerald" },
+        title: "iOS Poker Session Analytics & Social Platform",
+        summary:
+            "Swift iOS platform with MVVM session analytics, social interaction workflows, and a secure serverless backend using RS256 JWT and OAuth 2.0 PKCE.",
+        tech: [
+            "Swift",
+            "SwiftUI",
+            "MVVM",
+            "AWS Lambda",
+            "API Gateway",
+            "DynamoDB",
+            "JWT (RS256)",
+            "OAuth 2.0 PKCE",
+            "AWS SAM",
+        ],
+        image: "/projects/poker/poker-1.svg",
+        gallery: ["/projects/poker/poker-1.svg", "/projects/poker/poker-2.png"],
+        imageLabel: "iOS poker session tracking and social analytics workflow",
+        features: [
+            "Built a Swift iOS app with MVVM for poker session tracking, hand history logging, and interactive analytics workflows.",
+            "Implemented RS256 JWT authentication with refresh-token rotation and replay protection for secure session continuity.",
+            "Exposed JWKS for key distribution and integrated OAuth 2.0 PKCE flows with Apple and Google ID token verification.",
+            "Architected serverless APIs on AWS Lambda + API Gateway with DynamoDB GSIs, conditional writes, and TTL-based lifecycle control.",
+            "Automated deployments through AWS SAM and GitHub CI/CD using OIDC-based role assumption for secure cloud delivery.",
+        ],
+    },
     travel: {
         badge: { text: "Travel Planning", tone: "cyan" },
-        title: "Intelligent Travel Consultant and Smart Planning",
+        title: "AI-Driven Travel Recommendation Platform",
         summary:
-            "AI-assisted travel planner that blends retrieval-augmented recommendations with itinerary heuristics and map-aware distance checks.",
-        tech: ["Vue.js", "Python", "SQL", "OpenAI API", "JavaScript", "Google Maps API"],
+            "AI-assisted planner built around RAG, context-aware recommendations, and distance-aware itinerary optimization.",
+        tech: ["Python", "SQL", "OpenAI API", "RAG", "JavaScript", "Google Maps API"],
         image: "/projects/travel/travel-1.png",
         gallery: ["/projects/travel/travel-1.png", "/projects/travel/travel-2.png"],
         imageLabel: "Travel planning console with itinerary and map views",
         features: [
-            "ChatGPT API integration with retrieval and keyword extraction to deliver personalized recommendations and persist saved destinations.",
-            "Modular Python ingestion and cleaning pipelines that de-duplicate sets/maps and batch I/O for stable feeds.",
-            "Retrieval and ranking layer plus itinerary matching heuristics aligned to time windows and category preferences.",
-            "Normalized SQL schema with indexes and foreign keys to keep destinations, preferences, and histories queryable.",
-            "Google Maps embedding for interactive mapping and automated distance calculations that feed itinerary scoring.",
+            "Integrated the ChatGPT API with retrieval-augmented generation to deliver context-aware destination recommendations.",
+            "Developed modular Python ingestion and preprocessing services for reliable travel data transformation.",
+            "Built a constraint-aware itinerary matching engine that balances time windows, user preferences, and transit distance.",
+            "Designed a normalized SQL model for destinations, preferences, and itinerary state to keep ranking queries efficient.",
+            "Connected Google Maps geospatial calculations to itinerary scoring for route-aware recommendation quality.",
         ],
     },
     cardz: {
         badge: { text: "Social Media Platform", tone: "emerald" },
         title: "Cardz Social Media",
         summary:
-            "A full-stack social platform where authenticated users create multi-image posts, follow others, and interact through comments and upvotes. Profiles support rich editing and optional Google OAuth linking.",
+            "A full-stack social media platform with middleware-driven security, normalized client state, and reliability-focused testing.",
         tech: [
             "React",
-            "Redux Toolkit + Persist",
+            "Redux Toolkit",
             "Tailwind CSS",
-            "Bootstrap 5",
             "JavaScript",
-            "HTML/CSS",
             "Node.js",
             "Express",
             "MongoDB",
-            "Passport (Google OAuth2)",
-            "Cloudinary",
             "Jest",
-            "React Testing Library",
-            "Jasmine",
-            "Supertest",
         ],
         image: "/projects/cardz/cardz-1.png",
         gallery: ["/projects/cardz/cardz-1.png", "/projects/cardz/cardz-2.png", "/projects/cardz/cardz-3.png"],
         imageLabel: "Multi-image card posts with comments and upvotes",
         features: [
-            "Session-based auth with username/password plus Google OAuth login, link, and unlink flows.",
-            "Create, edit, and delete posts with multi-image uploads via Multer and Cloudinary.",
-            "Full comment CRUD and per-user upvote toggling for lightweight engagement.",
-            "Follow/unfollow system with personalized feed generation and search across users or post content.",
-            "Rich profile editing: avatar, status, names, contact info, and linked third-party accounts.",
-            "Client and API test coverage using Jest, React Testing Library, Jasmine, Supertest, and MongoDB Memory Server.",
+            "Engineered a RESTful Node.js/Express backend with layered request validation and middleware-driven access control.",
+            "Developed a component-driven React frontend with normalized state management and optimistic interaction updates.",
+            "Supported concurrent social interactions including posting, comments, follows, and engagement workflows.",
+            "Established Jest-based automated testing for core user journeys and critical regression paths.",
+            "Implemented abuse-mitigation controls including request throttling, input sanitization, and suspicious activity thresholds.",
         ],
     },
     baccarat: {
@@ -200,15 +219,6 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
         }
     };
 
-    const badgeTone = (tone: ProjectDetail["badge"]["tone"]) =>
-        tone === "emerald"
-            ? isDark
-                ? "border-emerald-300/60 bg-emerald-500/15 text-emerald-200"
-                : "border-emerald-200 bg-emerald-50 text-emerald-700"
-            : isDark
-                ? "border-cyan-300/60 bg-cyan-500/15 text-cyan-200"
-                : "border-cyan-200 bg-cyan-50 text-cyan-700";
-
     return (
         <>
             <motion.div
@@ -235,8 +245,8 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                     className={`
                     absolute -inset-2 rounded-3xl blur-2xl transition-all duration-500
                     ${isDark
-                    ? "bg-gradient-to-br from-cyan-500/10 to-emerald-500/10"
-                    : "bg-gradient-to-br from-emerald-500/5 to-cyan-500/5"}
+                        ? "bg-gradient-to-br from-cyan-500/10 to-emerald-500/10"
+                        : "bg-gradient-to-br from-emerald-500/5 to-cyan-500/5"}
                 `}
                     animate={{ opacity: isHovered ? 1 : 0 }}
                 />
@@ -245,8 +255,8 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                     className={`
                     relative overflow-hidden rounded-2xl transition-all duration-500
                     ${isDark
-                    ? "bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20"
-                    : "bg-white border border-slate-200 hover:border-slate-300 shadow-lg hover:shadow-xl"}
+                        ? "bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20"
+                        : "bg-white border border-slate-200 hover:border-slate-300 shadow-lg hover:shadow-xl"}
                 `}
                 >
                     {/* Project Image */}
@@ -282,17 +292,18 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                                         exit={{ scale: 0, rotate: 180 }}
                                         transition={{ duration: 0.3, delay: 0.1 }}
                                         className={`p-4 rounded-full transition-all duration-300 border shadow-lg ${isLiveAvailable
-                                                ? isDark
-                                                    ? "bg-white/10 hover:bg-cyan-500 border-white/20 text-white"
-                                                    : "bg-white/95 border-slate-200 text-slate-800 hover:bg-cyan-500 hover:text-white hover:border-cyan-200"
-                                                : isDark
-                                                    ? "bg-white/5 text-white/60 border-white/10 cursor-not-allowed"
-                                                    : "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
-                                            }`}
+                                            ? isDark
+                                                ? "bg-white/10 hover:bg-cyan-500 border-white/20 text-white"
+                                                : "bg-white/95 border-slate-200 text-slate-800 hover:bg-cyan-500 hover:text-white hover:border-cyan-200"
+                                            : isDark
+                                                ? "bg-white/5 text-white/60 border-white/10 cursor-not-allowed"
+                                                : "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
+                                        }`}
                                         aria-disabled={!isLiveAvailable}
                                         onClick={(event) => handleActionClick(event, isLiveAvailable, "live")}
                                     >
-                                        <ExternalLink className={`w-5 h-5 ${isLiveAvailable ? (isDark ? "text-white" : "text-slate-800") : isDark ? "text-white/50" : "text-slate-500"}`} />
+                                        <ExternalLink
+                                            className={`w-5 h-5 ${isLiveAvailable ? (isDark ? "text-white" : "text-slate-800") : isDark ? "text-white/50" : "text-slate-500"}`} />
                                     </motion.a>
                                     <motion.a
                                         href={isCodeAvailable ? project.githubUrl : undefined}
@@ -303,17 +314,18 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                                         exit={{ scale: 0, rotate: -180 }}
                                         transition={{ duration: 0.3, delay: 0.2 }}
                                         className={`p-4 rounded-full transition-all duration-300 border shadow-lg ${isCodeAvailable
-                                                ? isDark
-                                                    ? "bg-white/10 hover:bg-emerald-500 border-white/20 text-white"
-                                                    : "bg-white/95 border-slate-200 text-slate-800 hover:bg-emerald-500 hover:text-white hover:border-emerald-200"
-                                                : isDark
-                                                    ? "bg-white/5 text-white/60 border-white/10 cursor-not-allowed"
-                                                    : "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
-                                            }`}
+                                            ? isDark
+                                                ? "bg-white/10 hover:bg-emerald-500 border-white/20 text-white"
+                                                : "bg-white/95 border-slate-200 text-slate-800 hover:bg-emerald-500 hover:text-white hover:border-emerald-200"
+                                            : isDark
+                                                ? "bg-white/5 text-white/60 border-white/10 cursor-not-allowed"
+                                                : "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
+                                        }`}
                                         aria-disabled={!isCodeAvailable}
                                         onClick={(event) => handleActionClick(event, isCodeAvailable, "code")}
                                     >
-                                        <Github className={`w-5 h-5 ${isCodeAvailable ? (isDark ? "text-white" : "text-slate-800") : isDark ? "text-white/50" : "text-slate-500"}`} />
+                                        <Github
+                                            className={`w-5 h-5 ${isCodeAvailable ? (isDark ? "text-white" : "text-slate-800") : isDark ? "text-white/50" : "text-slate-500"}`} />
                                     </motion.a>
                                 </motion.div>
                             )}
@@ -370,7 +382,7 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                     >
                         <motion.div
                             className={`relative w-full max-w-5xl max-h-[85vh] overflow-y-auto rounded-3xl border ${isDark ? "border-white/10 bg-[#0b1224]/95" : "border-slate-200 bg-white/95"
-                                } p-6 shadow-2xl`}
+                            } p-6 shadow-2xl`}
                             initial={{ y: 30, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             exit={{ y: 30, opacity: 0 }}
@@ -388,7 +400,7 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                                         <div className="flex items-center justify-between gap-4">
                                             <div
                                                 className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold tracking-tight ${isDark ? "border-white/70 bg-white/10 text-white" : "border-slate-200 bg-white text-slate-700"
-                                                    }`}
+                                                }`}
                                             >
                                                 <span
                                                     className={`h-2 w-2 rounded-full ${detail.badge.tone === "emerald" ? "bg-emerald-400" : "bg-cyan-400"}`}
@@ -401,9 +413,9 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                                                 whileHover={{ scale: 1.08 }}
                                                 whileTap={{ scale: 0.95 }}
                                                 className={`relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border transition-all duration-300 ${isDark
-                                                        ? "bg-slate-800/50 border-white/15 hover:border-cyan-500/50"
-                                                        : "bg-white/80 border-slate-200 hover:border-emerald-500/50 shadow-lg"
-                                                    }`}
+                                                    ? "bg-slate-800/50 border-white/15 hover:border-cyan-500/50"
+                                                    : "bg-white/80 border-slate-200 hover:border-emerald-500/50 shadow-lg"
+                                                }`}
                                             >
                                                 <motion.div
                                                     className={`absolute inset-0 rounded-full blur-xl opacity-50 ${isDark ? "bg-cyan-500" : "bg-emerald-400"}`}
@@ -421,9 +433,9 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ duration: 0.4, ease: "easeOut" }}
                                             className={`relative overflow-hidden rounded-2xl border px-5 py-4 ${isDark
-                                                    ? "border-white/10 bg-gradient-to-r from-cyan-500/10 via-emerald-500/10 to-transparent"
-                                                    : "border-slate-200 bg-gradient-to-r from-emerald-50 via-cyan-50 to-white"
-                                                }`}
+                                                ? "border-white/10 bg-gradient-to-r from-cyan-500/10 via-emerald-500/10 to-transparent"
+                                                : "border-slate-200 bg-gradient-to-r from-emerald-50 via-cyan-50 to-white"
+                                            }`}
                                         >
                                             <motion.div
                                                 className="absolute -left-10 -top-16 h-32 w-48 rounded-full blur-3xl"
@@ -446,7 +458,7 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                                                     className={`h-px w-full ${detail.badge.tone === "emerald"
                                                         ? "bg-gradient-to-r from-emerald-400 via-cyan-300 to-transparent"
                                                         : "bg-gradient-to-r from-cyan-300 via-emerald-300 to-transparent"
-                                                        }`}
+                                                    }`}
                                                 />
                                             </motion.div>
                                             <div className="relative space-y-2">
@@ -455,17 +467,19 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                                             </div>
                                         </motion.div>
 
-                                        <div className="grid gap-6 lg:grid-cols-[1.3fr_0.9fr] items-start lg:items-stretch">
+                                        <div
+                                            className="grid gap-6 lg:grid-cols-[1.3fr_0.9fr] items-start lg:items-stretch">
                                             <motion.div
                                                 initial={{ opacity: 0, scale: 0.97 }}
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 transition={{ duration: 0.4 }}
                                                 className={`relative h-full min-h-[280px] sm:min-h-[320px] md:min-h-[360px] max-h-[560px] md:max-h-[480px] overflow-hidden rounded-2xl border ${isDark
-                                                        ? "border-white/10 bg-white/5"
-                                                        : "border-slate-200 bg-white shadow-sm"
-                                                    }`}
+                                                    ? "border-white/10 bg-white/5"
+                                                    : "border-slate-200 bg-white shadow-sm"
+                                                }`}
                                             >
-                                                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
+                                                <div
+                                                    className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
                                                 <AnimatePresence mode="wait">
                                                     {activeSrc && (
                                                         <motion.img
@@ -483,7 +497,8 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                                                 <div className="absolute inset-x-0 bottom-0 p-4">
                                                     {slides.length > 1 && (
                                                         <div className="flex items-center justify-center">
-                                                            <div className="flex items-center gap-3 rounded-full bg-black/70 px-4 py-2 backdrop-blur">
+                                                            <div
+                                                                className="flex items-center gap-3 rounded-full bg-black/70 px-4 py-2 backdrop-blur">
                                                                 <button
                                                                     onClick={() => handlePrev(slides.length)}
                                                                     className="p-1.5 rounded-full text-white/80 hover:text-white transition-colors"
@@ -491,15 +506,15 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                                                                 >
                                                                     <ChevronLeft className="h-4 w-4" />
                                                                 </button>
-                                                                    <div className="flex items-center gap-2">
+                                                                <div className="flex items-center gap-2">
                                                                     {slides.map((_, dotIndex) => (
                                                                         <button
                                                                             key={dotIndex}
                                                                             onClick={() => setActiveSlide(dotIndex)}
                                                                             className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${dotIndex === safeIndex
-                                                                                    ? "bg-white"
-                                                                                    : "bg-white/40"
-                                                                                }`}
+                                                                                ? "bg-white"
+                                                                                : "bg-white/40"
+                                                                            }`}
                                                                             aria-label={`Go to image ${dotIndex + 1}`}
                                                                         />
                                                                     ))}
@@ -519,7 +534,8 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
 
                                             <div className="space-y-4">
                                                 <div className={`rounded-2xl border p-6 ${panelSurface}`}>
-                                                    <h4 className={`mb-3 text-lg font-semibold ${textPrimary}`}>Tech Stack</h4>
+                                                    <h4 className={`mb-3 text-lg font-semibold ${textPrimary}`}>Tech
+                                                        Stack</h4>
                                                     <div className="flex flex-wrap gap-2">
                                                         {detail.tech.map((tech) => (
                                                             <motion.span
@@ -530,9 +546,9 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                                                                 viewport={{ once: true }}
                                                                 transition={{ duration: 0.2 }}
                                                                 className={`rounded-full px-2.5 py-1 text-xs font-medium cursor-default ${isDark
-                                                                        ? "bg-cyan-500/10 text-cyan-300"
-                                                                        : "bg-emerald-100 text-emerald-700"
-                                                                    }`}
+                                                                    ? "bg-cyan-500/10 text-cyan-300"
+                                                                    : "bg-emerald-100 text-emerald-700"
+                                                                }`}
                                                             >
                                                                 {tech}
                                                             </motion.span>
@@ -542,18 +558,20 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
 
                                                 <div className={`rounded-2xl border p-6 ${panelSurface}`}>
                                                     <div className="flex items-center justify-between gap-3 mb-2">
-                                                        <h4 className={`text-lg font-semibold leading-none ${textPrimary}`}>Try it</h4>
+                                                        <h4 className={`text-lg font-semibold leading-none ${textPrimary}`}>Try
+                                                            it</h4>
                                                         <span
                                                             className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold leading-none cursor-default ${isDark
-                                                                    ? "bg-cyan-500/15 text-cyan-100 border border-cyan-400/40"
-                                                                    : "bg-cyan-100 text-cyan-800 border border-cyan-200"
-                                                                }`}
+                                                                ? "bg-cyan-500/15 text-cyan-100 border border-cyan-400/40"
+                                                                : "bg-cyan-100 text-cyan-800 border border-cyan-200"
+                                                            }`}
                                                         >
                                                             Live &amp; Code
                                                         </span>
                                                     </div>
                                                     <p className={`mb-4 text-sm ${textSecondary}`}>
-                                                        Choose the live flow to feel the UX, or open the repo to inspect patterns and architecture.
+                                                        Choose the live flow to feel the UX, or open the repo to inspect
+                                                        patterns and architecture.
                                                     </p>
                                                     <div className="grid gap-2 sm:grid-cols-2">
                                                         <motion.a
@@ -564,13 +582,13 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                                                             whileTap={{ scale: 0.98 }}
                                                             aria-disabled={!isLiveAvailable}
                                                             className={`inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all border ${isLiveAvailable
-                                                                    ? isDark
-                                                                        ? "bg-gradient-to-r from-emerald-500/30 to-cyan-500/30 text-emerald-50 hover:from-emerald-500/40 hover:to-cyan-500/40 border-emerald-400/50 shadow-lg shadow-emerald-500/15"
-                                                                        : "bg-gradient-to-r from-emerald-500 to-cyan-500 text-white hover:from-emerald-600 hover:to-cyan-600 shadow-md shadow-emerald-300/30"
-                                                                    : isDark
-                                                                        ? "bg-white/5 text-white/60 border-white/10 cursor-not-allowed"
-                                                                        : "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
-                                                                }`}
+                                                                ? isDark
+                                                                    ? "bg-gradient-to-r from-emerald-500/30 to-cyan-500/30 text-emerald-50 hover:from-emerald-500/40 hover:to-cyan-500/40 border-emerald-400/50 shadow-lg shadow-emerald-500/15"
+                                                                    : "bg-gradient-to-r from-emerald-500 to-cyan-500 text-white hover:from-emerald-600 hover:to-cyan-600 shadow-md shadow-emerald-300/30"
+                                                                : isDark
+                                                                    ? "bg-white/5 text-white/60 border-white/10 cursor-not-allowed"
+                                                                    : "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
+                                                            }`}
                                                             onClick={(event) => handleActionClick(event, isLiveAvailable, "live")}
                                                         >
                                                             <ExternalLink className="w-4 h-4" />
@@ -584,13 +602,13 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                                                             whileTap={{ scale: 0.98 }}
                                                             aria-disabled={!isCodeAvailable}
                                                             className={`inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all border ${isCodeAvailable
-                                                                    ? isDark
-                                                                        ? "bg-white/10 text-white hover:bg-white/15 border-white/25 shadow-lg shadow-cyan-500/15"
-                                                                        : "bg-slate-900 text-white hover:bg-slate-800 border-slate-800 shadow-md"
-                                                                    : isDark
-                                                                        ? "bg-white/5 text-white/60 border-white/10 cursor-not-allowed"
-                                                                        : "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
-                                                                }`}
+                                                                ? isDark
+                                                                    ? "bg-white/10 text-white hover:bg-white/15 border-white/25 shadow-lg shadow-cyan-500/15"
+                                                                    : "bg-slate-900 text-white hover:bg-slate-800 border-slate-800 shadow-md"
+                                                                : isDark
+                                                                    ? "bg-white/5 text-white/60 border-white/10 cursor-not-allowed"
+                                                                    : "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
+                                                            }`}
                                                             onClick={(event) => handleActionClick(event, isCodeAvailable, "code")}
                                                         >
                                                             <Github className="w-4 h-4" />
@@ -602,7 +620,8 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                                         </div>
 
                                         <div className={`rounded-2xl border p-6 ${panelSurface}`}>
-                                            <h3 className={`mb-3 text-xl font-semibold ${textPrimary}`}>Key features</h3>
+                                            <h3 className={`mb-3 text-xl font-semibold ${textPrimary}`}>Key
+                                                features</h3>
                                             <div className="space-y-3 text-sm">
                                                 {detail.features.map((item, idx) => (
                                                     <div
@@ -611,13 +630,19 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                                                     >
                                                         <motion.span
                                                             className={`flex h-6 w-6 items-center justify-center rounded-full border-[2px] ${isDark
-                                                                    ? "border-emerald-400 bg-emerald-500/10"
-                                                                    : "border-emerald-500/80 bg-emerald-50"
-                                                                }`}
+                                                                ? "border-emerald-400 bg-emerald-500/10"
+                                                                : "border-emerald-500/80 bg-emerald-50"
+                                                            }`}
                                                             animate={{ scale: [1, 1.06, 1] }}
-                                                            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: idx * 0.08 }}
+                                                            transition={{
+                                                                duration: 2,
+                                                                repeat: Infinity,
+                                                                ease: "easeInOut",
+                                                                delay: idx * 0.08,
+                                                            }}
                                                         >
-                                                            <Check className={`h-3.5 w-3.5 ${isDark ? "text-emerald-300" : "text-emerald-600"}`} />
+                                                            <Check
+                                                                className={`h-3.5 w-3.5 ${isDark ? "text-emerald-300" : "text-emerald-600"}`} />
                                                         </motion.span>
                                                         <span>{item}</span>
                                                     </div>
@@ -645,9 +670,11 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                             className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-xl backdrop-blur ${isDark ? "bg-slate-900/90 border-white/10 text-white" : "bg-white/95 border-slate-200 text-slate-900"}`}
                             role="status"
                         >
-                            <div className={`h-1 w-full ${isDark ? "bg-gradient-to-r from-emerald-400 via-cyan-400 to-transparent" : "bg-gradient-to-r from-emerald-500 via-cyan-500 to-transparent"}`} />
+                            <div
+                                className={`h-1 w-full ${isDark ? "bg-gradient-to-r from-emerald-400 via-cyan-400 to-transparent" : "bg-gradient-to-r from-emerald-500 via-cyan-500 to-transparent"}`} />
                             <div className="flex items-start gap-3 px-4 py-3">
-                                <span className={`mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl border ${isDark ? "border-white/10 bg-white/5 text-emerald-100" : "border-emerald-100 bg-emerald-50 text-emerald-700"}`}>
+                                <span
+                                    className={`mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl border ${isDark ? "border-white/10 bg-white/5 text-emerald-100" : "border-emerald-100 bg-emerald-50 text-emerald-700"}`}>
                                     <Ban className="h-4 w-4" />
                                 </span>
                                 <div className="flex-1 space-y-1">

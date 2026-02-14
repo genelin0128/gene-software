@@ -18,7 +18,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-    Github, Linkedin, Twitter, Mail, ArrowDown,
+    Mail, ArrowDown,
     Code2, Layers, Palette, Zap, Download, Sparkles, LucideIcon,
 } from "lucide-react";
 
@@ -50,7 +50,7 @@ interface Project {
     tech: string[];
     liveUrl: string;
     githubUrl: string;
-    slug?: "cardz" | "baccarat" | "portfolio" | "travel";
+    slug?: "cardz" | "baccarat" | "portfolio" | "travel" | "poker";
 }
 
 interface Experience {
@@ -63,20 +63,13 @@ interface Experience {
     slug?: "paycom" | "sxb";
 }
 
-interface Stat {
-    value: number;
-    label: string;
-    suffix: string;
-    color: string;
-}
-
 const skills: Skill[] = [
     { name: "React / Next.js", level: 95, icon: Code2 },
-    { name: "TypeScript", level: 90, icon: Code2 },
-    { name: "Three.js / WebGL", level: 85, icon: Layers },
-    { name: "Tailwind CSS", level: 92, icon: Palette },
-    { name: "Node.js", level: 80, icon: Zap },
-    { name: "Figma", level: 88, icon: Palette },
+    { name: "TypeScript / JavaScript", level: 92, icon: Code2 },
+    { name: "Swift / SwiftUI", level: 84, icon: Layers },
+    { name: "Node.js / Express", level: 88, icon: Zap },
+    { name: "AWS Lambda / DynamoDB", level: 82, icon: Layers },
+    { name: "Docker / CI/CD", level: 85, icon: Palette },
 ];
 
 const projects: Project[] = [
@@ -90,10 +83,21 @@ const projects: Project[] = [
         slug: "portfolio",
     },
     {
-        title: "Intelligent Travel Consultant and Smart Planning",
-        description: "AI-assisted travel planner combining RAG recommendations, itinerary heuristics, and map-aware distance checks.",
+        title: "iOS Poker Session Analytics & Social Platform",
+        description:
+            "Swift iOS app with MVVM session analytics, social workflows, and a secure AWS serverless backend with RS256 JWT + OAuth 2.0 PKCE.",
+        image: "/projects/poker/poker-1.png",
+        tech: ["Swift", "SwiftUI", "MVVM", "AWS Lambda", "API Gateway", "DynamoDB"],
+        liveUrl: "#",
+        githubUrl: "#",
+        slug: "poker",
+    },
+    {
+        title: "AI-Driven Travel Recommendation Platform",
+        description:
+            "RAG-based travel planning system with context-aware recommendations, keyword retrieval, and distance-aware itinerary optimization.",
         image: "/projects/travel/travel-1.png",
-        tech: ["Vue.js", "Python", "SQL", "JavaScript", "Google Maps API"],
+        tech: ["Python", "SQL", "OpenAI API", "RAG", "JavaScript", "Google Maps API"],
         liveUrl: "#",
         githubUrl: "#",
         slug: "travel",
@@ -101,15 +105,16 @@ const projects: Project[] = [
     {
         title: "Cardz Social Media",
         description:
-            "Full-stack social platform where users create multi-image posts, follow others, and interact through comments, upvotes, and rich profiles with optional Google OAuth linking.",
+            "Full-stack social platform with middleware-driven access control, optimistic UI interactions, and Jest-backed reliability + abuse mitigation.",
         image: "/projects/cardz/cardz-1.png",
         tech: [
             "React",
             "Redux Toolkit",
             "Node.js",
             "Express",
+            "Jest",
             "MongoDB",
-            "Tailwind CSS"
+            "Tailwind CSS",
         ],
         liveUrl: "https://cardz.surge.sh/",
         githubUrl: "https://github.com/genelin0128/Cardz",
@@ -136,26 +141,30 @@ const experiences: Experience[] = [
     {
         role: "Software Development Intern",
         company: "Paycom",
+        location: "Irving, TX",
         duration: "May 2025 - August 2025",
-        description: "Built an internal UI Playroom so engineers and designers can drag-and-drop components, sketch flows, and share review links without writing code.",
-        skills: ["React", "TypeScript", "Next.js", "Redux Toolkit", "Docker", "Monaco Editor"],
+        description:
+            "Designed an IDE-style internal prototyping platform with Monaco and delivered a Redux Toolkit UI Playroom that cut load latency by 45%.",
+        skills: ["React", "TypeScript", "Next.js", "Redux Toolkit", "Docker", "AWS Amplify"],
         slug: "paycom",
     },
     {
         role: "Software Engineer Intern",
         company: "SXB Liberal Arts & Science Tutoring Center",
+        location: "Yunlin, Taiwan",
         duration: "May 2024 - August 2024",
-        description: "Developed an in-house billing & reconciliation platform with automated invoices, payment tracking, and admin dashboards backed by MySQL.",
-        skills: ["Python", "SQL", "Vue.js", "HTML/CSS", "JavaScript", "MySQL"],
+        description:
+            "Delivered a production billing and reconciliation platform with MySQL, OAuth 2.0/OIDC + JWT authentication, and Python ETL migration pipelines.",
+        skills: ["Python", "SQL", "Vue.js", "OAuth 2.0", "OpenID Connect", "MySQL"],
         slug: "sxb",
     },
 ];
 
 const typewriterTexts: string[] = [
-    "Frontend Engineer",
-    "React Developer",
-    "UI/UX Enthusiast",
-    "Three.js Creator",
+    "Software Engineer",
+    "Full-Stack Developer",
+    "iOS App Builder",
+    "Cloud-Native Engineer",
 ];
 
 export default function Home() {
@@ -215,9 +224,9 @@ export default function Home() {
                                 className={`
                                     inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-8 text-sm font-medium
                                     ${isDark
-                                        ? "bg-cyan-500/10 text-cyan-300"
-                                        : "bg-emerald-100 text-emerald-700"
-                                    }
+                                    ? "bg-cyan-500/10 text-cyan-300"
+                                    : "bg-emerald-100 text-emerald-700"
+                                }
                                 `}
                                 animate={{
                                     boxShadow: isDark
@@ -318,9 +327,9 @@ export default function Home() {
                                 className={`
                 px-8 py-4 rounded-full font-medium flex items-center gap-2 transition-all duration-300
                 ${isDark
-                                        ? "bg-white/5 border border-white/20 text-white hover:bg-white/10"
-                                        : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm"
-                                    }
+                                    ? "bg-white/5 border border-white/20 text-white hover:bg-white/10"
+                                    : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm"
+                                }
               `}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
@@ -383,19 +392,20 @@ export default function Home() {
                                     />
                                     <div className="relative space-y-4">
                                         <h3 className={`text-2xl font-semibold ${isDark ? "text-white/90" : "text-slate-800"}`}>
-                                            Building Thoughtful and Reliable Web Experiences
+                                            Building Scalable Web and Mobile Systems
                                         </h3>
 
                                         <div className={`space-y-4 leading-relaxed ${textSecondary}`}>
                                             <p>
-                                                I&apos;m Gene Lin, a Master of Computer Science candidate at Rice University (graduating December 2025)
-                                                focused on modern web development with TypeScript, React, and Next.js. I like shipping interfaces that
-                                                feel intentional and fast, with clear component APIs and predictable state.
+                                                I&apos;m Gene Lin, an MCS graduate from Rice University with internship
+                                                experience delivering scalable applications in cloud environments.
+                                                I focus on end-to-end engineering, from frontend workflows to backend
+                                                architecture and deployment pipelines.
                                             </p>
                                             <p>
-                                                Day to day I balance design fidelity with pragmatic engineering—profiling renders, tuning data flows,
-                                                and keeping teams unblocked. Lately I&apos;ve been exploring Three.js for interactive 3D, and on the side
-                                                I&apos;m building a small Texas Hold&apos;em app.
+                                                Recently I&apos;ve been building Swift-based iOS systems, React/Next.js
+                                                interfaces, and AWS serverless backends with secure authentication,
+                                                production-grade data modeling, and CI/CD automation.
                                             </p>
                                         </div>
                                     </div>
@@ -411,7 +421,8 @@ export default function Home() {
                                 className="relative space-y-6"
                             >
                                 <div className="absolute left-8 top-0 bottom-0 w-px pointer-events-none">
-                                    <div className="h-full w-full bg-gradient-to-b from-cyan-500/60 via-emerald-500/60 to-transparent" />
+                                    <div
+                                        className="h-full w-full bg-gradient-to-b from-cyan-500/60 via-emerald-500/60 to-transparent" />
                                     <motion.div
                                         className="absolute top-0 left-0 w-full h-10 bg-gradient-to-b from-cyan-400 to-transparent"
                                         animate={{ y: ["0%", "400%"] }}
@@ -419,8 +430,18 @@ export default function Home() {
                                     />
                                 </div>
                                 {[
-                                    { school: "Rice University", degree: "Master of Computer Science", period: "2024 - 2025", location: "Houston, TX" },
-                                    { school: "Feng Chia University", degree: "Bachelor of Information Engineering & Computer Science", period: "2020 - 2024", location: "Taichung, Taiwan" },
+                                    {
+                                        school: "Rice University",
+                                        degree: "Master of Computer Science",
+                                        period: "Dec 2025",
+                                        location: "Houston, TX",
+                                    },
+                                    {
+                                        school: "Feng Chia University",
+                                        degree: "Bachelor of Information Engineering & Computer Science",
+                                        period: "Jun 2024",
+                                        location: "Taichung, Taiwan",
+                                    },
                                 ].map((edu, idx) => (
                                     <motion.div
                                         key={edu.school}
@@ -537,7 +558,8 @@ export default function Home() {
                                         Let&apos;s talk about your project
                                     </h3>
                                     <p className={`leading-relaxed ${textSecondary}`}>
-                                        I&apos;m always excited to hear about new opportunities and interesting projects.
+                                        I&apos;m always excited to hear about new opportunities and interesting
+                                        projects.
                                         Whether you need a complete web application or want to improve your existing
                                         product, I&apos;m here to help.
                                     </p>
@@ -545,13 +567,13 @@ export default function Home() {
 
                                 {/* Email card */}
                                 <motion.a
-                                    href="mailto:genelin@gene-software.com"
+                                    href="mailto:chingyao.work@gmail.com"
                                     className={`
                                         flex items-center gap-4 p-4 rounded-xl transition-all duration-300 group
                                         ${isDark
-                                            ? "bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 shadow-lg shadow-cyan-500/10"
-                                            : "bg-white border border-slate-200 hover:border-emerald-500/60 shadow-sm hover:shadow-emerald-100"
-                                        }
+                                        ? "bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 shadow-lg shadow-cyan-500/10"
+                                        : "bg-white border border-slate-200 hover:border-emerald-500/60 shadow-sm hover:shadow-emerald-100"
+                                    }
                                     `}
                                     whileHover={{ scale: 1.03 }}
                                     whileTap={{ scale: 0.97 }}
@@ -580,7 +602,7 @@ export default function Home() {
                                             }`}
                                             aria-live="polite"
                                         >
-                                            {isEmailRevealed ? "genelin@gene-software.com" : "genelin [at] gene-software.com"}
+                                            {isEmailRevealed ? "chingyao.work@gmail.com" : "chingyao.work [at] gmail.com"}
                                         </p>
                                         {!isEmailRevealed && (
                                             <p className="text-xs text-cyan-400/80">Click to reveal</p>
@@ -602,7 +624,7 @@ export default function Home() {
                 <footer className={`py-8 px-6 border-t ${isDark ? "border-white/5" : "border-slate-200"}`}>
                     <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
                         <p className={`text-sm ${textMuted}`}>
-                            © 2025 Gene Lin. All rights reserved.
+                            © 2026 Gene Lin. All rights reserved.
                         </p>
                     </div>
                 </footer>

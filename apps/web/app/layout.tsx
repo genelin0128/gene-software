@@ -21,16 +21,20 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     title: "Gene Lin | Portfolio",
     description:
-        "Portfolio of Gene Lin — showcasing software engineering projects, frontend development skills, and interactive UI/UX work built with React, Next.js, TypeScript, and WebGL.",
+        "Portfolio of Gene Lin — showcasing software engineering work across React/Next.js frontends, Swift iOS applications, and AWS serverless backend systems.",
 
     keywords: [
         "Gene Lin",
         "Ching Yao Lin",
         "Frontend Engineer",
         "Software Engineer",
+        "iOS Developer",
+        "Backend Engineer",
         "React Developer",
         "Next.js Developer",
         "TypeScript",
+        "Swift",
+        "AWS Lambda",
         "Web Developer Portfolio",
         "Three.js",
         "WebGL",
@@ -46,7 +50,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Gene Lin | Portfolio",
         description:
-            "Frontend engineer portfolio showcasing React, Next.js, WebGL, and immersive UI/UX projects.",
+            "Software engineer portfolio featuring React/Next.js, Swift iOS, and AWS serverless project delivery.",
         url: "https://www.gene-software.com",
         siteName: "Gene Lin Portfolio",
         images: [
