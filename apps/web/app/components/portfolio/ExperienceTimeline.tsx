@@ -67,7 +67,7 @@ const detailContent: Record<NonNullable<Experience["slug"]>, ExperienceDetail> =
         badge: { text: "Billing & Reconciliation Platform", tone: "emerald" },
         title: "Delivered a production billing system with secure backend workflows",
         summary:
-            "Built and deployed a production-grade billing and reconciliation platform on MySQL with OAuth 2.0 / OpenID Connect authentication, JWT session controls, and Python-driven ETL modernization.",
+            "Built and deployed a production-grade billing and reconciliation platform on MySQL with OAuth 2.0 / OpenID Connect (OIDC) authentication, JWT session controls, and Python-driven ETL modernization.",
         tech: [
             "Python",
             "SQL",
@@ -83,7 +83,7 @@ const detailContent: Record<NonNullable<Experience["slug"]>, ExperienceDetail> =
         imageLabel: "Secure admin dashboards for billing and reconciliation",
         highlights: [
             "Automated invoice generation and payment tracking through a normalized MySQL-backed reconciliation workflow.",
-            "Implemented backend authentication using OAuth 2.0 / OpenID Connect with JWT-based session management.",
+            "Implemented backend authentication using OAuth 2.0 / OpenID Connect (OIDC) with JWT-based session management.",
             "Added structured logging and secure API patterns to strengthen production auditability.",
             "Shipped Vue.js internal tools with RESTful APIs for billing operations and staff administration.",
             "Led Python ETL migrations to modernize legacy datasets and improve data integrity.",
