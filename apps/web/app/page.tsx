@@ -32,7 +32,7 @@ import ContactForm from "@/app/components/portfolio/ContactForm";
 import { TypewriterText, SectionHeading } from "@/app/components/portfolio/AnimatedText";
 import SocialLinks from "@/app/components/portfolio/SocialLinks";
 import ScrollProgress from "@/app/components/portfolio/ScrollProgress";
-import SquirrelChaseCursor from "@/app/components/portfolio/SquirrelChaseCursor";
+import SpiderChaseCursor from "@/app/components/portfolio/SpiderChaseCursor";
 
 // Data Types
 interface Skill {
@@ -286,7 +286,7 @@ export default function Home() {
             {/* Foreground content */}
             <div className="relative z-10">
                 {/* Custom cursor */}
-                <SquirrelChaseCursor isDark={isDark} />
+                <SpiderChaseCursor isDark={isDark} />
 
                 {/* UI Components */}
                 <ScrollProgress isDark={isDark} />
