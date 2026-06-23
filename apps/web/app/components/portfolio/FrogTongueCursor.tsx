@@ -36,7 +36,6 @@ const FROG_MOUTH_OFFSET_Y = 27;
 const frogSprites = {
     idle: "/cursors/frog-idle.png",
     blink: "/cursors/frog-blink.png",
-    open: "/cursors/frog-open.png",
     hop: {
         ready: {
             left: "/cursors/frog-hop-ready-left.png",
@@ -162,7 +161,7 @@ function FrogSprite({ phase, direction }: { phase: FrogPhase; direction: FrogDir
                 alt=""
                 draggable="false"
                 className={frogImageClass}
-                animate={{ opacity: mouthOpen || isHopping ? 0 : 1 }}
+                animate={{ opacity: isHopping ? 0 : 1 }}
                 transition={{ duration: 0.08 }}
             />
             <motion.img
@@ -173,6 +172,43 @@ function FrogSprite({ phase, direction }: { phase: FrogPhase; direction: FrogDir
                 animate={{ opacity: mouthOpen || isHopping ? 0 : [0, 0, 1, 1, 0, 0] }}
                 transition={{ duration: 4.4, repeat: Infinity, times: [0, 0.8, 0.84, 0.88, 0.92, 1], ease: "easeInOut" }}
             />
+            <motion.svg
+                viewBox="0 0 512 512"
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full"
+                initial={false}
+                animate={{ opacity: mouthOpen && !isHopping ? 1 : 0 }}
+                transition={{ duration: mouthOpen ? 0.1 : 0.08, ease: "easeOut" }}
+            >
+                <defs>
+                    <radialGradient id="frog-mouth-depth" cx="50%" cy="34%" r="75%">
+                        <stop offset="0%" stopColor="#5f101b" />
+                        <stop offset="68%" stopColor="#2a050b" />
+                        <stop offset="100%" stopColor="#170205" />
+                    </radialGradient>
+                    <linearGradient id="frog-mouth-lip" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#fff6dc" stopOpacity="0.9" />
+                        <stop offset="100%" stopColor="#cf7a69" stopOpacity="0.62" />
+                    </linearGradient>
+                </defs>
+                <path
+                    d="M177 255 C199 225 313 225 335 255 C323 304 188 304 177 255 Z"
+                    fill="url(#frog-mouth-depth)"
+                    stroke="url(#frog-mouth-lip)"
+                    strokeWidth="9"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                />
+                <path
+                    d="M212 272 C235 292 281 292 304 272"
+                    fill="none"
+                    stroke="#f08c91"
+                    strokeWidth="10"
+                    strokeLinecap="round"
+                    opacity="0.56"
+                />
+                <ellipse cx="256" cy="252" rx="44" ry="12" fill="#941c2b" opacity="0.58" />
+            </motion.svg>
             <motion.img
                 src={directedSprite(frogSprites.hop.ready, direction)}
                 alt=""
@@ -236,14 +272,6 @@ function FrogSprite({ phase, direction }: { phase: FrogPhase; direction: FrogDir
                         : { duration: 0.08 },
                     rotate: { duration: FROG_HOP_MS / 1000, ease: [0.2, 0.86, 0.18, 1] },
                 }}
-            />
-            <motion.img
-                src={frogSprites.open}
-                alt=""
-                draggable="false"
-                className={frogImageClass}
-                animate={{ opacity: mouthOpen ? 1 : 0 }}
-                transition={{ duration: mouthOpen ? 0.16 : 0.1, ease: [0.2, 0.8, 0.2, 1] }}
             />
         </div>
     );
