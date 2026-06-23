@@ -14,6 +14,7 @@ interface FrogTongueCursorProps {
 
 type FrogPhase = "idle" | "aim" | "hop" | "shoot" | "catch" | "miss" | "swallow";
 type FlyPhase = "free" | "caught" | "respawn";
+type FrogDirection = -1 | 1;
 
 type Point = {
     x: number;
@@ -35,11 +36,25 @@ const FROG_MOUTH_OFFSET_Y = 27;
 const frogSprites = {
     idle: "/cursors/frog-idle.png",
     blink: "/cursors/frog-blink.png",
-    ready: "/cursors/frog-hop-ready.png",
-    launch: "/cursors/frog-hop-launch.png",
-    hop: "/cursors/frog-hop.png",
-    land: "/cursors/frog-hop-land.png",
     open: "/cursors/frog-open.png",
+    hop: {
+        ready: {
+            left: "/cursors/frog-hop-ready-left.png",
+            right: "/cursors/frog-hop-ready-right.png",
+        },
+        launch: {
+            left: "/cursors/frog-hop-launch-left.png",
+            right: "/cursors/frog-hop-launch-right.png",
+        },
+        air: {
+            left: "/cursors/frog-hop-left.png",
+            right: "/cursors/frog-hop-right.png",
+        },
+        land: {
+            left: "/cursors/frog-hop-land-left.png",
+            right: "/cursors/frog-hop-land-right.png",
+        },
+    },
 } as const;
 const frogImageClass = "absolute inset-0 h-full w-full select-none object-contain";
 
@@ -90,6 +105,10 @@ function getMouthPoint(frogX: number, frogY: number, frogHop: number): Point {
     };
 }
 
+function directedSprite(sprite: { left: string; right: string }, direction: FrogDirection) {
+    return direction === -1 ? sprite.left : sprite.right;
+}
+
 function FlyIcon({ isDark }: { isDark: boolean }) {
     const body = isDark ? "#b8f3e8" : "#2f7f74";
     const wing = isDark ? "rgba(239,255,252,0.8)" : "rgba(216,246,239,0.82)";
@@ -132,7 +151,7 @@ function FlyIcon({ isDark }: { isDark: boolean }) {
     );
 }
 
-function FrogSprite({ phase }: { phase: FrogPhase }) {
+function FrogSprite({ phase, direction }: { phase: FrogPhase; direction: FrogDirection }) {
     const mouthOpen = phase === "shoot" || phase === "catch" || phase === "swallow";
     const isHopping = phase === "hop";
 
@@ -155,7 +174,7 @@ function FrogSprite({ phase }: { phase: FrogPhase }) {
                 transition={{ duration: 4.4, repeat: Infinity, times: [0, 0.8, 0.84, 0.88, 0.92, 1], ease: "easeInOut" }}
             />
             <motion.img
-                src={frogSprites.ready}
+                src={directedSprite(frogSprites.hop.ready, direction)}
                 alt=""
                 draggable="false"
                 className={frogImageClass}
@@ -171,7 +190,7 @@ function FrogSprite({ phase }: { phase: FrogPhase }) {
                 }}
             />
             <motion.img
-                src={frogSprites.launch}
+                src={directedSprite(frogSprites.hop.launch, direction)}
                 alt=""
                 draggable="false"
                 className={frogImageClass}
@@ -187,7 +206,7 @@ function FrogSprite({ phase }: { phase: FrogPhase }) {
                 }}
             />
             <motion.img
-                src={frogSprites.hop}
+                src={directedSprite(frogSprites.hop.air, direction)}
                 alt=""
                 draggable="false"
                 className={frogImageClass}
@@ -203,7 +222,7 @@ function FrogSprite({ phase }: { phase: FrogPhase }) {
                 }}
             />
             <motion.img
-                src={frogSprites.land}
+                src={directedSprite(frogSprites.hop.land, direction)}
                 alt=""
                 draggable="false"
                 className={frogImageClass}
@@ -237,7 +256,7 @@ export default function FrogTongueCursor({ isDark }: FrogTongueCursorProps) {
     const [frogPhase, setFrogPhase] = useState<FrogPhase>("idle");
     const [flyPhase, setFlyPhase] = useState<FlyPhase>("free");
     const [tongueShotId, setTongueShotId] = useState(0);
-    const [facing, setFacing] = useState<1 | -1>(1);
+    const [facing, setFacing] = useState<FrogDirection>(1);
 
     const pointerRef = useRef<Point>({ x: 0, y: 0 });
     const lastPointerMoveAtRef = useRef(0);
@@ -409,7 +428,7 @@ export default function FrogTongueCursor({ isDark }: FrogTongueCursorProps) {
                     window.innerWidth - 84,
                 );
                 setFacing((current) => {
-                    const nextFacing = perchX >= currentFrogX ? 1 : -1;
+                    const nextFacing: FrogDirection = hopDirection;
                     return current === nextFacing ? current : nextFacing;
                 });
                 queue(() => {
@@ -518,8 +537,9 @@ export default function FrogTongueCursor({ isDark }: FrogTongueCursorProps) {
             hasPointerRef.current = true;
             setHasPointer(true);
             setFacing((current) => {
+                if (frogPhaseRef.current === "hop") return current;
                 if (Math.abs(x - frogX.get()) < 20) return current;
-                const nextFacing = x >= frogX.get() ? 1 : -1;
+                const nextFacing: FrogDirection = x >= frogX.get() ? 1 : -1;
                 return current === nextFacing ? current : nextFacing;
             });
 
@@ -661,13 +681,13 @@ export default function FrogTongueCursor({ isDark }: FrogTongueCursorProps) {
             <motion.div
                 data-testid="frog-hunter"
                 data-frog-state={frogPhase}
+                data-frog-facing={facing === -1 ? "left" : "right"}
                 className="absolute z-10 h-[58px] w-[68px]"
                 style={{
                     x: frogX,
                     y: renderedFrogY,
                     translateX: "-50%",
                     translateY: "-92%",
-                    scaleX: facing,
                     willChange: "transform",
                 }}
                 initial={{ opacity: 0 }}
@@ -676,7 +696,7 @@ export default function FrogTongueCursor({ isDark }: FrogTongueCursorProps) {
                 }}
                 transition={{ opacity: { duration: 0.18 } }}
             >
-                <FrogSprite phase={frogPhase} />
+                <FrogSprite phase={frogPhase} direction={facing} />
             </motion.div>
         </div>
     );
