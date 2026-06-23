@@ -8,9 +8,9 @@
 
 "use client";
 
-import { useEffect, useState, type MouseEvent as ReactMouseEvent } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ExternalLink, Github, ArrowUpRight, X, Check, ChevronLeft, ChevronRight, Ban } from "lucide-react";
+import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import { ExternalLink, Github, ArrowUpRight, X, Ban } from "lucide-react";
 
 interface Project {
     title: string;
@@ -19,11 +19,11 @@ interface Project {
     tech: string[];
     liveUrl: string;
     githubUrl: string;
-    slug?: "cardz" | "baccarat" | "portfolio" | "travel" | "poker";
+    slug?: "gatherpoint" | "cardz" | "baccarat" | "portfolio" | "travel" | "poker";
 }
 
 interface ProjectDetail {
-    badge: { text: string; tone: "emerald" | "cyan" };
+    badge: { text: string };
     title: string;
     summary: string;
     tech: string[];
@@ -40,26 +40,55 @@ interface ProjectCardProps {
 }
 
 const projectDetails: Record<NonNullable<Project["slug"]>, ProjectDetail> = {
+    gatherpoint: {
+        badge: { text: "AI Discovery Workflow" },
+        title: "GatherPoint AI",
+        summary:
+            "Full-stack event discovery system that converts natural-language intent into planner state, SQL and pgvector retrieval, ranked event cards, and draft-event handoff.",
+        tech: [
+            "TypeScript",
+            "Next.js",
+            "Fastify",
+            "Azure OpenAI",
+            "PostgreSQL",
+            "Prisma",
+            "pgvector",
+            "Redis",
+            "Cloudflare R2",
+        ],
+        image: "/projects/gatherpoint/gatherpoint-demo-detail-clean.png",
+        gallery: [
+            "/projects/gatherpoint/gatherpoint-demo-detail-clean.png",
+            "/projects/gatherpoint/gatherpoint-demo-home.png",
+        ],
+        imageLabel: "GatherPoint AI public demo feed and event detail workflow",
+        features: [
+            "Orchestrated an app-controlled AI discovery workflow from user intent to validated planner state and ranked event cards.",
+            "Built viewer-scoped Fastify APIs for event creation, registration, privacy-aware reads, and assistant state.",
+            "Backed API flows with Clerk auth, Zod validation, Redis rate limits, and PostgreSQL data access.",
+            "Shipped owner-scoped event image uploads with Cloudflare R2 presigned URLs and background WebP conversion.",
+        ],
+    },
     portfolio: {
-        badge: { text: "Personal Portfolio", tone: "emerald" },
+        badge: { text: "Personal Portfolio" },
         title: "3D Motion Developer Portfolio",
         summary:
-            "Next.js/TypeScript portfolio deployed at gene-software.com, pairing a Three.js background with Framer Motion sequences and modal project spotlights that double as a design playground.",
-        tech: ["Next.js", "React", "TypeScript", "Three.js", "Framer Motion", "Tailwind CSS"],
+            "Next.js/TypeScript portfolio deployed at gene-software.com, pairing a Three.js background with Motion-driven sections and modal project spotlights that double as a design playground.",
+        tech: ["Next.js", "React", "TypeScript", "Three.js", "Motion", "Tailwind CSS"],
         image: "/projects/portfolio/portfolio-1.png",
         gallery: ["/projects/portfolio/portfolio-1.png", "/projects/portfolio/portfolio-2.png"],
         imageLabel: "Portfolio hero and interactive project gallery",
         features: [
             "Three.js hero scene and particle field tuned for smooth GPU budgets on desktop and mobile.",
-            "Dark/light theming persisted via localStorage with gradients and tokens updating instantly.",
+            "Dark/light theming persisted via localStorage with restrained tokens updating instantly.",
             "Project modals with image carousels, tech stacks, and guarded CTAs when links are unavailable.",
-            "Framer Motion choreography across hero, cards, and timeline for cohesive interaction patterns.",
+            "Motion choreography across hero, cards, and timeline for cohesive interaction patterns.",
             "Keyboard-accessible cards, ESC-to-close modals, and responsive layouts that hold up across breakpoints.",
         ],
     },
     poker: {
-        badge: { text: "iOS + AWS Serverless", tone: "emerald" },
-        title: "iOS Poker Session Analytics & Social Platform",
+        badge: { text: "iOS + AWS Serverless" },
+        title: "iOS Poker Session Tracking & Analytics App",
         summary:
             "Swift iOS platform with MVVM session analytics, social interaction workflows, and a secure serverless backend using RS256 JWT and OAuth 2.0 PKCE.",
         tech: [
@@ -71,38 +100,36 @@ const projectDetails: Record<NonNullable<Project["slug"]>, ProjectDetail> = {
             "DynamoDB",
             "JWT (RS256)",
             "OAuth 2.0 PKCE",
-            "AWS SAM",
         ],
         image: "/projects/poker/poker-1.png",
         gallery: ["/projects/poker/poker-1.png", "/projects/poker/poker-2.png"],
         imageLabel: "iOS poker session tracking and social analytics workflow",
         features: [
-            "Built a Swift iOS app with MVVM for poker session tracking, hand history logging, and interactive analytics workflows.",
-            "Implemented RS256 JWT authentication with refresh-token rotation and replay protection for secure session continuity.",
-            "Exposed JWKS for key distribution and integrated OAuth 2.0 PKCE flows with Apple and Google ID token verification.",
-            "Architected serverless APIs on AWS Lambda + API Gateway with DynamoDB GSIs, conditional writes, and TTL-based lifecycle control.",
-            "Automated deployments through AWS SAM and GitHub CI/CD using OIDC-based role assumption for secure cloud delivery.",
+            "Built a SwiftUI MVVM analytics client for session logging, hand-history review, bankroll trends, and social activity.",
+            "Turned poker records into searchable mobile workflows.",
+            "Implemented RS256 JWTs, OAuth 2.0 PKCE sign-in, refresh-token rotation, and JWKS distribution.",
+            "Deployed AWS Lambda and DynamoDB backend workflows for session, analytics, and social data.",
+            "Used GSIs, conditional writes, TTL cleanup, and GitHub OIDC CI/CD without long-lived AWS keys.",
         ],
     },
     travel: {
-        badge: { text: "Travel Planning", tone: "cyan" },
-        title: "AI-Driven Travel Recommendation Platform",
+        badge: { text: "Travel Planning" },
+        title: "AI Travel Itinerary Recommendation Platform",
         summary:
-            "AI-assisted planner built around RAG, context-aware recommendations, and distance-aware itinerary optimization.",
-        tech: ["Python", "SQL", "OpenAI API", "RAG", "JavaScript", "Google Maps API"],
+            "Retrieval-augmented recommendation platform that turns user preferences, destination metadata, and time-window constraints into structured OpenAI context for feasible itinerary generation.",
+        tech: ["Python", "SQL", "OpenAI API", "Google Maps API", "RAG"],
         image: "/projects/travel/travel-1.png",
         gallery: ["/projects/travel/travel-1.png", "/projects/travel/travel-2.png"],
         imageLabel: "Travel planning console with itinerary and map views",
         features: [
-            "Integrated the ChatGPT API with retrieval-augmented generation to deliver context-aware destination recommendations.",
-            "Developed modular Python ingestion and preprocessing services for reliable travel data transformation.",
-            "Built a constraint-aware itinerary matching engine that balances time windows, user preferences, and transit distance.",
-            "Designed a normalized SQL model for destinations, preferences, and itinerary state to keep ranking queries efficient.",
-            "Connected Google Maps geospatial calculations to itinerary scoring for route-aware recommendation quality.",
+            "Built a retrieval-augmented recommendation pipeline from user preferences, destination metadata, and time-window constraints.",
+            "Generated structured OpenAI context for constraint-aware itinerary generation.",
+            "Implemented SQL-backed feasibility scoring with Google Maps API signals.",
+            "Ranked destinations by schedule fit, travel distance, available time, and preference match.",
         ],
     },
     cardz: {
-        badge: { text: "Social Media Platform", tone: "emerald" },
+        badge: { text: "Social Media Platform" },
         title: "Cardz Social Media",
         summary:
             "A full-stack social media platform with middleware-driven security, normalized client state, and reliability-focused testing.",
@@ -128,7 +155,7 @@ const projectDetails: Record<NonNullable<Project["slug"]>, ProjectDetail> = {
         ],
     },
     baccarat: {
-        badge: { text: "Table Game", tone: "cyan" },
+        badge: { text: "Table Game" },
         title: "Baccarat Simulator — single-page table with animated squeeze reveals",
         summary:
             "A Next.js baccarat build with animated chip betting, squeeze/flip flows, automation tools, and cookie-backed session state that mirrors a real table feel.",
@@ -143,7 +170,7 @@ const projectDetails: Record<NonNullable<Project["slug"]>, ProjectDetail> = {
         imageLabel: "Single-page baccarat table with chip betting and squeeze reveals",
         features: [
             "Interactive betting surface with chip selection, bankroll tracking, undo/reset, and side bets (Player/Banker Pair, Lucky 6, Tie) kept in sync with balance.",
-            "Animated dealing flow with flip/squeeze overlays or popups, manual flip gating, and Framer Motion result/win toasts.",
+            "Animated dealing flow with flip/squeeze overlays or popups, manual flip gating, and Motion result/win toasts.",
             "Mode selector (Beginner/Intermediate/Advanced) sets decision timers; countdown ring auto-flips and locks swaps once time expires.",
             "Automation tools like Auto Deal multi-round runs with stop controls plus paid utilities to swap unflipped cards or reshuffle undealt cards.",
             "Roadmap/telemetry slide-out with recent outcomes, undealt-card counts & probabilities, auto deck reset every 30 rounds, screenshot capture, and user ID/login persistence.",
@@ -151,19 +178,206 @@ const projectDetails: Record<NonNullable<Project["slug"]>, ProjectDetail> = {
     },
 };
 
+function ProjectImageCarousel({
+    slides,
+    imageLabel,
+}: {
+    slides: string[];
+    imageLabel: string;
+}) {
+    const viewportRef = useRef<HTMLDivElement>(null);
+    const trackRef = useRef<HTMLDivElement>(null);
+    const [dragLimit, setDragLimit] = useState(0);
+    const [slideWidth, setSlideWidth] = useState(0);
+
+    useLayoutEffect(() => {
+        const viewport = viewportRef.current;
+        const track = trackRef.current;
+        if (!viewport || !track) return;
+
+        const measure = () => {
+            const viewportWidth = viewport.clientWidth;
+            const nextSlideWidth = Math.min(
+                slides.length > 1 ? viewport.clientWidth * 0.88 : viewport.clientWidth,
+                620,
+            );
+            const measuredSlideWidth = Math.max(280, Math.floor(nextSlideWidth));
+            const totalTrackWidth = slides.length * measuredSlideWidth + Math.max(0, slides.length - 1) * 16;
+
+            setSlideWidth(measuredSlideWidth);
+            setDragLimit(Math.max(0, totalTrackWidth - viewportWidth));
+        };
+
+        measure();
+        const resizeObserver = new ResizeObserver(measure);
+        resizeObserver.observe(viewport);
+        resizeObserver.observe(track);
+        return () => resizeObserver.disconnect();
+    }, [slides.length]);
+
+    return (
+        <div
+            ref={viewportRef}
+            className="portfolio-carousel relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6fa79b]/45"
+            aria-label="Project screenshots"
+            tabIndex={0}
+        >
+            <motion.div
+                ref={trackRef}
+                className="flex w-max cursor-grab gap-4 py-1 active:cursor-grabbing"
+                drag={dragLimit > 0 ? "x" : false}
+                dragConstraints={{ left: -dragLimit, right: 0 }}
+                dragElastic={0}
+                dragMomentum={false}
+            >
+                {slides.map((src, slideIndex) => (
+                    <motion.div
+                        key={`${src}-${slideIndex}`}
+                        className="shrink-0"
+                        style={{ width: slideWidth || "100%" }}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.35, delay: slideIndex * 0.04, ease: "easeOut" }}
+                    >
+                        <img
+                            src={src}
+                            alt={`${imageLabel} ${slideIndex + 1}`}
+                            draggable={false}
+                            className="aspect-[16/10] w-full select-none rounded-2xl object-cover"
+                        />
+                    </motion.div>
+                ))}
+            </motion.div>
+        </div>
+    );
+}
+
+function TechPillTicker({ tech, isDark }: { tech: string[]; isDark: boolean }) {
+    const shouldReduceMotion = useReducedMotion();
+    const needsTicker = tech.length > 5;
+    const visibleTech = needsTicker ? [...tech, ...tech] : tech;
+
+    return (
+        <div
+            className="relative h-10 w-full min-w-0 overflow-hidden"
+            style={{
+                maskImage: needsTicker
+                    ? "linear-gradient(90deg, transparent, black 8%, black 92%, transparent)"
+                    : undefined,
+            }}
+        >
+            <motion.div
+                className="flex w-max gap-2 py-1"
+                animate={needsTicker && !shouldReduceMotion ? { x: ["0%", "-50%"] } : undefined}
+                transition={
+                    needsTicker && !shouldReduceMotion
+                        ? { duration: Math.max(12, tech.length * 2.2), ease: "linear", repeat: Infinity }
+                        : undefined
+                }
+            >
+                {visibleTech.map((item, itemIndex) => (
+                    <span
+                        key={`${item}-${itemIndex}`}
+                        className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${
+                            isDark ? "bg-[#1b2a31] text-[#9acdc4]" : "bg-[#e6eee9] text-[#28544b]"
+                        }`}
+                    >
+                        {item}
+                    </span>
+                ))}
+            </motion.div>
+        </div>
+    );
+}
+
+const boldTerms = [
+    "app-controlled AI discovery workflow",
+    "validated planner state",
+    "ranked event cards",
+    "viewer-scoped Fastify APIs",
+    "Clerk auth",
+    "Zod validation",
+    "Redis rate limits",
+    "PostgreSQL data access",
+    "Cloudflare R2 presigned URLs",
+    "background WebP conversion",
+    "Three.js hero scene",
+    "smooth GPU budgets",
+    "Dark/light theming",
+    "Project modals",
+    "Motion choreography",
+    "Keyboard-accessible cards",
+    "SwiftUI MVVM analytics client",
+    "session logging",
+    "hand-history review",
+    "RS256 JWTs",
+    "OAuth 2.0 PKCE",
+    "AWS Lambda",
+    "DynamoDB",
+    "GitHub OIDC CI/CD",
+    "retrieval-augmented recommendation pipeline",
+    "structured OpenAI context",
+    "SQL-backed feasibility scoring",
+    "Google Maps API signals",
+    "schedule fit",
+    "travel distance",
+    "RESTful Node.js/Express backend",
+    "middleware-driven access control",
+    "component-driven React frontend",
+    "Jest-based automated testing",
+    "abuse-mitigation controls",
+    "Interactive betting surface",
+    "Animated dealing flow",
+    "Mode selector",
+    "Automation tools",
+    "Roadmap/telemetry slide-out",
+];
+
+function renderBoldText(text: string) {
+    const terms = boldTerms
+        .filter((term) => text.includes(term))
+        .sort((a, b) => text.indexOf(a) - text.indexOf(b));
+
+    if (!terms.length) return text;
+
+    const segments: Array<string | { text: string; strong: true }> = [];
+    let cursor = 0;
+
+    terms.forEach((term) => {
+        const index = text.indexOf(term, cursor);
+        if (index === -1) return;
+        if (index > cursor) segments.push(text.slice(cursor, index));
+        segments.push({ text: term, strong: true });
+        cursor = index + term.length;
+    });
+
+    if (cursor < text.length) segments.push(text.slice(cursor));
+
+    return segments.map((segment, index) =>
+        typeof segment === "string" ? (
+            segment
+        ) : (
+            <strong key={`${segment.text}-${index}`} className="font-semibold text-inherit">
+                {segment.text}
+            </strong>
+        ),
+    );
+}
+
 export default function ProjectCard({ project, index, isDark }: ProjectCardProps) {
     const [isHovered, setIsHovered] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [activeSlide, setActiveSlide] = useState(0);
     const [notifications, setNotifications] = useState<
         { id: number; title: string; message: string }[]
     >([]);
+    const cardRef = useRef<HTMLDivElement>(null);
     const isLiveAvailable = Boolean(project.liveUrl && project.liveUrl !== "#");
     const isCodeAvailable = Boolean(project.githubUrl && project.githubUrl !== "#");
     const hasDetail = project.slug && projectDetails[project.slug];
     const textPrimary = isDark ? "text-white" : "text-slate-800";
     const textSecondary = isDark ? "text-white/70" : "text-slate-600";
-    const panelSurface = isDark ? "border-white/20 bg-white/5" : "border-slate-200 bg-white shadow-sm";
+    const bulletDot = "mt-1 block h-2.5 aspect-square shrink-0 rounded-full bg-[#6fa79b] shadow-[0_0_0_6px_rgba(111,167,155,0.16)]";
+    const panelSurface = isDark ? "border-white/12 bg-white/[0.04]" : "border-[#d8d2c7] bg-white";
 
     useEffect(() => {
         if (!isModalOpen) return;
@@ -176,27 +390,50 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
 
     useEffect(() => {
         if (!isModalOpen) return;
-        const original = document.body.style.overflow;
+        const scrollY = window.scrollY;
+        const originalBodyOverflow = document.body.style.overflow;
+        const originalBodyPosition = document.body.style.position;
+        const originalBodyTop = document.body.style.top;
+        const originalBodyWidth = document.body.style.width;
+        const originalHtmlOverflow = document.documentElement.style.overflow;
+
         document.body.style.overflow = "hidden";
+        document.documentElement.style.overflow = "hidden";
+        document.body.style.position = "fixed";
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.width = "100%";
+        document.body.classList.add("portfolio-modal-open");
+
         return () => {
-            document.body.style.overflow = original;
+            document.body.style.overflow = originalBodyOverflow;
+            document.documentElement.style.overflow = originalHtmlOverflow;
+            document.body.style.position = originalBodyPosition;
+            document.body.style.top = originalBodyTop;
+            document.body.style.width = originalBodyWidth;
+            document.body.classList.remove("portfolio-modal-open");
+            window.scrollTo(0, scrollY);
         };
     }, [isModalOpen]);
 
     useEffect(() => {
-        // Reset carousel when modal opens for a different project
-        if (isModalOpen) {
-            setActiveSlide(0);
-        }
-    }, [isModalOpen, project.slug]);
+        if (!isHovered) return;
 
-    const handlePrev = (slidesLength: number) => {
-        setActiveSlide((prev) => (prev - 1 + slidesLength) % slidesLength);
-    };
+        const clearIfPointerLeavesCard = (event: MouseEvent | PointerEvent) => {
+            const card = cardRef.current;
+            if (!card) return;
+            const target = document.elementFromPoint(event.clientX, event.clientY);
+            if (!target || !card.contains(target)) {
+                setIsHovered(false);
+            }
+        };
 
-    const handleNext = (slidesLength: number) => {
-        setActiveSlide((prev) => (prev + 1) % slidesLength);
-    };
+        window.addEventListener("pointermove", clearIfPointerLeavesCard, { passive: true });
+        window.addEventListener("mousemove", clearIfPointerLeavesCard, { passive: true });
+        return () => {
+            window.removeEventListener("pointermove", clearIfPointerLeavesCard);
+            window.removeEventListener("mousemove", clearIfPointerLeavesCard);
+        };
+    }, [isHovered]);
 
     const pushUnavailableNotice = (type: "live" | "code") => {
         const title = type === "live" ? "Live demo unavailable" : "Code not shared";
@@ -222,12 +459,16 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
     return (
         <>
             <motion.div
+                ref={cardRef}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
+                onPointerEnter={() => setIsHovered(true)}
+                onPointerMove={() => setIsHovered(true)}
+                onPointerLeave={() => setIsHovered(false)}
                 onClick={() => hasDetail && setIsModalOpen(true)}
                 onKeyDown={(event) => {
                     if (!hasDetail) return;
@@ -238,22 +479,20 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                 }}
                 role={hasDetail ? "button" : undefined}
                 tabIndex={hasDetail ? 0 : -1}
-                className={`group relative ${hasDetail ? "cursor-pointer" : "cursor-default"}`}
+                className={`group relative h-full min-w-0 ${isHovered ? "project-card-hovered" : ""} ${hasDetail ? "cursor-pointer" : "cursor-default"}`}
             >
                 {/* Ambient glow effect */}
                 <motion.div
                     className={`
                     absolute -inset-2 rounded-3xl blur-2xl transition-all duration-500
-                    ${isDark
-                        ? "bg-gradient-to-br from-cyan-500/10 to-emerald-500/10"
-                        : "bg-gradient-to-br from-emerald-500/5 to-cyan-500/5"}
+                    ${isDark ? "bg-[#6f8b84]/12" : "bg-[#9aa89d]/14"}
                 `}
                     animate={{ opacity: isHovered ? 1 : 0 }}
                 />
 
                 <div
                     className={`
-                    relative overflow-hidden rounded-2xl transition-all duration-500
+                    relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl transition-all duration-500
                     ${isDark
                         ? "bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20"
                         : "bg-white border border-slate-200 hover:border-slate-300 shadow-lg hover:shadow-xl"}
@@ -270,72 +509,53 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                         />
 
                         {/* Gradient overlay */}
-                        <div
-                            className={`absolute inset-0 bg-gradient-to-t to-transparent ${isDark ? "from-[#0a0a0f]" : "from-white"}`} />
+                        <div className={`absolute inset-0 ${isDark ? "bg-[#0b0f14]/18" : "bg-[#fffdf8]/16"}`} />
 
                         {/* Hover overlay with buttons */}
-                        <AnimatePresence>
-                            {isHovered && (
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.3 }}
-                                    className="absolute inset-0 flex items-center justify-center gap-4 bg-black/50 backdrop-blur-sm"
-                                >
-                                    <motion.a
-                                        href={isLiveAvailable ? project.liveUrl : undefined}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        initial={{ scale: 0, rotate: -180 }}
-                                        animate={{ scale: 1, rotate: 0 }}
-                                        exit={{ scale: 0, rotate: 180 }}
-                                        transition={{ duration: 0.3, delay: 0.1 }}
-                                        className={`p-4 rounded-full transition-all duration-300 border shadow-lg ${isLiveAvailable
-                                            ? isDark
-                                                ? "bg-white/10 hover:bg-cyan-500 border-white/20 text-white"
-                                                : "bg-white/95 border-slate-200 text-slate-800 hover:bg-cyan-500 hover:text-white hover:border-cyan-200"
-                                            : isDark
-                                                ? "bg-white/5 text-white/60 border-white/10 cursor-not-allowed"
-                                                : "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
-                                        }`}
-                                        aria-disabled={!isLiveAvailable}
-                                        onClick={(event) => handleActionClick(event, isLiveAvailable, "live")}
-                                    >
-                                        <ExternalLink
-                                            className={`w-5 h-5 ${isLiveAvailable ? (isDark ? "text-white" : "text-slate-800") : isDark ? "text-white/50" : "text-slate-500"}`} />
-                                    </motion.a>
-                                    <motion.a
-                                        href={isCodeAvailable ? project.githubUrl : undefined}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        initial={{ scale: 0, rotate: 180 }}
-                                        animate={{ scale: 1, rotate: 0 }}
-                                        exit={{ scale: 0, rotate: -180 }}
-                                        transition={{ duration: 0.3, delay: 0.2 }}
-                                        className={`p-4 rounded-full transition-all duration-300 border shadow-lg ${isCodeAvailable
-                                            ? isDark
-                                                ? "bg-white/10 hover:bg-emerald-500 border-white/20 text-white"
-                                                : "bg-white/95 border-slate-200 text-slate-800 hover:bg-emerald-500 hover:text-white hover:border-emerald-200"
-                                            : isDark
-                                                ? "bg-white/5 text-white/60 border-white/10 cursor-not-allowed"
-                                                : "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
-                                        }`}
-                                        aria-disabled={!isCodeAvailable}
-                                        onClick={(event) => handleActionClick(event, isCodeAvailable, "code")}
-                                    >
-                                        <Github
-                                            className={`w-5 h-5 ${isCodeAvailable ? (isDark ? "text-white" : "text-slate-800") : isDark ? "text-white/50" : "text-slate-500"}`} />
-                                    </motion.a>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                        <div className="project-cover-actions pointer-events-none absolute inset-0 flex items-center justify-center gap-4">
+                            <a
+                                href={isLiveAvailable ? project.liveUrl : undefined}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`project-cover-action project-cover-action-left pointer-events-auto rounded-full border p-4 shadow-lg ${isLiveAvailable
+                                    ? isDark
+                                        ? "bg-white/10 hover:bg-[#2f7f74] border-white/20 text-white"
+                                        : "bg-white/95 border-[#d8d2c7] text-[#1f2933] hover:bg-[#2f7f74] hover:text-white hover:border-[#2f7f74]"
+                                    : isDark
+                                        ? "bg-white/5 text-white/60 border-white/10 cursor-not-allowed"
+                                        : "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
+                                }`}
+                                aria-disabled={!isLiveAvailable}
+                                onClick={(event) => handleActionClick(event, isLiveAvailable, "live")}
+                            >
+                                <ExternalLink
+                                    className={`w-5 h-5 ${isLiveAvailable ? (isDark ? "text-white" : "text-slate-800") : isDark ? "text-white/50" : "text-slate-500"}`} />
+                            </a>
+                            <a
+                                href={isCodeAvailable ? project.githubUrl : undefined}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`project-cover-action project-cover-action-right pointer-events-auto rounded-full border p-4 shadow-lg ${isCodeAvailable
+                                    ? isDark
+                                        ? "bg-white/10 hover:bg-[#2f7f74] border-white/20 text-white"
+                                        : "bg-white/95 border-[#d8d2c7] text-[#1f2933] hover:bg-[#2f7f74] hover:text-white hover:border-[#2f7f74]"
+                                    : isDark
+                                        ? "bg-white/5 text-white/60 border-white/10 cursor-not-allowed"
+                                        : "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
+                                }`}
+                                aria-disabled={!isCodeAvailable}
+                                onClick={(event) => handleActionClick(event, isCodeAvailable, "code")}
+                            >
+                                <Github
+                                    className={`w-5 h-5 ${isCodeAvailable ? (isDark ? "text-white" : "text-slate-800") : isDark ? "text-white/50" : "text-slate-500"}`} />
+                            </a>
+                        </div>
                     </div>
 
                     {/* Content */}
-                    <div className="p-6">
-                        <div className="flex items-start justify-between mb-3">
-                            <h3 className={`text-xl font-semibold transition-colors duration-300 ${isDark ? "text-white group-hover:text-cyan-400" : "text-slate-800 group-hover:text-emerald-600"}`}>
+                    <div className="flex min-h-[168px] min-w-0 flex-1 flex-col p-5 sm:p-6">
+                        <div className="flex min-w-0 items-start justify-between gap-3 mb-3">
+                            <h3 className={`line-clamp-2 min-w-0 text-xl font-semibold transition-colors duration-300 ${isDark ? "text-white group-hover:text-[#9acdc4]" : "text-[#1f2933] group-hover:text-[#28544b]"}`}>
                                 {project.title}
                             </h3>
                             <motion.div
@@ -343,29 +563,16 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                                 transition={{ duration: 0.3 }}
                             >
                                 <ArrowUpRight
-                                    className={`w-5 h-5 transition-colors duration-300 ${isDark ? "text-white/30 group-hover:text-cyan-400" : "text-slate-400 group-hover:text-emerald-600"}`} />
+                                    className={`w-5 h-5 transition-colors duration-300 ${isDark ? "text-white/30 group-hover:text-[#9acdc4]" : "text-[#8b938c] group-hover:text-[#28544b]"}`} />
                             </motion.div>
                         </div>
 
-                        <p className={`text-sm mb-4 line-clamp-2 ${isDark ? "text-white/60" : "text-slate-600"}`}>
+                        <p className={`mb-4 line-clamp-2 min-w-0 break-words text-sm ${isDark ? "text-white/60" : "text-slate-600"}`}>
                             {project.description}
                         </p>
 
-                        {/* Tech stack badges */}
-                        <div className="flex flex-wrap gap-2">
-                            {project.tech.map((tech, i) => (
-                                <motion.span
-                                    key={i}
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    whileInView={{ opacity: 1, scale: 1 }}
-                                    whileHover={{ scale: 1.1 }}
-                                    transition={{ delay: 0.05 * i }}
-                                    viewport={{ once: true }}
-                                    className={`px-2.5 py-1 text-xs font-medium rounded-full cursor-default ${isDark ? "bg-cyan-500/10 text-cyan-400" : "bg-emerald-100 text-emerald-600"}`}
-                                >
-                                    {tech}
-                                </motion.span>
-                            ))}
+                        <div className="mt-auto">
+                            <TechPillTicker tech={project.tech} isDark={isDark} />
                         </div>
                     </div>
                 </div>
@@ -374,282 +581,170 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
             <AnimatePresence>
                 {hasDetail && isModalOpen && (
                     <motion.div
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md px-4"
+                        className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/80 px-3 py-6 backdrop-blur-sm"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
+                        transition={{ duration: 0.24, ease: "easeOut" }}
                         onClick={() => setIsModalOpen(false)}
                     >
                         <motion.div
-                            className={`relative w-full max-w-5xl max-h-[85vh] overflow-y-auto rounded-3xl border ${isDark ? "border-white/10 bg-[#0b1224]/95" : "border-slate-200 bg-white/95"
-                            } p-6 shadow-2xl`}
-                            initial={{ y: 30, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            exit={{ y: 30, opacity: 0 }}
-                            transition={{ duration: 0.3 }}
+                            role="dialog"
+                            aria-modal="true"
+                            aria-label={project.title}
+                            className={`relative max-h-[88vh] w-full max-w-[980px] overflow-hidden rounded-[22px] border shadow-2xl ${
+                                isDark
+                                    ? "border-white/12 bg-[#080d19]/96 text-white"
+                                    : "border-slate-200 bg-white text-slate-900"
+                            }`}
+                            initial={{ y: 24, opacity: 0, scale: 0.98 }}
+                            animate={{ y: 0, opacity: 1, scale: 1 }}
+                            exit={{ y: 16, opacity: 0, scale: 0.985 }}
+                            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
                             onClick={(e) => e.stopPropagation()}
                         >
                             {(() => {
                                 if (!hasDetail || !project.slug) return null;
                                 const detail = projectDetails[project.slug];
                                 const slides = detail.gallery && detail.gallery.length > 0 ? detail.gallery : [detail.image];
-                                const safeIndex = slides.length ? ((activeSlide % slides.length) + slides.length) % slides.length : 0;
-                                const activeSrc = slides[safeIndex];
                                 return (
-                                    <div className="space-y-8">
-                                        <div className="flex items-center justify-between gap-4">
-                                            <div
-                                                className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold tracking-tight ${isDark ? "border-white/70 bg-white/10 text-white" : "border-slate-200 bg-white text-slate-700"
-                                                }`}
-                                            >
-                                                <span
-                                                    className={`h-2 w-2 rounded-full ${detail.badge.tone === "emerald" ? "bg-emerald-400" : "bg-cyan-400"}`}
-                                                />
-                                                {detail.badge.text}
-                                            </div>
-                                            <motion.button
-                                                onClick={() => setIsModalOpen(false)}
-                                                aria-label="Close"
-                                                whileHover={{ scale: 1.08 }}
-                                                whileTap={{ scale: 0.95 }}
-                                                className={`relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border transition-all duration-300 ${isDark
-                                                    ? "bg-slate-800/50 border-white/15 hover:border-cyan-500/50"
-                                                    : "bg-white/80 border-slate-200 hover:border-emerald-500/50 shadow-lg"
-                                                }`}
-                                            >
-                                                <motion.div
-                                                    className={`absolute inset-0 rounded-full blur-xl opacity-50 ${isDark ? "bg-cyan-500" : "bg-emerald-400"}`}
-                                                    animate={{ scale: [1, 1.2, 1], opacity: [0.25, 0.4, 0.25] }}
-                                                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                                                />
-                                                <span className="relative">
-                                                    <X className={`h-5 w-5 ${isDark ? "text-white" : "text-slate-700"}`} />
-                                                </span>
-                                            </motion.button>
-                                        </div>
-
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ duration: 0.4, ease: "easeOut" }}
-                                            className={`relative overflow-hidden rounded-2xl border px-5 py-4 ${isDark
-                                                ? "border-white/10 bg-gradient-to-r from-cyan-500/10 via-emerald-500/10 to-transparent"
-                                                : "border-slate-200 bg-gradient-to-r from-emerald-50 via-cyan-50 to-white"
+                                    <motion.div
+                                        className="portfolio-modal no-scroll-bounce m-2 max-h-[calc(88vh-16px)] overflow-y-auto overflow-x-hidden rounded-[18px] p-5 sm:p-7"
+                                        initial="hidden"
+                                        animate="show"
+                                        variants={{
+                                            hidden: {},
+                                            show: { transition: { staggerChildren: 0.055, delayChildren: 0.04 } },
+                                        }}
+                                    >
+                                        <motion.button
+                                            onClick={() => setIsModalOpen(false)}
+                                            aria-label="Close"
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.96 }}
+                                            className={`absolute right-5 top-5 z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border sm:right-7 sm:top-7 ${
+                                                isDark
+                                                    ? "border-white/10 bg-white/[0.08] text-white hover:bg-white/[0.12]"
+                                                    : "border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-50"
                                             }`}
                                         >
-                                            <motion.div
-                                                className="absolute -left-10 -top-16 h-32 w-48 rounded-full blur-3xl"
-                                                animate={{ opacity: [0.25, 0.5, 0.25], scale: [1, 1.08, 1] }}
-                                                transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-                                                style={{
-                                                    background:
-                                                        detail.badge.tone === "emerald"
-                                                            ? "radial-gradient(circle, rgba(52,211,153,0.45), transparent 55%)"
-                                                            : "radial-gradient(circle, rgba(34,211,238,0.45), transparent 55%)",
-                                                }}
-                                            />
-                                            <motion.div
-                                                className="absolute inset-x-0 top-0 h-px"
-                                                initial={{ scaleX: 0 }}
-                                                animate={{ scaleX: 1 }}
-                                                transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
-                                            >
-                                                <div
-                                                    className={`h-px w-full ${detail.badge.tone === "emerald"
-                                                        ? "bg-gradient-to-r from-emerald-400 via-cyan-300 to-transparent"
-                                                        : "bg-gradient-to-r from-cyan-300 via-emerald-300 to-transparent"
-                                                    }`}
-                                                />
-                                            </motion.div>
-                                            <div className="relative space-y-2">
-                                                <h2 className={`text-3xl sm:text-4xl font-bold leading-snug ${textPrimary}`}>{detail.title}</h2>
-                                                <p className={`text-base sm:text-lg ${textSecondary}`}>{detail.summary}</p>
-                                            </div>
-                                        </motion.div>
+                                            <X className="h-5 w-5" />
+                                        </motion.button>
 
-                                        <div
-                                            className="grid gap-6 lg:grid-cols-[1.3fr_0.9fr] items-start lg:items-stretch">
-                                            <motion.div
-                                                initial={{ opacity: 0, scale: 0.97 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                transition={{ duration: 0.4 }}
-                                                className={`relative h-full min-h-[280px] sm:min-h-[320px] md:min-h-[360px] max-h-[560px] md:max-h-[480px] overflow-hidden rounded-2xl border ${isDark
-                                                    ? "border-white/10 bg-white/5"
-                                                    : "border-slate-200 bg-white shadow-sm"
-                                                }`}
-                                            >
-                                                <div
-                                                    className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
-                                                <AnimatePresence mode="wait">
-                                                    {activeSrc && (
-                                                        <motion.img
-                                                            key={`${project.slug ?? detail.title}-${safeIndex}-${activeSrc}`}
-                                                            src={activeSrc}
-                                                            alt={detail.imageLabel}
-                                                            initial={{ opacity: 0, x: 40 }}
-                                                            animate={{ opacity: 1, x: 0 }}
-                                                            exit={{ opacity: 0, x: -40 }}
-                                                            transition={{ duration: 0.45, ease: "easeOut" }}
-                                                            className="absolute inset-0 h-full w-full object-contain lg:object-cover"
-                                                        />
-                                                    )}
-                                                </AnimatePresence>
-                                                <div className="absolute inset-x-0 bottom-0 p-4">
-                                                    {slides.length > 1 && (
-                                                        <div className="flex items-center justify-center">
-                                                            <div
-                                                                className="flex items-center gap-3 rounded-full bg-black/70 px-4 py-2 backdrop-blur">
-                                                                <button
-                                                                    onClick={() => handlePrev(slides.length)}
-                                                                    className="p-1.5 rounded-full text-white/80 hover:text-white transition-colors"
-                                                                    aria-label="Previous image"
-                                                                >
-                                                                    <ChevronLeft className="h-4 w-4" />
-                                                                </button>
-                                                                <div className="flex items-center gap-2">
-                                                                    {slides.map((_, dotIndex) => (
-                                                                        <button
-                                                                            key={dotIndex}
-                                                                            onClick={() => setActiveSlide(dotIndex)}
-                                                                            className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${dotIndex === safeIndex
-                                                                                ? "bg-white"
-                                                                                : "bg-white/40"
-                                                                            }`}
-                                                                            aria-label={`Go to image ${dotIndex + 1}`}
-                                                                        />
-                                                                    ))}
-                                                                </div>
-                                                                <button
-                                                                    onClick={() => handleNext(slides.length)}
-                                                                    className="p-1.5 rounded-full text-white/80 hover:text-white transition-colors"
-                                                                    aria-label="Next image"
-                                                                >
-                                                                    <ChevronRight className="h-4 w-4" />
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </motion.div>
-
-                                            <div className="space-y-4">
-                                                <div className={`rounded-2xl border p-6 ${panelSurface}`}>
-                                                    <h4 className={`mb-3 text-lg font-semibold ${textPrimary}`}>Tech
-                                                        Stack</h4>
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {detail.tech.map((tech) => (
-                                                            <motion.span
-                                                                key={tech}
-                                                                whileHover={{ scale: 1.1 }}
-                                                                initial={{ opacity: 0, scale: 0.9 }}
-                                                                whileInView={{ opacity: 1, scale: 1 }}
-                                                                viewport={{ once: true }}
-                                                                transition={{ duration: 0.2 }}
-                                                                className={`rounded-full px-2.5 py-1 text-xs font-medium cursor-default ${isDark
-                                                                    ? "bg-cyan-500/10 text-cyan-300"
-                                                                    : "bg-emerald-100 text-emerald-700"
-                                                                }`}
-                                                            >
-                                                                {tech}
-                                                            </motion.span>
-                                                        ))}
-                                                    </div>
-                                                </div>
-
-                                                <div className={`rounded-2xl border p-6 ${panelSurface}`}>
-                                                    <div className="flex items-center justify-between gap-3 mb-2">
-                                                        <h4 className={`text-lg font-semibold leading-none ${textPrimary}`}>Try
-                                                            it</h4>
-                                                        <span
-                                                            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold leading-none cursor-default ${isDark
-                                                                ? "bg-cyan-500/15 text-cyan-100 border border-cyan-400/40"
-                                                                : "bg-cyan-100 text-cyan-800 border border-cyan-200"
-                                                            }`}
-                                                        >
-                                                            Live &amp; Code
-                                                        </span>
-                                                    </div>
-                                                    <p className={`mb-4 text-sm ${textSecondary}`}>
-                                                        Choose the live flow to feel the UX, or open the repo to inspect
-                                                        patterns and architecture.
-                                                    </p>
-                                                    <div className="grid gap-2 sm:grid-cols-2">
-                                                        <motion.a
-                                                            href={isLiveAvailable ? project.liveUrl : undefined}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            whileHover={{ scale: 1.02, y: -2 }}
-                                                            whileTap={{ scale: 0.98 }}
-                                                            aria-disabled={!isLiveAvailable}
-                                                            className={`inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all border ${isLiveAvailable
-                                                                ? isDark
-                                                                    ? "bg-gradient-to-r from-emerald-500/30 to-cyan-500/30 text-emerald-50 hover:from-emerald-500/40 hover:to-cyan-500/40 border-emerald-400/50 shadow-lg shadow-emerald-500/15"
-                                                                    : "bg-gradient-to-r from-emerald-500 to-cyan-500 text-white hover:from-emerald-600 hover:to-cyan-600 shadow-md shadow-emerald-300/30"
-                                                                : isDark
-                                                                    ? "bg-white/5 text-white/60 border-white/10 cursor-not-allowed"
-                                                                    : "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
-                                                            }`}
-                                                            onClick={(event) => handleActionClick(event, isLiveAvailable, "live")}
-                                                        >
-                                                            <ExternalLink className="w-4 h-4" />
-                                                            Live demo
-                                                        </motion.a>
-                                                        <motion.a
-                                                            href={isCodeAvailable ? project.githubUrl : undefined}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            whileHover={{ scale: 1.02, y: -2 }}
-                                                            whileTap={{ scale: 0.98 }}
-                                                            aria-disabled={!isCodeAvailable}
-                                                            className={`inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all border ${isCodeAvailable
-                                                                ? isDark
-                                                                    ? "bg-white/10 text-white hover:bg-white/15 border-white/25 shadow-lg shadow-cyan-500/15"
-                                                                    : "bg-slate-900 text-white hover:bg-slate-800 border-slate-800 shadow-md"
-                                                                : isDark
-                                                                    ? "bg-white/5 text-white/60 border-white/10 cursor-not-allowed"
-                                                                    : "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
-                                                            }`}
-                                                            onClick={(event) => handleActionClick(event, isCodeAvailable, "code")}
-                                                        >
-                                                            <Github className="w-4 h-4" />
-                                                            View code
-                                                        </motion.a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className={`rounded-2xl border p-6 ${panelSurface}`}>
-                                            <h3 className={`mb-3 text-xl font-semibold ${textPrimary}`}>Key
-                                                features</h3>
-                                            <div className="space-y-3 text-sm">
-                                                {detail.features.map((item, idx) => (
-                                                    <div
-                                                        key={item}
-                                                        className={`flex items-center gap-3 ${isDark ? "text-white/80" : "text-slate-700"}`}
+                                        <motion.header
+                                            className="pr-14 sm:pr-16"
+                                            variants={{
+                                                hidden: { opacity: 0, y: 12 },
+                                                show: { opacity: 1, y: 0, transition: { duration: 0.34, ease: "easeOut" } },
+                                            }}
+                                        >
+                                            <h2 className={`max-w-3xl text-3xl font-bold leading-tight sm:text-4xl ${textPrimary}`}>
+                                                {detail.title}
+                                            </h2>
+                                            <p className={`mt-3 max-w-3xl text-base leading-7 ${textSecondary}`}>
+                                                {detail.summary}
+                                            </p>
+                                            <div className="mt-5 flex max-w-3xl flex-wrap gap-2">
+                                                {detail.tech.map((tech) => (
+                                                    <span
+                                                        key={tech}
+                                                        className={`rounded-full px-3 py-1.5 text-xs font-medium ${
+                                                            isDark
+                                                                ? "bg-[#1b2a31] text-[#d9ebe7] ring-1 ring-[#6fa79b]/20"
+                                                                : "bg-[#e6eee9] text-[#28544b] ring-1 ring-[#cbd9d0]"
+                                                        }`}
                                                     >
-                                                        <motion.span
-                                                            className={`flex h-6 w-6 items-center justify-center rounded-full border-[2px] ${isDark
-                                                                ? "border-emerald-400 bg-emerald-500/10"
-                                                                : "border-emerald-500/80 bg-emerald-50"
-                                                            }`}
-                                                            animate={{ scale: [1, 1.06, 1] }}
-                                                            transition={{
-                                                                duration: 2,
-                                                                repeat: Infinity,
-                                                                ease: "easeInOut",
-                                                                delay: idx * 0.08,
-                                                            }}
-                                                        >
-                                                            <Check
-                                                                className={`h-3.5 w-3.5 ${isDark ? "text-emerald-300" : "text-emerald-600"}`} />
-                                                        </motion.span>
-                                                        <span>{item}</span>
-                                                    </div>
+                                                        {tech}
+                                                    </span>
                                                 ))}
                                             </div>
+                                        </motion.header>
+
+                                        <div className="mt-7 grid gap-6 lg:grid-cols-[minmax(0,0.98fr)_minmax(280px,0.82fr)]">
+                                            <motion.section
+                                                className="min-w-0"
+                                                variants={{
+                                                    hidden: { opacity: 0, y: 16 },
+                                                    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 320, damping: 30 } },
+                                                }}
+                                            >
+                                                <ProjectImageCarousel
+                                                    slides={slides}
+                                                    imageLabel={detail.imageLabel}
+                                                />
+
+                                                <div className="mt-5 flex flex-wrap gap-3">
+                                                    <motion.a
+                                                        href={isLiveAvailable ? project.liveUrl : undefined}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        whileHover={isLiveAvailable ? { y: -1 } : undefined}
+                                                        whileTap={isLiveAvailable ? { scale: 0.98 } : undefined}
+                                                        aria-disabled={!isLiveAvailable}
+                                                        className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-colors ${
+                                                            isLiveAvailable
+                                                                ? "bg-[#2f7f74] text-white hover:bg-[#286f66]"
+                                                                : isDark
+                                                                    ? "bg-white/5 text-white/45"
+                                                                    : "bg-slate-100 text-slate-400"
+                                                        }`}
+                                                        onClick={(event) => handleActionClick(event, isLiveAvailable, "live")}
+                                                    >
+                                                        <ExternalLink className="h-4 w-4" />
+                                                        Live demo
+                                                    </motion.a>
+                                                    <motion.a
+                                                        href={isCodeAvailable ? project.githubUrl : undefined}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        whileHover={isCodeAvailable ? { y: -1 } : undefined}
+                                                        whileTap={isCodeAvailable ? { scale: 0.98 } : undefined}
+                                                        aria-disabled={!isCodeAvailable}
+                                                        className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-colors ${
+                                                            isCodeAvailable
+                                                                ? isDark
+                                                                    ? "bg-white/10 text-white hover:bg-white/15"
+                                                                    : "bg-slate-900 text-white hover:bg-slate-800"
+                                                                : isDark
+                                                                    ? "bg-white/5 text-white/45"
+                                                                    : "bg-slate-100 text-slate-400"
+                                                        }`}
+                                                        onClick={(event) => handleActionClick(event, isCodeAvailable, "code")}
+                                                    >
+                                                        <Github className="h-4 w-4" />
+                                                        View code
+                                                    </motion.a>
+                                                </div>
+                                            </motion.section>
+
+                                            <motion.aside
+                                                className="min-w-0"
+                                                variants={{
+                                                    hidden: { opacity: 0, y: 16 },
+                                                    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 320, damping: 30 } },
+                                                }}
+                                            >
+                                                <motion.section className={`rounded-2xl border p-5 ${panelSurface}`} layout>
+                                                    <h3 className={`mb-3 text-sm font-semibold uppercase tracking-[0.18em] ${isDark ? "text-white/50" : "text-slate-500"}`}>
+                                                        Highlights
+                                                    </h3>
+                                                    <div className="space-y-3 text-sm">
+                                                        {detail.features.map((item) => (
+                                                            <div
+                                                                key={item}
+                                                                className={`flex items-start gap-3 leading-6 ${
+                                                                    isDark ? "text-white/76" : "text-slate-700"
+                                                                }`}
+                                                            >
+                                                                <span className={bulletDot} />
+                                                                <span>{renderBoldText(item)}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </motion.section>
+                                            </motion.aside>
                                         </div>
-                                    </div>
+                                    </motion.div>
                                 );
                             })()}
                         </motion.div>
@@ -657,29 +752,43 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                 )}
             </AnimatePresence>
 
-            <div className="pointer-events-none fixed bottom-4 right-4 z-[60] flex w-[320px] flex-col gap-3">
+            <div className="pointer-events-none fixed bottom-5 right-5 z-[90] h-28 w-[min(360px,calc(100vw-40px))]">
                 <AnimatePresence>
-                    {notifications.map((note) => (
+                    {notifications.slice(-3).reverse().map((note, stackIndex) => (
                         <motion.div
                             key={note.id}
-                            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 10, scale: 0.96 }}
-                            transition={{ duration: 0.25, ease: "easeOut" }}
+                            initial={{ opacity: 0, y: 24, scale: 0.96 }}
+                            animate={{
+                                opacity: stackIndex === 0 ? 1 : 0.58,
+                                y: stackIndex * -10,
+                                scale: 1 - stackIndex * 0.045,
+                            }}
+                            exit={{ opacity: 0, y: 18, scale: 0.96 }}
+                            transition={{ type: "spring", stiffness: 460, damping: 34, mass: 0.8 }}
                             layout
-                            className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-xl backdrop-blur ${isDark ? "bg-slate-900/90 border-white/10 text-white" : "bg-white/95 border-slate-200 text-slate-900"}`}
+                            style={{ zIndex: 3 - stackIndex }}
+                            className={`absolute bottom-0 right-0 w-full overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-xl ${
+                                stackIndex === 0 ? "pointer-events-auto" : "pointer-events-none"
+                            } ${
+                                isDark
+                                    ? "border-white/12 bg-[#0b1224]/92 text-white"
+                                    : "border-slate-200 bg-white/96 text-slate-900"
+                            }`}
                             role="status"
                         >
-                            <div
-                                className={`h-1 w-full ${isDark ? "bg-gradient-to-r from-emerald-400 via-cyan-400 to-transparent" : "bg-gradient-to-r from-emerald-500 via-cyan-500 to-transparent"}`} />
-                            <div className="flex items-start gap-3 px-4 py-3">
+                            <div className={`h-px w-full ${isDark ? "bg-[#6fa79b]/60" : "bg-[#2f7f74]/45"}`} />
+                            <div className="flex items-start gap-3 px-3.5 py-3">
                                 <span
-                                    className={`mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl border ${isDark ? "border-white/10 bg-white/5 text-emerald-100" : "border-emerald-100 bg-emerald-50 text-emerald-700"}`}>
+                                    className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${
+                                        isDark
+                                            ? "border-[#6fa79b]/20 bg-[#6fa79b]/10 text-[#d9ebe7]"
+                                            : "border-[#cbd9d0] bg-[#edf3ee] text-[#28544b]"
+                                    }`}>
                                     <Ban className="h-4 w-4" />
                                 </span>
-                                <div className="flex-1 space-y-1">
-                                    <p className="text-sm font-semibold leading-none">{note.title}</p>
-                                    <p className={`text-xs leading-relaxed ${isDark ? "text-white/70" : "text-slate-600"}`}>{note.message}</p>
+                                <div className="min-w-0 flex-1 space-y-1">
+                                    <p className="text-sm font-semibold leading-tight">{note.title}</p>
+                                    <p className={`text-xs leading-relaxed ${isDark ? "text-white/62" : "text-slate-600"}`}>{note.message}</p>
                                 </div>
                                 <button
                                     type="button"

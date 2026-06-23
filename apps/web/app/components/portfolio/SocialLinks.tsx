@@ -8,7 +8,7 @@
 
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Github, Linkedin, Instagram, Mail, LucideIcon } from "lucide-react";
 
 interface SocialLink {
@@ -23,25 +23,25 @@ const socialLinks: SocialLink[] = [
         icon: Github,
         href: "https://github.com/genelin0128",
         label: "GitHub",
-        hoverColor: "hover:bg-gray-700 hover:border-gray-600",
+        hoverColor: "hover:bg-[#2f7f74] hover:border-[#2f7f74]",
     },
     {
         icon: Linkedin,
         href: "https://www.linkedin.com/in/gene0128/",
         label: "LinkedIn",
-        hoverColor: "hover:bg-blue-600 hover:border-blue-500",
+        hoverColor: "hover:bg-[#2f7f74] hover:border-[#2f7f74]",
     },
     {
         icon: Instagram,
         href: "https://www.instagram.com/geneeeeeelin/",
         label: "Instagram",
-        hoverColor: "hover:bg-pink-500 hover:border-pink-400",
+        hoverColor: "hover:bg-[#2f7f74] hover:border-[#2f7f74]",
     },
     {
         icon: Mail,
-        href: "mailto:genelin@gene-software.com",
+        href: "mailto:chingyao.work@gmail.com",
         label: "Email",
-        hoverColor: "hover:bg-red-500 hover:border-red-400",
+        hoverColor: "hover:bg-[#2f7f74] hover:border-[#2f7f74]",
     },
 ];
 
@@ -104,7 +104,7 @@ export default function SocialLinks({ isDark, size = "md", showLabels = false }:
                         variants={itemVariants}
                         whileHover={{ y: -4, scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
-                        className={`group relative ${sizeClasses[size]} rounded-full transition-all duration-300 ${isDark ? `bg-white/5 border border-white/10 ${social.hoverColor}` : `bg-white border border-slate-200 shadow-sm ${social.hoverColor}`}`}
+                        className={`group relative ${sizeClasses[size]} rounded-full transition-all duration-300 ${isDark ? `bg-white/5 border border-white/10 ${social.hoverColor}` : `bg-white border border-[#d8d2c7] shadow-sm ${social.hoverColor}`}`}
                         aria-label={social.label}
                     >
                         {/* Icon */}

@@ -8,8 +8,8 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, type MouseEvent as ReactMouseEvent } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { Menu, X } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
@@ -21,14 +21,14 @@ interface NavItem {
 const navItems: NavItem[] = [
     { name: "Home", href: "#home" },
     { name: "About", href: "#about" },
-    { name: "Projects", href: "#projects" },
     { name: "Experience", href: "#experience" },
+    { name: "Projects", href: "#projects" },
     { name: "Contact", href: "#contact" },
 ];
 
 interface NavBarProps {
     isDark: boolean;
-    onThemeToggle: () => void;
+    onThemeToggle: (event: ReactMouseEvent<HTMLButtonElement>) => void;
     onNavClick?: (href: string) => void;
 }
 
@@ -95,13 +95,9 @@ export default function NavBar({ isDark, onThemeToggle, onNavClick }: NavBarProp
         setIsMobileMenuOpen(false);
     };
 
-    const navBgClass = isDark
-        ? isScrolled
-            ? "bg-[#0a0a0f]/80 backdrop-blur-xl border-b border-white/5"
-            : ""
-        : isScrolled
-            ? "bg-white/80 backdrop-blur-xl border-b border-slate-200 shadow-sm"
-            : "";
+    const glassShell = isDark
+        ? "border-white/10 bg-[#07111e]/72 text-white shadow-[0_18px_60px_rgba(0,0,0,0.28)]"
+        : "border-slate-200/80 bg-white/[0.82] text-slate-800 shadow-[0_18px_55px_rgba(15,23,42,0.12)]";
 
     return (
         <>
@@ -109,10 +105,9 @@ export default function NavBar({ isDark, onThemeToggle, onNavClick }: NavBarProp
                 initial={{ y: -100 }}
                 animate={{ y: 0 }}
                 transition={{ duration: 0.6, ease: "easeOut" }}
-                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBgClass}`}
+                className="pointer-events-none fixed left-0 right-0 top-3 z-50 px-3 sm:top-4 sm:px-4"
             >
-                <div className="max-w-6xl mx-auto px-6 py-4">
-                    <div className="flex items-center justify-between">
+                <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
                         {/* Logo */}
                         <motion.a
                             href="#home"
@@ -120,15 +115,19 @@ export default function NavBar({ isDark, onThemeToggle, onNavClick }: NavBarProp
                                 e.preventDefault();
                                 handleNav("#home");
                             }}
-                            className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-emerald-500 bg-clip-text text-transparent"
+                            className={`pointer-events-auto inline-flex h-11 items-center rounded-full border px-4 text-sm font-bold backdrop-blur-xl transition-all duration-300 sm:h-12 sm:px-5 sm:text-base ${glassShell} ${
+                                isScrolled ? "translate-y-0" : ""
+                            }`}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                         >
-                            Gene Lin
+                            <span className={isDark ? "text-[#d9ebe7]" : "text-[#28544b]"}>
+                                Gene Lin
+                            </span>
                         </motion.a>
 
                         {/* Desktop Navigation */}
-                        <div className="hidden md:flex items-center gap-8">
+                        <div className={`pointer-events-auto hidden h-12 items-center gap-1 rounded-full border px-1.5 backdrop-blur-xl transition-all duration-300 md:flex ${glassShell}`}>
                             {navItems.map((item) => {
                                 const isActive = activeSection === item.href.slice(1);
                                 return (
@@ -139,34 +138,37 @@ export default function NavBar({ isDark, onThemeToggle, onNavClick }: NavBarProp
                                             e.preventDefault();
                                             handleNav(item.href);
                                         }}
-                                        className={`
-                      text-sm relative group transition-colors duration-300
-                      ${isDark
-                                                ? isActive
-                                                    ? "text-cyan-400"
-                                                    : "text-white/60 hover:text-white"
-                                                : isActive
-                                                    ? "text-emerald-600"
-                                                    : "text-slate-600 hover:text-slate-900"
-                                            }
-                    `}
+                                        className={`relative rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300 ${
+                                            isActive
+                                                ? isDark
+                                                    ? "text-[#d9ebe7]"
+                                                    : "text-slate-900"
+                                                : isDark
+                                                    ? "text-white/62 hover:text-white"
+                                                    : "text-slate-500 hover:text-slate-900"
+                                        }`}
                                     >
+                                        {isActive && (
+                                            <motion.span
+                                                layoutId="nav-active-pill"
+                                                className={`absolute inset-0 rounded-full ${
+                                                    isDark
+                                                        ? "bg-[#6fa79b]/16 ring-1 ring-[#6fa79b]/22"
+                                                        : "bg-[#e6eee9] ring-1 ring-[#cbd9d0]"
+                                                }`}
+                                                transition={{ type: "spring", stiffness: 460, damping: 34 }}
+                                            />
+                                        )}
+                                        <span className="relative z-10">
                                         {item.name}
-                                        <motion.span
-                                            className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-emerald-500"
-                                            initial={{ width: 0 }}
-                                            animate={{ width: isActive ? "100%" : 0 }}
-                                            transition={{ duration: 0.3 }}
-                                        />
-                                        <span
-                                            className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-emerald-500 group-hover:w-full transition-all duration-300" />
+                                        </span>
                                     </a>
                                 );
                             })}
                         </div>
 
                         {/* Right side actions */}
-                        <div className="flex items-center gap-4">
+                        <div className="pointer-events-auto flex items-center gap-2">
                             <ThemeToggle isDark={isDark} onToggle={onThemeToggle} />
 
                             {/* Hire Me Button - Desktop */}
@@ -176,7 +178,7 @@ export default function NavBar({ isDark, onThemeToggle, onNavClick }: NavBarProp
                                     e.preventDefault();
                                     handleNav("#contact");
                                 }}
-                                className="hidden md:block px-5 py-2.5 text-sm font-medium bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-full text-white hover:shadow-lg hover:shadow-cyan-500/25 transition-all duration-300"
+                                className="hidden h-12 items-center rounded-full bg-[#2f7f74] px-5 text-sm font-semibold text-white shadow-lg shadow-[#2f7f74]/18 transition-all duration-300 hover:bg-[#286f66] hover:shadow-[#2f7f74]/25 lg:inline-flex"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                             >
@@ -186,8 +188,7 @@ export default function NavBar({ isDark, onThemeToggle, onNavClick }: NavBarProp
                             {/* Mobile Menu Button */}
                             <button
                                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                                className={`md:hidden p-2 transition-colors ${isDark ? "text-white/70 hover:text-white" : "text-slate-600 hover:text-slate-900"
-                                    }`}
+                                className={`grid h-11 w-11 place-items-center rounded-full border backdrop-blur-xl transition-colors sm:h-12 sm:w-12 md:hidden ${glassShell}`}
                                 aria-label="Toggle mobile menu"
                             >
                                 <AnimatePresence mode="wait">
@@ -215,7 +216,6 @@ export default function NavBar({ isDark, onThemeToggle, onNavClick }: NavBarProp
                                 </AnimatePresence>
                             </button>
                         </div>
-                    </div>
                 </div>
             </motion.nav>
 
@@ -227,10 +227,9 @@ export default function NavBar({ isDark, onThemeToggle, onNavClick }: NavBarProp
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className={`fixed inset-0 z-40 md:hidden pt-20 ${isDark ? "bg-[#0a0a0f]/95 backdrop-blur-xl" : "bg-white/95 backdrop-blur-xl"
-                            }`}
+                        className={`fixed inset-x-4 top-20 z-40 overflow-hidden rounded-3xl border p-4 backdrop-blur-xl md:hidden ${glassShell}`}
                     >
-                        <div className="flex flex-col items-center gap-8 p-8">
+                        <div className="flex flex-col gap-2">
                             {navItems.map((item, index) => (
                                 <motion.a
                                     key={item.name}
@@ -243,8 +242,15 @@ export default function NavBar({ isDark, onThemeToggle, onNavClick }: NavBarProp
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: 30 }}
                                     transition={{ delay: index * 0.1 }}
-                                    className={`text-2xl transition-colors ${isDark ? "text-white/80 hover:text-white" : "text-slate-700 hover:text-slate-900"
-                                        }`}
+                                    className={`rounded-2xl px-4 py-3 text-base font-medium transition-colors ${
+                                        activeSection === item.href.slice(1)
+                                            ? isDark
+                                                ? "bg-[#6fa79b]/16 text-[#d9ebe7]"
+                                                : "bg-[#e6eee9] text-[#28544b]"
+                                            : isDark
+                                                ? "text-white/76 hover:bg-white/[0.08] hover:text-white"
+                                                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                                    }`}
                                 >
                                     {item.name}
                                 </motion.a>
@@ -258,7 +264,7 @@ export default function NavBar({ isDark, onThemeToggle, onNavClick }: NavBarProp
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.5 }}
-                                className="mt-4 px-8 py-3 text-lg font-medium bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-full text-white"
+                                className="mt-2 rounded-2xl bg-[#2f7f74] px-4 py-3 text-center text-base font-semibold text-white"
                             >
                                 Hire Me
                             </motion.a>

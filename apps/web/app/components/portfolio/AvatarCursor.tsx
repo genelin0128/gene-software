@@ -9,7 +9,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, useSpring, useMotionValue, SpringOptions } from "framer-motion";
+import { motion, useSpring, useMotionValue, SpringOptions } from "motion/react";
 import Image from "next/image";
 
 interface AvatarCursorProps {
@@ -17,7 +17,10 @@ interface AvatarCursorProps {
     avatarSrc: string;
 }
 
+const HOVER_FINE_POINTER_MEDIA_QUERY = "(hover: hover) and (pointer: fine)";
+
 export default function AvatarCursor({ isActive, avatarSrc }: AvatarCursorProps) {
+    const [canUseCursor, setCanUseCursor] = useState(false);
     const cursorX = useMotionValue(0);
     const cursorY = useMotionValue(0);
 
@@ -43,13 +46,15 @@ export default function AvatarCursor({ isActive, avatarSrc }: AvatarCursorProps)
         };
     }, [cursorX, cursorY, isActive]);
 
-    // Hide on mobile/touch devices
-    const [isMobile, setIsMobile] = useState(false);
     useEffect(() => {
-        setIsMobile("ontouchstart" in window);
+        const media = window.matchMedia(HOVER_FINE_POINTER_MEDIA_QUERY);
+        const update = () => setCanUseCursor(media.matches);
+        update();
+        media.addEventListener("change", update);
+        return () => media.removeEventListener("change", update);
     }, []);
 
-    if (isMobile || !isActive) return null;
+    if (!canUseCursor || !isActive) return null;
 
     return (
         <div className="fixed inset-0 pointer-events-none z-[10000]">
@@ -70,22 +75,11 @@ export default function AvatarCursor({ isActive, avatarSrc }: AvatarCursorProps)
                 transition={{ duration: 0.3 }}
             >
                 {/* Glow effect - behind avatar */}
-                <motion.div
-                    className="absolute w-40 h-40 rounded-full bg-cyan-400/20 blur-2xl -z-10"
-                    animate={{
-                        scale: [1, 1.2, 1],
-                        opacity: [0.5, 0.8, 0.5],
-                    }}
-                    transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                    }}
-                />
+                <div className="absolute -z-10 h-40 w-40 rounded-full bg-[#6fa79b]/20 blur-2xl" />
 
                 {/* Avatar image */}
                 <div
-                    className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl ring-4 ring-cyan-400/30">
+                    className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl ring-4 ring-[#6fa79b]/30">
                     <Image
                         src={avatarSrc}
                         alt="Avatar"

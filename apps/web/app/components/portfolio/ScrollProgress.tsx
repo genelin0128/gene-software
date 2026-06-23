@@ -9,7 +9,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, useScroll, useSpring } from "framer-motion";
+import { motion, useScroll, useSpring } from "motion/react";
 
 interface ScrollProgressProps {
     isDark: boolean;
@@ -46,11 +46,10 @@ export default function ScrollProgress({ isDark }: ScrollProgressProps) {
                 animate={{ opacity: isVisible ? 1 : 0 }}
                 transition={{ duration: 0.3 }}
             >
-                <div className="h-full bg-gradient-to-r from-cyan-400 via-emerald-400 to-lime-300" />
+                <div className="h-full bg-[#2f7f74]" />
 
                 {/* Glow effect */}
-                <div
-                    className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-emerald-400 to-lime-300 blur-sm opacity-50" />
+                <div className="absolute inset-0 bg-[#2f7f74] blur-sm opacity-40" />
             </motion.div>
 
             {/* Scroll to top button (raised above all UI layers) */}
@@ -67,7 +66,7 @@ export default function ScrollProgress({ isDark }: ScrollProgressProps) {
                         document.documentElement.scrollTop = 0;
                     }
                 }}
-                className={`fixed right-6 z-[60] p-3 rounded-full shadow-lg transition-all duration-300 touch-manipulation ${isDark ? "bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20" : "bg-white border border-slate-200 hover:bg-slate-50"}`}
+                className={`portfolio-back-to-top fixed right-6 z-[60] p-3 rounded-full shadow-lg transition-all duration-300 touch-manipulation ${isDark ? "bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20" : "bg-white border border-slate-200 hover:bg-slate-50"}`}
                 style={{
                     // Lift above mobile browser toolbars (safe areas) and keep reachable
                     bottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))",
@@ -78,13 +77,11 @@ export default function ScrollProgress({ isDark }: ScrollProgressProps) {
                 whileTap={{ scale: 0.9 }}
                 aria-label="Scroll to top"
             >
-                <motion.svg
+                <svg
                     className={`w-5 h-5 ${isDark ? "text-white" : "text-slate-700"}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
-                    animate={{ y: [0, -3, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
                 >
                     <path
                         strokeLinecap="round"
@@ -92,7 +89,7 @@ export default function ScrollProgress({ isDark }: ScrollProgressProps) {
                         strokeWidth={2}
                         d="M5 10l7-7m0 0l7 7m-7-7v18"
                     />
-                </motion.svg>
+                </svg>
             </motion.button>
         </>
     );

@@ -8,12 +8,13 @@
 
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { Sun, Moon } from "lucide-react";
+import type { MouseEvent as ReactMouseEvent } from "react";
 
 interface ThemeToggleProps {
     isDark: boolean;
-    onToggle: () => void;
+    onToggle: (event: ReactMouseEvent<HTMLButtonElement>) => void;
 }
 
 export default function ThemeToggle({ isDark, onToggle }: ThemeToggleProps) {
@@ -24,28 +25,18 @@ export default function ThemeToggle({ isDark, onToggle }: ThemeToggleProps) {
                 relative p-3 rounded-full overflow-hidden
                 transition-all duration-500
                 ${isDark
-                ? "bg-slate-800/50 border border-white/10 hover:border-cyan-500/50"
-                : "bg-white/80 border border-slate-200 hover:border-emerald-500/50 shadow-lg"}
+                ? "bg-[#101820]/72 border border-white/10 hover:border-[#6fa79b]/50"
+                : "bg-white/80 border border-[#d8d2c7] hover:border-[#6fa79b]/50 shadow-lg"}
             `}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             aria-label="Toggle theme"
         >
-            {/* Glow effect */}
-            <motion.div
+            <div
                 className={`
                     absolute inset-0 rounded-full blur-xl opacity-50
-                    ${isDark ? "bg-cyan-500" : "bg-yellow-400"}
+                    ${isDark ? "bg-[#6fa79b]" : "bg-[#d8b45a]"}
                 `}
-                animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.3, 0.5, 0.3],
-                }}
-                transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                }}
             />
 
             {/* Icon container */}
@@ -60,25 +51,15 @@ export default function ThemeToggle({ isDark, onToggle }: ThemeToggleProps) {
                             transition={{ duration: 0.3, ease: "easeOut" }}
                             className="absolute inset-0"
                         >
-                            <Moon className="w-5 h-5 text-cyan-400" />
+                            <Moon className="w-5 h-5 text-[#9acdc4]" />
 
-                            {/* Stars around moon */}
                             {[...Array(3)].map((_, i) => (
-                                <motion.div
+                                <div
                                     key={i}
                                     className="absolute w-1 h-1 bg-white rounded-full"
                                     style={{
                                         top: `${-5 + i * 8}px`,
                                         right: `${-8 + i * 4}px`,
-                                    }}
-                                    animate={{
-                                        opacity: [0, 1, 0],
-                                        scale: [0.5, 1, 0.5],
-                                    }}
-                                    transition={{
-                                        duration: 1.5,
-                                        repeat: Infinity,
-                                        delay: i * 0.3,
                                     }}
                                 />
                             ))}
@@ -94,14 +75,9 @@ export default function ThemeToggle({ isDark, onToggle }: ThemeToggleProps) {
                         >
                             <Sun className="w-5 h-5 text-amber-500" />
 
-                            {/* Sun rays */}
-                            <motion.div
-                                className="absolute inset-0"
-                                animate={{ rotate: 360 }}
-                                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                            >
+                            <div className="absolute inset-0">
                                 {[...Array(8)].map((_, i) => (
-                                    <motion.div
+                                    <div
                                         key={i}
                                         className="absolute w-0.5 h-2 bg-amber-400/60 rounded-full"
                                         style={{
@@ -110,18 +86,9 @@ export default function ThemeToggle({ isDark, onToggle }: ThemeToggleProps) {
                                             transformOrigin: "center -6px",
                                             transform: `rotate(${i * 45}deg) translateY(-100%)`,
                                         }}
-                                        animate={{
-                                            opacity: [0.4, 1, 0.4],
-                                            scaleY: [0.8, 1.2, 0.8],
-                                        }}
-                                        transition={{
-                                            duration: 1.5,
-                                            repeat: Infinity,
-                                            delay: i * 0.1,
-                                        }}
                                     />
                                 ))}
-                            </motion.div>
+                            </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -129,4 +96,3 @@ export default function ThemeToggle({ isDark, onToggle }: ThemeToggleProps) {
         </motion.button>
     );
 }
-

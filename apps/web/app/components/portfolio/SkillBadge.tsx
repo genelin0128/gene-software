@@ -8,7 +8,7 @@
 
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { LucideIcon } from "lucide-react";
 
 interface SkillBadgeProps {
@@ -34,9 +34,7 @@ export default function SkillBadge({ name, level, icon: Icon, delay = 0, isDark 
                 className={`
                     absolute inset-0 rounded-xl blur-xl transition-all duration-300
                     opacity-0 group-hover:opacity-100
-                    ${isDark
-                    ? "bg-gradient-to-r from-cyan-500/20 to-emerald-500/20"
-                    : "bg-gradient-to-r from-emerald-500/10 to-cyan-500/10"}
+                    ${isDark ? "bg-[#6fa79b]/12" : "bg-[#9aa89d]/12"}
                 `}
             />
 
@@ -45,17 +43,17 @@ export default function SkillBadge({ name, level, icon: Icon, delay = 0, isDark 
                     relative flex items-center gap-3 px-4 py-3 rounded-xl
                     transition-all duration-300 backdrop-blur-sm
                     ${isDark
-                    ? "bg-white/5 border border-white/10 hover:border-cyan-500/50"
-                    : "bg-white border border-slate-200 hover:border-emerald-500/50 shadow-sm"}
+                    ? "bg-white/5 border border-white/10 hover:border-[#6fa79b]/50"
+                    : "bg-white border border-[#d8d2c7] hover:border-[#6fa79b]/50 shadow-sm"}
                 `}
             >
                 {/* Icon with animated background */}
                 <motion.div
-                    className={`p-2 rounded-lg ${isDark ? "bg-cyan-500/10" : "bg-emerald-500/10"}`}
+                    className={`p-2 rounded-lg ${isDark ? "bg-[#1b2a31]" : "bg-[#e6eee9]"}`}
                     whileHover={{ rotate: [0, -10, 10, 0] }}
                     transition={{ duration: 0.5 }}
                 >
-                    <Icon className={`w-5 h-5 ${isDark ? "text-cyan-400" : "text-emerald-600"}`} />
+                    <Icon className={`w-5 h-5 ${isDark ? "text-[#9acdc4]" : "text-[#28544b]"}`} />
                 </motion.div>
 
                 <div className="flex-1">
@@ -72,15 +70,8 @@ export default function SkillBadge({ name, level, icon: Icon, delay = 0, isDark 
                             whileInView={{ width: `${level}%` }}
                             transition={{ duration: 1.2, delay: delay + 0.3, ease: "easeOut" }}
                             viewport={{ once: true }}
-                            className="h-full bg-gradient-to-r from-cyan-400 to-emerald-500 rounded-full relative overflow-hidden"
-                        >
-                            {/* Shimmer effect */}
-                            <motion.div
-                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                                animate={{ x: ["-100%", "100%"] }}
-                                transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-                            />
-                        </motion.div>
+                            className="h-full rounded-full bg-[#2f7f74]"
+                        />
                     </div>
                 </div>
 
@@ -98,4 +89,3 @@ export default function SkillBadge({ name, level, icon: Icon, delay = 0, isDark 
         </motion.div>
     );
 }
-

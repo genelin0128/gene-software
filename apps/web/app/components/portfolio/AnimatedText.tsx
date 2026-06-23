@@ -9,7 +9,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 interface TypewriterTextProps {
   texts: string[];
@@ -53,13 +53,13 @@ export function TypewriterText({ texts, className = '', isDark }: TypewriterText
 
   return (
     <span className={className}>
-      <span className={isDark ? 'text-cyan-400' : 'text-emerald-600'}>
+      <span className={isDark ? 'text-[#9acdc4]' : 'text-[#28544b]'}>
         {displayText}
       </span>
       <motion.span
         animate={{ opacity: [1, 0] }}
         transition={{ duration: 0.5, repeat: Infinity, repeatType: 'reverse' }}
-        className={isDark ? 'text-cyan-400' : 'text-emerald-600'}
+        className={isDark ? 'text-[#9acdc4]' : 'text-[#28544b]'}
       >
         │
       </motion.span>
@@ -87,9 +87,9 @@ export function SectionHeading({ title, highlightColor, isDark }: SectionHeading
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
       viewport={{ once: true }}
-      className="text-center mb-16"
+      className="text-center mb-10 sm:mb-14"
     >
-      <h2 className="text-4xl sm:text-5xl font-bold mb-4">
+      <h2 className="text-3xl sm:text-5xl font-bold mb-4">
         <span className={isDark ? 'text-white' : 'text-slate-800'}>
           {firstWords}{' '}
         </span>
@@ -104,9 +104,8 @@ export function SectionHeading({ title, highlightColor, isDark }: SectionHeading
         transition={{ duration: 0.8, delay: 0.3 }}
         viewport={{ once: true }}
       >
-        <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 to-emerald-500 rounded-full" />
+        <div className={`h-1 w-20 rounded-full ${isDark ? 'bg-[#6fa79b]' : 'bg-[#2f7f74]'}`} />
       </motion.div>
     </motion.div>
   );
 }
-

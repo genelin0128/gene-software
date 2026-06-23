@@ -1,0 +1,41 @@
+# Optional local Motion Studio MCP integration.
+# This public repo must never contain the actual Motion token. Set MOTION_TOKEN
+# in your local shell or Codex environment if you want these tools enabled.
+
+[mcp_servers.motion]
+command = "node"
+args = [
+  "--input-type=module",
+  "-e",
+  """
+import { spawn } from 'node:child_process';
+
+const motionToken = process.env.MOTION_TOKEN;
+if (!motionToken) {
+  console.error('MOTION_TOKEN is required to start the Motion MCP server.');
+  process.exit(1);
+}
+
+const npxCommand = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+const child = spawn(
+  npxCommand,
+  ['-y', 'https://api.motion.dev/registry.tgz?package=motion-studio-mcp&version=latest'],
+  {
+    stdio: 'inherit',
+    env: { ...process.env, TOKEN: motionToken },
+  },
+);
+
+child.on('exit', (code) => process.exit(code ?? 0));
+child.on('error', (error) => {
+  console.error(error.message);
+  process.exit(1);
+});
+"""
+]
+env_vars = ["MOTION_TOKEN"]
+startup_timeout_sec = 20
+tool_timeout_sec = 60
+
+[mcp_servers.motion.tools.search-motion-codex]
+approval_mode = "approve"

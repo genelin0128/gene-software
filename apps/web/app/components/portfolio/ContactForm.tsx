@@ -9,7 +9,7 @@
 "use client";
 
 import { useState, useEffect, FormEvent, ChangeEvent } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Textarea } from "@/app/components/ui/textarea";
@@ -142,8 +142,8 @@ export default function ContactForm({ isDark }: ContactFormProps) {
     const inputClasses = `
     h-12 transition-all duration-300
     ${isDark
-        ? "bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-cyan-500/50 focus:bg-white/10"
-        : "bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-emerald-500/50"
+        ? "bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#6fa79b]/55 focus:bg-white/10"
+        : "bg-white border-[#d8d2c7] text-[#1f2933] placeholder:text-[#8b938c] focus:border-[#6fa79b]/60"
     }
   `;
 
@@ -170,19 +170,14 @@ export default function ContactForm({ isDark }: ContactFormProps) {
                 />
 
                 {/* Background glow */}
-                <div
-                    className={`absolute inset-0 rounded-2xl blur-2xl ${isDark ? "bg-gradient-to-r from-cyan-500/5 to-emerald-500/5" : "bg-gradient-to-r from-emerald-500/5 to-cyan-500/5"}`} />
+                <div className={`absolute inset-0 rounded-2xl blur-2xl ${isDark ? "bg-[#6fa79b]/8" : "bg-[#9aa89d]/10"}`} />
 
                 <div
                     className={`relative p-8 rounded-2xl space-y-6 ${isDark ? "bg-white/5 backdrop-blur-sm border border-white/10" : "bg-white border border-slate-200 shadow-lg"}`}>
                     {/* Decorative corner sparkles */}
-                    <motion.div
-                        className="absolute -top-2 -right-2"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    >
-                        <Sparkles className={`w-6 h-6 ${isDark ? "text-cyan-400/50" : "text-emerald-400/50"}`} />
-                    </motion.div>
+                    <div className="absolute -top-2 -right-2">
+                        <Sparkles className={`w-6 h-6 ${isDark ? "text-[#9acdc4]/50" : "text-[#6fa79b]/60"}`} />
+                    </div>
 
                     {/* Form fields */}
                     <div className="grid sm:grid-cols-2 gap-6">
@@ -243,7 +238,7 @@ export default function ContactForm({ isDark }: ContactFormProps) {
                             onFocus={() => setFocusedField("message")}
                             onBlur={() => setFocusedField(null)}
                             placeholder="Tell me about your project..."
-                            className={`min-h-[150px] resize-none transition-all duration-300 ${isDark ? "bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-cyan-500/50 focus:bg-white/10" : "bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-emerald-500/50"}`}
+                            className={`min-h-[150px] resize-none transition-all duration-300 ${isDark ? "bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#6fa79b]/55 focus:bg-white/10" : "bg-white border-[#d8d2c7] text-[#1f2933] placeholder:text-[#8b938c] focus:border-[#6fa79b]/60"}`}
                             required
                         />
                     </motion.div>
@@ -259,7 +254,7 @@ export default function ContactForm({ isDark }: ContactFormProps) {
                 <Button
                     type="submit"
                     disabled={status === "sending" || status === "sent" || status === "cooldown" || cooldownSeconds > 0}
-                    className={`w-full h-12 font-medium transition-all duration-500 relative overflow-hidden ${status === "sent" ? "bg-green-500 hover:bg-green-500" : "bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400"} text-white disabled:opacity-80`}
+                    className={`w-full h-12 font-medium transition-all duration-500 relative overflow-hidden ${status === "sent" ? "bg-[#2f7f74] hover:bg-[#2f7f74]" : "bg-[#2f7f74] hover:bg-[#286f66]"} text-white disabled:opacity-80`}
                 >
                     {/* Button content based on status */}
                     <motion.span
@@ -330,15 +325,15 @@ export default function ContactForm({ isDark }: ContactFormProps) {
                     transition={{ type: "spring", stiffness: 260, damping: 20 }}
                     className={`pointer-events-auto w-80 rounded-2xl px-4 py-3 shadow-[0_10px_40px_-20px_rgba(0,0,0,0.4)] backdrop-blur-sm border ${
                         isDark
-                            ? "bg-gradient-to-r from-cyan-600/20 via-emerald-500/15 to-cyan-500/20 border-white/10 text-white"
-                            : "bg-gradient-to-r from-white via-emerald-50 to-cyan-50 border-emerald-100 text-slate-900"
+                            ? "bg-[#101820]/92 border-white/10 text-white"
+                            : "bg-white/96 border-[#d8d2c7] text-[#1f2933]"
                     }`}
                 >
                     <div className="flex flex-col gap-1.5">
                         <div className="flex items-center gap-2">
                             <div
                                 className={`h-2.5 w-2.5 rounded-full ${
-                                    isDark ? "bg-emerald-300 shadow-[0_0_0_6px_rgba(52,211,153,0.15)]" : "bg-emerald-500 shadow-[0_0_0_6px_rgba(16,185,129,0.12)]"
+                                    isDark ? "bg-[#9acdc4] shadow-[0_0_0_6px_rgba(111,167,155,0.16)]" : "bg-[#2f7f74] shadow-[0_0_0_6px_rgba(47,127,116,0.12)]"
                                 }`}
                             />
                             <div className="font-semibold tracking-tight leading-tight">Message received</div>

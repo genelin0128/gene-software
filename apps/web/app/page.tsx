@@ -7,7 +7,7 @@
  * Tech Stack:
  * - React 18
  * - Three.js for 3D graphics
- * - Framer Motion for animations
+ * - Motion for animations
  * - Tailwind CSS for styling
  * - Lucide React for icons
  *
@@ -15,11 +15,11 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import {
     Mail, ArrowDown,
-    Code2, Layers, Palette, Zap, Download, Sparkles, LucideIcon,
+    Code2, Layers, Palette, Zap, Download, Sparkles, LucideIcon, Database,
 } from "lucide-react";
 
 // Components
@@ -32,7 +32,6 @@ import ContactForm from "@/app/components/portfolio/ContactForm";
 import { TypewriterText, SectionHeading } from "@/app/components/portfolio/AnimatedText";
 import SocialLinks from "@/app/components/portfolio/SocialLinks";
 import ScrollProgress from "@/app/components/portfolio/ScrollProgress";
-import ParticleField from "@/app/components/portfolio/ParticleField";
 import CursorFollower from "@/app/components/portfolio/CursorFollower";
 import AvatarCursor from "@/app/components/portfolio/AvatarCursor";
 
@@ -50,7 +49,7 @@ interface Project {
     tech: string[];
     liveUrl: string;
     githubUrl: string;
-    slug?: "cardz" | "baccarat" | "portfolio" | "travel" | "poker";
+    slug?: "gatherpoint" | "cardz" | "baccarat" | "portfolio" | "travel" | "poker";
 }
 
 interface Experience {
@@ -66,24 +65,34 @@ interface Experience {
 const skills: Skill[] = [
     { name: "React / Next.js", level: 95, icon: Code2 },
     { name: "TypeScript / JavaScript", level: 92, icon: Code2 },
+    { name: "Node.js / Fastify", level: 88, icon: Zap },
+    { name: "PostgreSQL / Prisma", level: 86, icon: Database },
     { name: "Swift / SwiftUI", level: 84, icon: Layers },
-    { name: "Node.js / Express", level: 88, icon: Zap },
-    { name: "AWS Lambda / DynamoDB", level: 82, icon: Layers },
     { name: "Docker / CI/CD", level: 85, icon: Palette },
 ];
 
 const projects: Project[] = [
     {
+        title: "GatherPoint AI",
+        description:
+            "App-controlled AI discovery workflow with Next.js, Fastify, Azure OpenAI, PostgreSQL, pgvector retrieval, Redis rate limits, and Cloudflare R2 media lifecycle.",
+        image: "/projects/gatherpoint/gatherpoint-demo-detail-clean.png",
+        tech: ["TypeScript", "Next.js", "Fastify", "Azure OpenAI", "PostgreSQL", "Prisma", "pgvector", "Redis"],
+        liveUrl: "https://gatherpoint.ai/?feed=demo",
+        githubUrl: "#",
+        slug: "gatherpoint",
+    },
+    {
         title: "3D Motion Developer Portfolio",
-        description: "Next.js portfolio deployed at gene-software.com with a Three.js background, Framer Motion-driven hero, and modal project spotlights.",
+        description: "Next.js portfolio deployed at gene-software.com with a Three.js background, Motion-driven hero, and modal project spotlights.",
         image: "/projects/portfolio/portfolio-1.png",
-        tech: ["React", "Next.js", "TypeScript", "Three.js", "Framer Motion", "Tailwind CSS"],
+        tech: ["React", "Next.js", "TypeScript", "Three.js", "Motion", "Tailwind CSS"],
         liveUrl: "https://gene-software.com/",
         githubUrl: "https://github.com/genelin0128/gene-software",
         slug: "portfolio",
     },
     {
-        title: "iOS Poker Session Analytics & Social Platform",
+        title: "iOS Poker Session Tracking & Analytics App",
         description:
             "Swift iOS app with MVVM session analytics, social workflows, and a secure AWS serverless backend with RS256 JWT + OAuth 2.0 PKCE.",
         image: "/projects/poker/poker-1.png",
@@ -93,11 +102,11 @@ const projects: Project[] = [
         slug: "poker",
     },
     {
-        title: "AI-Driven Travel Recommendation Platform",
+        title: "AI Travel Itinerary Recommendation Platform",
         description:
-            "RAG-based travel planning system with context-aware recommendations, keyword retrieval, and distance-aware itinerary optimization.",
+            "Retrieval-augmented itinerary platform that combines user preferences, destination metadata, time windows, SQL feasibility scoring, and Google Maps signals.",
         image: "/projects/travel/travel-1.png",
-        tech: ["Python", "SQL", "OpenAI API", "RAG", "JavaScript", "Google Maps API"],
+        tech: ["Python", "SQL", "OpenAI API", "Google Maps API", "RAG"],
         liveUrl: "#",
         githubUrl: "#",
         slug: "travel",
@@ -143,7 +152,7 @@ const experiences: Experience[] = [
         location: "Irving, TX",
         duration: "May 2025 - August 2025",
         description:
-            "Designed an IDE-style internal prototyping platform with Monaco and delivered a Redux Toolkit UI Playroom that cut load latency by 45%.",
+            "Built an IDE-style internal prototyping platform and drag-and-drop UI Playroom with React, TypeScript, Next.js, Monaco Editor, Redux Toolkit, Docker, and AWS Amplify.",
         skills: ["React", "TypeScript", "Next.js", "Redux Toolkit", "Docker", "AWS Amplify"],
         slug: "paycom",
     },
@@ -160,42 +169,121 @@ const experiences: Experience[] = [
 ];
 
 const typewriterTexts: string[] = [
-    "Software Engineer",
+    "New Grad Software Engineer",
     "Full-Stack Developer",
+    "Agentic AI Builder",
     "iOS App Builder",
-    "Cloud-Native Engineer",
 ];
 
 export default function Home() {
     const [isDark, setIsDark] = useState(true);
+    const [backgroundIsDark, setBackgroundIsDark] = useState(true);
     const [isHoveringGreeting, setIsHoveringGreeting] = useState(false);
     const [isEmailRevealed, setIsEmailRevealed] = useState(false);
+    const [themeReveal, setThemeReveal] = useState<{
+        id: number;
+        x: number;
+        y: number;
+        radius: number;
+        nextIsDark: boolean;
+    } | null>(null);
+    const themeRevealTimeoutRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        if ("scrollRestoration" in window.history) {
+            window.history.scrollRestoration = "manual";
+        }
+
+        if (window.location.hash) return;
+
+        const resetScroll = () => window.scrollTo(0, 0);
+        let secondFrame = 0;
+
+        resetScroll();
+        const firstFrame = window.requestAnimationFrame(() => {
+            resetScroll();
+            secondFrame = window.requestAnimationFrame(resetScroll);
+        });
+        const timeout = window.setTimeout(resetScroll, 160);
+
+        return () => {
+            window.cancelAnimationFrame(firstFrame);
+            if (secondFrame) window.cancelAnimationFrame(secondFrame);
+            window.clearTimeout(timeout);
+        };
+    }, []);
 
     // Persist theme preference
     useEffect(() => {
         const savedTheme = localStorage.getItem("portfolio-theme");
         if (savedTheme) {
-            setIsDark(savedTheme === "dark");
+            const savedIsDark = savedTheme === "dark";
+            setIsDark(savedIsDark);
+            setBackgroundIsDark(savedIsDark);
         }
     }, []);
 
-    const handleThemeToggle = () => {
+    useEffect(() => {
+        return () => {
+            if (themeRevealTimeoutRef.current !== null) {
+                window.clearTimeout(themeRevealTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    const handleThemeToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
         const newTheme = !isDark;
+        const rect = event.currentTarget.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+        const radius = Math.hypot(
+            Math.max(x, window.innerWidth - x),
+            Math.max(y, window.innerHeight - y),
+        ) + 96;
+        const id = Date.now();
+
+        if (themeRevealTimeoutRef.current !== null) {
+            window.clearTimeout(themeRevealTimeoutRef.current);
+        }
+
+        setThemeReveal({ id, x, y, radius, nextIsDark: newTheme });
         setIsDark(newTheme);
         localStorage.setItem("portfolio-theme", newTheme ? "dark" : "light");
+
+        themeRevealTimeoutRef.current = window.setTimeout(() => {
+            setBackgroundIsDark(newTheme);
+            setThemeReveal((current) => (current?.id === id ? null : current));
+            themeRevealTimeoutRef.current = null;
+        }, 820);
     };
 
     // Dynamic text colors based on theme
-    const textPrimary = isDark ? "text-white" : "text-slate-800";
-    const textSecondary = isDark ? "text-white/60" : "text-slate-600";
-    const textMuted = isDark ? "text-white/50" : "text-slate-500";
+    const textPrimary = isDark ? "text-white" : "text-[#1f2933]";
+    const textSecondary = isDark ? "text-white/64" : "text-[#536173]";
+    const textMuted = isDark ? "text-white/50" : "text-[#7d877f]";
 
     return (
         <div
-            className={`relative min-h-screen overflow-x-hidden transition-colors duration-700 ${isDark ? "bg-[#0a0a0f]" : "bg-slate-50"}`}>
+            className={`relative min-h-screen overflow-x-hidden transition-colors duration-700 ${backgroundIsDark ? "bg-[#070b10]" : "bg-[#f4f7f5]"}`}>
             {/* Background layers */}
-            <ThreeBackground isDark={isDark} />
-            <ParticleField isDark={isDark} />
+            <ThreeBackground isDark={backgroundIsDark} />
+            <AnimatePresence>
+                {themeReveal && (
+                    <motion.div
+                        key={themeReveal.id}
+                        className="pointer-events-none fixed inset-0 z-[1]"
+                        style={{
+                            backgroundColor: themeReveal.nextIsDark ? "#070b10" : "#f4f7f5",
+                            clipPath: `circle(0px at ${themeReveal.x}px ${themeReveal.y}px)`,
+                        }}
+                        animate={{
+                            clipPath: `circle(${themeReveal.radius}px at ${themeReveal.x}px ${themeReveal.y}px)`,
+                        }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.76, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                )}
+            </AnimatePresence>
 
             {/* Foreground content */}
             <div className="relative z-10">
@@ -219,41 +307,24 @@ export default function Home() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8 }}
                         >
-                            <motion.div
+                            <div
                                 className={`
                                     inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-8 text-sm font-medium
                                     ${isDark
-                                    ? "bg-cyan-500/10 text-cyan-300"
-                                    : "bg-emerald-100 text-emerald-700"
+                                    ? "bg-[#1b2a31] text-[#d9ebe7]"
+                                    : "bg-[#e6eee9] text-[#28544b]"
                                 }
                                 `}
-                                animate={{
-                                    boxShadow: isDark
-                                        ? [
-                                            "0 0 0 0 rgba(52, 211, 153, 0.35)",
-                                            "0 0 0 18px rgba(52, 211, 153, 0)",
-                                            "0 0 0 0 rgba(52, 211, 153, 0.35)",
-                                        ]
-                                        : [
-                                            "0 0 0 0 rgba(52, 211, 153, 0.25)",
-                                            "0 0 0 18px rgba(52, 211, 153, 0)",
-                                            "0 0 0 0 rgba(52, 211, 153, 0.25)",
-                                        ],
-                                }}
-                                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                                whileHover={{ scale: 1.08 }}
                             >
-                                <motion.span
-                                    className={`w-3 h-3 rounded-full ${isDark ? "bg-cyan-300" : "bg-emerald-400"}`}
-                                    animate={{ scale: [1, 1.4, 1], opacity: [1, 0.25, 1] }}
-                                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                                <span
+                                    className="w-3 h-3 rounded-full bg-[#6fa79b]"
                                 />
                                 <span
-                                    className={`text-sm font-medium ${isDark ? "text-cyan-200" : "text-emerald-800"}`}
+                                    className={`text-sm font-medium ${isDark ? "text-[#d9ebe7]" : "text-[#28544b]"}`}
                                 >
                                     Available for opportunities
                                 </span>
-                            </motion.div>
+                            </div>
                         </motion.div>
 
                         {/* Main heading with animated reveal */}
@@ -266,16 +337,12 @@ export default function Home() {
                             onMouseLeave={() => setIsHoveringGreeting(false)}
                         >
                             Hi, I&apos;m{" "}
-                            <motion.span
-                                className="bg-gradient-to-r from-cyan-400 via-emerald-400 to-lime-300 bg-clip-text text-transparent inline-block"
-                                animate={{
-                                    backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-                                }}
-                                transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+                            <span
+                                className={isDark ? "inline-block text-[#d9ebe7]" : "inline-block text-[#28544b]"}
                                 style={{ backgroundSize: "200% 200%" }}
                             >
                                 Gene Lin
-                            </motion.span>
+                            </span>
                         </motion.h1>
 
                         {/* Typewriter subtitle */}
@@ -288,7 +355,7 @@ export default function Home() {
                             A passionate{" "}
                             <TypewriterText texts={typewriterTexts} isDark={isDark} />
                             <br />
-                            crafting immersive digital experiences
+                            building full-stack products, backend APIs, and AI workflows
                         </motion.p>
 
                         {/* CTA Buttons */}
@@ -304,7 +371,7 @@ export default function Home() {
                                     e.preventDefault();
                                     document.querySelector("#projects")?.scrollIntoView({ behavior: "smooth" });
                                 }}
-                                className="group relative px-8 py-4 bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-full font-medium text-white overflow-hidden"
+                                className="group relative overflow-hidden rounded-full bg-[#2f7f74] px-8 py-4 font-medium text-white"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                             >
@@ -313,7 +380,7 @@ export default function Home() {
                                     View My Work
                                 </span>
                                 <motion.div
-                                    className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500"
+                                    className="absolute inset-0 bg-[#286f66]"
                                     initial={{ x: "100%" }}
                                     whileHover={{ x: 0 }}
                                     transition={{ duration: 0.3 }}
@@ -354,20 +421,15 @@ export default function Home() {
                             transition={{ duration: 0.8, delay: 0.6 }}
                             className="absolute bottom-10 left-1/2 -translate-x-1/2"
                         >
-                            <motion.div
-                                animate={{ y: [0, 10, 0] }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                            >
-                                <ArrowDown className={`w-6 h-6 ${textMuted}`} />
-                            </motion.div>
+                            <ArrowDown className={`w-6 h-6 ${textMuted}`} />
                         </motion.div>
                     </div>
                 </section>
 
                 {/* ========== ABOUT SECTION ========== */}
-                <section id="about" className="py-32 px-6">
+                <section id="about" className="px-6 pb-16 pt-24 lg:py-32">
                     <div className="max-w-6xl mx-auto">
-                        <SectionHeading title="About Me" highlightColor="text-cyan-400" isDark={isDark} />
+                        <SectionHeading title="About Me" highlightColor={isDark ? "text-[#9acdc4]" : "text-[#28544b]"} isDark={isDark} />
 
                         <div className="grid lg:grid-cols-2 gap-16 items-start">
                             {/* About card */}
@@ -386,7 +448,7 @@ export default function Home() {
                                 >
                                     <div
                                         className={`absolute inset-0 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 ${
-                                            isDark ? "bg-gradient-to-r from-cyan-500/10 to-emerald-500/10" : "bg-gradient-to-r from-emerald-500/10 to-cyan-500/10"
+                                            isDark ? "bg-[#6fa79b]/10" : "bg-[#9aa89d]/12"
                                         }`}
                                     />
                                     <div className="relative space-y-4">
@@ -396,15 +458,15 @@ export default function Home() {
 
                                         <div className={`space-y-4 leading-relaxed ${textSecondary}`}>
                                             <p>
-                                                I&apos;m Gene Lin, an MCS graduate from Rice University with internship
-                                                experience delivering scalable applications in cloud environments.
-                                                I focus on end-to-end engineering, from frontend workflows to backend
-                                                architecture and deployment pipelines.
+                                                I&apos;m Gene Lin, a Rice University Master of Computer Science graduate
+                                                with software engineering internships building full-stack product tools,
+                                                backend APIs, and cloud-deployed systems.
                                             </p>
                                             <p>
-                                                Recently I&apos;ve been building Swift-based iOS systems, React/Next.js
-                                                interfaces, and AWS serverless backends with secure authentication,
-                                                production-grade data modeling, and CI/CD automation.
+                                                Recently I&apos;ve been building React/Next.js interfaces, Fastify and
+                                                Python API workflows, PostgreSQL and MySQL data models, OAuth/JWT
+                                                authentication flows, SwiftUI clients, and app-controlled agentic AI
+                                                workflows.
                                             </p>
                                         </div>
                                     </div>
@@ -421,12 +483,7 @@ export default function Home() {
                             >
                                 <div className="absolute left-8 top-0 bottom-0 w-px pointer-events-none">
                                     <div
-                                        className="h-full w-full bg-gradient-to-b from-cyan-500/60 via-emerald-500/60 to-transparent" />
-                                    <motion.div
-                                        className="absolute top-0 left-0 w-full h-10 bg-gradient-to-b from-cyan-400 to-transparent"
-                                        animate={{ y: ["0%", "400%"] }}
-                                        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                                    />
+                                        className="h-full w-full bg-[#6fa79b]/45" />
                                 </div>
                                 {[
                                     {
@@ -451,19 +508,11 @@ export default function Home() {
                                         className="relative pl-12 sm:pl-16"
                                     >
                                         <div className="absolute left-5 top-4">
-                                            <motion.div
-                                                className="w-6 h-6 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 flex items-center justify-center"
-                                                whileInView={{
-                                                    boxShadow: [
-                                                        "0 0 0 0 rgba(6, 182, 212, 0.4)",
-                                                        "0 0 0 10px rgba(6, 182, 212, 0)",
-                                                    ],
-                                                }}
-                                                transition={{ duration: 1.5, repeat: Infinity, delay: idx * 0.2 }}
-                                                viewport={{ once: true }}
+                                            <div
+                                                className="w-6 h-6 rounded-full bg-[#6fa79b] flex items-center justify-center"
                                             >
                                                 <div className="w-2 h-2 bg-white rounded-full" />
-                                            </motion.div>
+                                            </div>
                                         </div>
 
                                         <div
@@ -475,7 +524,7 @@ export default function Home() {
                                         >
                                             <div
                                                 className={`absolute inset-0 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 ${
-                                                    isDark ? "bg-gradient-to-r from-cyan-500/10 to-emerald-500/10" : "bg-gradient-to-r from-emerald-500/10 to-cyan-500/10"
+                                                    isDark ? "bg-[#6fa79b]/10" : "bg-[#9aa89d]/12"
                                                 }`}
                                             />
                                             <div className="relative space-y-2">
@@ -483,7 +532,7 @@ export default function Home() {
                                                     <h5 className={`text-base font-semibold ${textPrimary}`}>{edu.school}</h5>
                                                     <motion.span
                                                         whileHover={{ scale: 1.08 }}
-                                                        className={`inline-flex shrink-0 items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full cursor-default ${isDark ? "bg-cyan-500/10 text-cyan-400" : "bg-emerald-100 text-emerald-600"}`}
+                                                        className={`inline-flex shrink-0 items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full cursor-default ${isDark ? "bg-[#1b2a31] text-[#9acdc4]" : "bg-[#e6eee9] text-[#28544b]"}`}
                                                     >
                                                         {edu.period}
                                                     </motion.span>
@@ -512,12 +561,20 @@ export default function Home() {
                     </div>
                 </section>
 
-                {/* ========== PROJECTS SECTION ========== */}
-                <section id="projects" className="py-32 px-6">
-                    <div className="max-w-6xl mx-auto">
-                        <SectionHeading title="Featured Projects" highlightColor="text-emerald-400" isDark={isDark} />
+                {/* ========== EXPERIENCE SECTION ========== */}
+                <section id="experience" className="px-6 py-20 lg:py-32">
+                    <div className="max-w-4xl mx-auto">
+                        <SectionHeading title="Work Experience" highlightColor={isDark ? "text-[#9acdc4]" : "text-[#28544b]"} isDark={isDark} />
+                        <ExperienceTimeline experiences={experiences} isDark={isDark} />
+                    </div>
+                </section>
 
-                        <div className="grid md:grid-cols-2 gap-8">
+                {/* ========== PROJECTS SECTION ========== */}
+                <section id="projects" className="px-6 py-20 lg:py-32">
+                    <div className="max-w-6xl mx-auto">
+                        <SectionHeading title="Featured Projects" highlightColor={isDark ? "text-[#9acdc4]" : "text-[#28544b]"} isDark={isDark} />
+
+                        <div className="grid min-w-0 grid-cols-1 gap-8 md:grid-cols-2">
                             {projects.map((project, index) => (
                                 <ProjectCard
                                     key={project.title}
@@ -530,18 +587,10 @@ export default function Home() {
                     </div>
                 </section>
 
-                {/* ========== EXPERIENCE SECTION ========== */}
-                <section id="experience" className="py-32 px-6">
-                    <div className="max-w-4xl mx-auto">
-                        <SectionHeading title="Work Experience" highlightColor="text-emerald-400" isDark={isDark} />
-                        <ExperienceTimeline experiences={experiences} isDark={isDark} />
-                    </div>
-                </section>
-
                 {/* ========== CONTACT SECTION ========== */}
-                <section id="contact" className="py-32 px-6">
+                <section id="contact" className="px-6 py-20 lg:py-32">
                     <div className="max-w-4xl mx-auto">
-                        <SectionHeading title="Get In Touch" highlightColor="text-cyan-400" isDark={isDark} />
+                        <SectionHeading title="Get In Touch" highlightColor={isDark ? "text-[#9acdc4]" : "text-[#28544b]"} isDark={isDark} />
 
                         <div className="grid lg:grid-cols-2 gap-12">
                             {/* Left column - Info */}
@@ -554,24 +603,23 @@ export default function Home() {
                             >
                                 <div>
                                     <h3 className={`text-xl font-semibold mb-4 ${textPrimary}`}>
-                                        Let&apos;s talk about your project
+                                        Let&apos;s talk software roles and product engineering
                                     </h3>
                                     <p className={`leading-relaxed ${textSecondary}`}>
-                                        I&apos;m always excited to hear about new opportunities and interesting
-                                        projects.
-                                        Whether you need a complete web application or want to improve your existing
-                                        product, I&apos;m here to help.
+                                        I&apos;m looking for software engineering opportunities where I can build
+                                        product interfaces, API workflows, data-backed systems, and practical AI
+                                        features with a strong ownership mindset.
                                     </p>
                                 </div>
 
                                 {/* Email card */}
                                 <motion.a
-                                    href="mailto:genelin@gene-software.com"
+                                    href="mailto:chingyao.work@gmail.com"
                                     className={`
                                         flex items-center gap-4 p-4 rounded-xl transition-all duration-300 group
                                         ${isDark
-                                        ? "bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 shadow-lg shadow-cyan-500/10"
-                                        : "bg-white border border-slate-200 hover:border-emerald-500/60 shadow-sm hover:shadow-emerald-100"
+                                        ? "bg-white/5 backdrop-blur-sm border border-white/10 hover:border-[#6fa79b]/45"
+                                        : "bg-white border border-[#d8d2c7] hover:border-[#6fa79b]/60 shadow-sm"
                                     }
                                     `}
                                     whileHover={{ scale: 1.03 }}
@@ -584,8 +632,8 @@ export default function Home() {
                                     }}
                                 >
                                     <div
-                                        className={`p-3 rounded-lg transition-colors ${isDark ? "bg-cyan-500/10 group-hover:bg-cyan-500/20" : "bg-emerald-100 group-hover:bg-emerald-200"}`}>
-                                        <Mail className={`w-5 h-5 ${isDark ? "text-cyan-400" : "text-emerald-600"}`} />
+                                        className={`p-3 rounded-lg transition-colors ${isDark ? "bg-[#1b2a31] group-hover:bg-[#213640]" : "bg-[#e6eee9] group-hover:bg-[#dce9e2]"}`}>
+                                        <Mail className={`w-5 h-5 ${isDark ? "text-[#9acdc4]" : "text-[#28544b]"}`} />
                                     </div>
                                     <div>
                                         <p className={`text-sm ${textMuted}`}>Email</p>
@@ -601,10 +649,10 @@ export default function Home() {
                                             }`}
                                             aria-live="polite"
                                         >
-                                            {isEmailRevealed ? "genelin@gene-software.com" : "genelin [at] gene-software.com"}
+                                            {isEmailRevealed ? "chingyao.work@gmail.com" : "chingyao.work [at] gmail.com"}
                                         </p>
                                         {!isEmailRevealed && (
-                                            <p className="text-xs text-cyan-400/80">Click to reveal</p>
+                                            <p className="text-xs text-[#6fa79b]">Click to reveal</p>
                                         )}
                                     </div>
                                 </motion.a>

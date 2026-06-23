@@ -1,32 +1,33 @@
-cd "$HOME/Desktop/Visual Studio Code/gene-software"
-
-cat > .gitignore <<'EOF'
 # macOS
 .DS_Store
 __MACOSX/
 
-# Editors/IDE
-.vscode/
+# Editors / IDEs
 .idea/
+.vscode/
 
-# Env/Secrets
+# Environment files and secrets
 .env
-.env.*.local
+.env.*
+!.env.example
+!.env.production.example
+*.pem
+*.key
+*.p12
+*.pfx
 
-# Node/JS
+# Node / JavaScript
 node_modules/
 .pnpm-store/
 
-# Build artifacts (monorepo)
-apps/*/dist/
-apps/*/out/
+# Build artifacts
 apps/*/.next/
-coverage/
-
-# Root-level fallbacks (若未來新增)
-dist/
-out/
+apps/*/out/
+apps/*/dist/
 .next/
+out/
+dist/
+coverage/
 
 # Logs
 *.log
@@ -47,4 +48,9 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
-EOF
+
+# Local agent scratch space
+.gstack/
+.qa/
+temp-note.md
+scratch/
