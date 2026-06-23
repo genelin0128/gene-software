@@ -16,7 +16,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import {
     Mail, ArrowDown,
     Code2, Layers, Palette, Zap, Download, Sparkles, LucideIcon, Database,
@@ -262,26 +262,24 @@ export default function Home() {
 
     return (
         <div
-            className={`relative min-h-screen overflow-x-hidden transition-colors duration-700 ${backgroundIsDark ? "bg-[#070b10]" : "bg-[#f4f7f5]"}`}>
+            className={`relative min-h-screen overflow-x-hidden ${backgroundIsDark ? "bg-[#070b10]" : "bg-[#f4f7f5]"}`}>
             {/* Background layers */}
             <ThreeBackground isDark={backgroundIsDark} />
-            <AnimatePresence>
-                {themeReveal && (
-                    <motion.div
-                        key={themeReveal.id}
-                        className="pointer-events-none fixed inset-0 z-[1]"
-                        style={{
-                            backgroundColor: themeReveal.nextIsDark ? "#070b10" : "#f4f7f5",
-                            clipPath: `circle(0px at ${themeReveal.x}px ${themeReveal.y}px)`,
-                        }}
-                        animate={{
-                            clipPath: `circle(${themeReveal.radius}px at ${themeReveal.x}px ${themeReveal.y}px)`,
-                        }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.76, ease: [0.22, 1, 0.36, 1] }}
-                    />
-                )}
-            </AnimatePresence>
+            {themeReveal && (
+                <motion.div
+                    key={themeReveal.id}
+                    data-theme-reveal=""
+                    className="pointer-events-none fixed inset-0 z-[1]"
+                    style={{
+                        backgroundColor: themeReveal.nextIsDark ? "#070b10" : "#f4f7f5",
+                        clipPath: `circle(0px at ${themeReveal.x}px ${themeReveal.y}px)`,
+                    }}
+                    animate={{
+                        clipPath: `circle(${themeReveal.radius}px at ${themeReveal.x}px ${themeReveal.y}px)`,
+                    }}
+                    transition={{ duration: 0.76, ease: [0.22, 1, 0.36, 1] }}
+                />
+            )}
 
             {/* Foreground content */}
             <div className="relative z-10">

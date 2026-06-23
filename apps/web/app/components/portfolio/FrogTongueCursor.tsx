@@ -35,9 +35,13 @@ const FROG_MOUTH_OFFSET_Y = 27;
 const frogSprites = {
     idle: "/cursors/frog-idle.png",
     blink: "/cursors/frog-blink.png",
+    ready: "/cursors/frog-hop-ready.png",
+    launch: "/cursors/frog-hop-launch.png",
     hop: "/cursors/frog-hop.png",
+    land: "/cursors/frog-hop-land.png",
     open: "/cursors/frog-open.png",
 } as const;
+const frogImageClass = "absolute inset-0 h-full w-full select-none object-contain";
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
@@ -131,49 +135,96 @@ function FlyIcon({ isDark }: { isDark: boolean }) {
 function FrogSprite({ phase }: { phase: FrogPhase }) {
     const mouthOpen = phase === "shoot" || phase === "catch" || phase === "swallow";
     const isHopping = phase === "hop";
+    const isAiming = phase === "aim";
 
     return (
-        <div className="relative h-full w-full">
+        <div className="relative h-full w-full drop-shadow-[0_15px_22px_rgba(15,23,27,0.26)]">
             <motion.img
                 src={frogSprites.idle}
                 alt=""
                 draggable="false"
-                className="absolute inset-0 h-full w-full select-none object-contain drop-shadow-[0_15px_22px_rgba(15,23,27,0.26)]"
-                animate={{ opacity: isHopping ? 0 : 1 }}
+                className={frogImageClass}
+                animate={{ opacity: mouthOpen || isAiming || isHopping ? 0 : 1 }}
                 transition={{ duration: 0.08 }}
             />
             <motion.img
                 src={frogSprites.blink}
                 alt=""
                 draggable="false"
-                className="absolute inset-0 h-full w-full select-none object-contain drop-shadow-[0_15px_22px_rgba(15,23,27,0.26)]"
-                animate={{ opacity: mouthOpen || isHopping ? 0 : [0, 0, 1, 1, 0, 0] }}
+                className={frogImageClass}
+                animate={{ opacity: mouthOpen || isAiming || isHopping ? 0 : [0, 0, 1, 1, 0, 0] }}
                 transition={{ duration: 4.4, repeat: Infinity, times: [0, 0.8, 0.84, 0.88, 0.92, 1], ease: "easeInOut" }}
+            />
+            <motion.img
+                src={frogSprites.ready}
+                alt=""
+                draggable="false"
+                className={frogImageClass}
+                animate={{
+                    opacity: isAiming ? 1 : isHopping ? [1, 1, 0, 0, 0, 0] : 0,
+                    rotate: isHopping ? [-2, -1, 0, 0, 0, 0] : 0,
+                }}
+                transition={{
+                    opacity: isHopping
+                        ? { duration: FROG_HOP_MS / 1000, times: [0, 0.1, 0.18, 0.19, 0.82, 1], ease: "linear" }
+                        : { duration: 0.08 },
+                    rotate: { duration: FROG_HOP_MS / 1000, ease: [0.2, 0.86, 0.18, 1] },
+                }}
+            />
+            <motion.img
+                src={frogSprites.launch}
+                alt=""
+                draggable="false"
+                className={frogImageClass}
+                animate={{
+                    opacity: isHopping ? [0, 1, 1, 0, 0, 0] : 0,
+                    rotate: isHopping ? [-4, -5, -4, -1, 0, 0] : 0,
+                }}
+                transition={{
+                    opacity: isHopping
+                        ? { duration: FROG_HOP_MS / 1000, times: [0, 0.12, 0.34, 0.44, 0.82, 1], ease: "linear" }
+                        : { duration: 0.08 },
+                    rotate: { duration: FROG_HOP_MS / 1000, ease: [0.2, 0.86, 0.18, 1] },
+                }}
             />
             <motion.img
                 src={frogSprites.hop}
                 alt=""
                 draggable="false"
-                className="absolute inset-0 h-full w-full select-none object-contain drop-shadow-[0_16px_20px_rgba(15,23,27,0.22)]"
+                className={frogImageClass}
                 animate={{
-                    opacity: isHopping ? 1 : 0,
-                    rotate: isHopping ? [-7, -3, 4, 8, 5, -2, 0] : 0,
-                    scaleX: isHopping ? [0.92, 1.05, 1.08, 1.06, 1.02, 1.12, 1] : 1,
-                    scaleY: isHopping ? [1.12, 0.92, 0.94, 0.96, 1.02, 0.88, 1] : 1,
+                    opacity: isHopping ? [0, 0, 1, 1, 0, 0] : 0,
+                    rotate: isHopping ? [-6, -4, -2, 2, 5, 4] : 0,
                 }}
                 transition={{
-                    opacity: { duration: 0.08 },
+                    opacity: isHopping
+                        ? { duration: FROG_HOP_MS / 1000, times: [0, 0.3, 0.38, 0.68, 0.78, 1], ease: "linear" }
+                        : { duration: 0.08 },
                     rotate: { duration: FROG_HOP_MS / 1000, ease: [0.2, 0.86, 0.18, 1] },
-                    scaleX: { duration: FROG_HOP_MS / 1000, ease: [0.2, 0.86, 0.18, 1] },
-                    scaleY: { duration: FROG_HOP_MS / 1000, ease: [0.2, 0.86, 0.18, 1] },
+                }}
+            />
+            <motion.img
+                src={frogSprites.land}
+                alt=""
+                draggable="false"
+                className={frogImageClass}
+                animate={{
+                    opacity: isHopping ? [0, 0, 0, 1, 1, 0] : 0,
+                    rotate: isHopping ? [0, 0, 0, 3, 1, 0] : 0,
+                }}
+                transition={{
+                    opacity: isHopping
+                        ? { duration: FROG_HOP_MS / 1000, times: [0, 0.58, 0.68, 0.76, 0.94, 1], ease: "linear" }
+                        : { duration: 0.08 },
+                    rotate: { duration: FROG_HOP_MS / 1000, ease: [0.2, 0.86, 0.18, 1] },
                 }}
             />
             <motion.img
                 src={frogSprites.open}
                 alt=""
                 draggable="false"
-                className="absolute inset-0 h-full w-full select-none object-contain drop-shadow-[0_15px_22px_rgba(15,23,27,0.26)]"
-                animate={{ opacity: mouthOpen ? 1 : 0, scale: mouthOpen ? [0.98, 1.03, 1] : 1 }}
+                className={frogImageClass}
+                animate={{ opacity: mouthOpen ? 1 : 0 }}
                 transition={{ duration: mouthOpen ? 0.16 : 0.1, ease: [0.2, 0.8, 0.2, 1] }}
             />
         </div>
@@ -365,19 +416,27 @@ export default function FrogTongueCursor({ isDark }: FrogTongueCursorProps) {
                 queue(() => {
                     if (syncSuppression()) return;
                     setPhase("hop");
-                    const midX = currentFrogX + (perchX - currentFrogX) * 0.5;
-                    frogMoveControlsRef.current = animate(frogX, perchX, {
+                    const deltaX = perchX - currentFrogX;
+                    frogMoveControlsRef.current = animate(frogX, [
+                        currentFrogX,
+                        currentFrogX + deltaX * 0.04,
+                        currentFrogX + deltaX * 0.12,
+                        currentFrogX + deltaX * 0.25,
+                        currentFrogX + deltaX * 0.42,
+                        currentFrogX + deltaX * 0.58,
+                        currentFrogX + deltaX * 0.72,
+                        currentFrogX + deltaX * 0.84,
+                        currentFrogX + deltaX * 0.94,
+                        perchX,
+                    ], {
                         duration: FROG_HOP_MS / 1000,
                         ease: [0.2, 0.86, 0.18, 1],
+                        times: [0, 0.07, 0.16, 0.28, 0.42, 0.56, 0.7, 0.82, 0.93, 1],
                     });
-                    hopControlsRef.current = animate(frogHop, [0, 7, -9, -26, -34, -29, -18, -7, 5, -2, 0], {
+                    hopControlsRef.current = animate(frogHop, [0, 4, 8, 2, -10, -24, -36, -40, -35, -26, -15, -5, 3, -1, 0], {
                         duration: FROG_HOP_MS / 1000,
                         ease: [0.2, 0.86, 0.18, 1],
-                        times: [0, 0.06, 0.14, 0.26, 0.42, 0.58, 0.72, 0.84, 0.92, 0.97, 1],
-                    });
-                    animate(tongueEndX, midX, {
-                        duration: FROG_HOP_MS / 1000,
-                        ease: [0.2, 0.86, 0.18, 1],
+                        times: [0, 0.04, 0.08, 0.14, 0.22, 0.32, 0.44, 0.55, 0.65, 0.74, 0.83, 0.9, 0.95, 0.98, 1],
                     });
                 }, TONGUE_AIM_MS);
                 queue(() => {
@@ -389,11 +448,6 @@ export default function FrogTongueCursor({ isDark }: FrogTongueCursorProps) {
                         ease: [0.18, 0.74, 0.16, 1],
                     });
                 }, TONGUE_AIM_MS + FROG_HOP_MS);
-            } else {
-                hopControlsRef.current = animate(frogHop, [0, 3, -5, 0], {
-                    duration: 0.28,
-                    ease: [0.18, 0.74, 0.16, 1],
-                });
             }
 
             queue(() => {
@@ -617,12 +671,11 @@ export default function FrogTongueCursor({ isDark }: FrogTongueCursorProps) {
                     scaleX: facing,
                     willChange: "transform",
                 }}
-                initial={{ opacity: 0, scale: 0.72 }}
+                initial={{ opacity: 0 }}
                 animate={{
                     opacity: 1,
-                    scale: frogPhase === "aim" ? 0.99 : frogPhase === "shoot" || frogPhase === "catch" || frogPhase === "swallow" ? 1.04 : 0.92,
                 }}
-                transition={{ scale: { type: "spring", stiffness: 320, damping: 24 }, opacity: { duration: 0.18 } }}
+                transition={{ opacity: { duration: 0.18 } }}
             >
                 <FrogSprite phase={frogPhase} />
             </motion.div>
