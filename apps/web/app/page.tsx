@@ -183,6 +183,7 @@ export default function Home() {
         x: number;
         y: number;
         radius: number;
+        previousIsDark: boolean;
         nextIsDark: boolean;
     } | null>(null);
     const themeRevealTimeoutRef = useRef<number | null>(null);
@@ -244,12 +245,19 @@ export default function Home() {
             window.clearTimeout(themeRevealTimeoutRef.current);
         }
 
-        setThemeReveal({ id, x, y, radius, nextIsDark: newTheme });
+        setThemeReveal({
+            id,
+            x,
+            y,
+            radius,
+            previousIsDark: backgroundIsDark,
+            nextIsDark: newTheme,
+        });
+        setBackgroundIsDark(newTheme);
         setIsDark(newTheme);
         localStorage.setItem("portfolio-theme", newTheme ? "dark" : "light");
 
         themeRevealTimeoutRef.current = window.setTimeout(() => {
-            setBackgroundIsDark(newTheme);
             setThemeReveal((current) => (current?.id === id ? null : current));
             themeRevealTimeoutRef.current = null;
         }, 820);
@@ -266,19 +274,28 @@ export default function Home() {
             {/* Background layers */}
             <ThreeBackground isDark={backgroundIsDark} />
             {themeReveal && (
-                <motion.div
-                    key={themeReveal.id}
-                    data-theme-reveal=""
-                    className="pointer-events-none fixed inset-0 z-[1]"
-                    style={{
-                        backgroundColor: themeReveal.nextIsDark ? "#070b10" : "#f4f7f5",
-                        clipPath: `circle(0px at ${themeReveal.x}px ${themeReveal.y}px)`,
-                    }}
-                    animate={{
-                        clipPath: `circle(${themeReveal.radius}px at ${themeReveal.x}px ${themeReveal.y}px)`,
-                    }}
-                    transition={{ duration: 0.76, ease: [0.22, 1, 0.36, 1] }}
-                />
+                <>
+                    <div
+                        data-theme-reveal-previous=""
+                        className="pointer-events-none fixed inset-0 z-[1]"
+                        style={{
+                            backgroundColor: themeReveal.previousIsDark ? "#070b10" : "#f4f7f5",
+                        }}
+                    />
+                    <motion.div
+                        key={themeReveal.id}
+                        data-theme-reveal=""
+                        className="pointer-events-none fixed inset-0 z-[2]"
+                        style={{
+                            backgroundColor: themeReveal.nextIsDark ? "#070b10" : "#f4f7f5",
+                            clipPath: `circle(0px at ${themeReveal.x}px ${themeReveal.y}px)`,
+                        }}
+                        animate={{
+                            clipPath: `circle(${themeReveal.radius}px at ${themeReveal.x}px ${themeReveal.y}px)`,
+                        }}
+                        transition={{ duration: 0.76, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                </>
             )}
 
             {/* Foreground content */}

@@ -135,7 +135,6 @@ function FlyIcon({ isDark }: { isDark: boolean }) {
 function FrogSprite({ phase }: { phase: FrogPhase }) {
     const mouthOpen = phase === "shoot" || phase === "catch" || phase === "swallow";
     const isHopping = phase === "hop";
-    const isAiming = phase === "aim";
 
     return (
         <div className="relative h-full w-full drop-shadow-[0_15px_22px_rgba(15,23,27,0.26)]">
@@ -144,7 +143,7 @@ function FrogSprite({ phase }: { phase: FrogPhase }) {
                 alt=""
                 draggable="false"
                 className={frogImageClass}
-                animate={{ opacity: mouthOpen || isAiming || isHopping ? 0 : 1 }}
+                animate={{ opacity: mouthOpen || isHopping ? 0 : 1 }}
                 transition={{ duration: 0.08 }}
             />
             <motion.img
@@ -152,7 +151,7 @@ function FrogSprite({ phase }: { phase: FrogPhase }) {
                 alt=""
                 draggable="false"
                 className={frogImageClass}
-                animate={{ opacity: mouthOpen || isAiming || isHopping ? 0 : [0, 0, 1, 1, 0, 0] }}
+                animate={{ opacity: mouthOpen || isHopping ? 0 : [0, 0, 1, 1, 0, 0] }}
                 transition={{ duration: 4.4, repeat: Infinity, times: [0, 0.8, 0.84, 0.88, 0.92, 1], ease: "easeInOut" }}
             />
             <motion.img
@@ -161,7 +160,7 @@ function FrogSprite({ phase }: { phase: FrogPhase }) {
                 draggable="false"
                 className={frogImageClass}
                 animate={{
-                    opacity: isAiming ? 1 : isHopping ? [1, 1, 0, 0, 0, 0] : 0,
+                    opacity: isHopping ? [1, 1, 0, 0, 0, 0] : 0,
                     rotate: isHopping ? [-2, -1, 0, 0, 0, 0] : 0,
                 }}
                 transition={{
