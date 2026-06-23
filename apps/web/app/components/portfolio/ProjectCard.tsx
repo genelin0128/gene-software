@@ -479,7 +479,7 @@ export default function ProjectCard({ project, index, isDark }: ProjectCardProps
                 }}
                 role={hasDetail ? "button" : undefined}
                 tabIndex={hasDetail ? 0 : -1}
-                className={`group relative h-full min-w-0 ${isHovered ? "project-card-hovered" : ""} ${hasDetail ? "cursor-pointer" : "cursor-default"}`}
+                className={`project-card-surface group relative h-full min-w-0 ${isHovered ? "project-card-hovered" : ""} ${hasDetail ? "cursor-pointer" : "cursor-default"}`}
             >
                 {/* Ambient glow effect */}
                 <motion.div

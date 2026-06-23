@@ -32,8 +32,7 @@ import ContactForm from "@/app/components/portfolio/ContactForm";
 import { TypewriterText, SectionHeading } from "@/app/components/portfolio/AnimatedText";
 import SocialLinks from "@/app/components/portfolio/SocialLinks";
 import ScrollProgress from "@/app/components/portfolio/ScrollProgress";
-import CursorFollower from "@/app/components/portfolio/CursorFollower";
-import AvatarCursor from "@/app/components/portfolio/AvatarCursor";
+import SquirrelChaseCursor from "@/app/components/portfolio/SquirrelChaseCursor";
 
 // Data Types
 interface Skill {
@@ -178,7 +177,6 @@ const typewriterTexts: string[] = [
 export default function Home() {
     const [isDark, setIsDark] = useState(true);
     const [backgroundIsDark, setBackgroundIsDark] = useState(true);
-    const [isHoveringGreeting, setIsHoveringGreeting] = useState(false);
     const [isEmailRevealed, setIsEmailRevealed] = useState(false);
     const [themeReveal, setThemeReveal] = useState<{
         id: number;
@@ -288,11 +286,7 @@ export default function Home() {
             {/* Foreground content */}
             <div className="relative z-10">
                 {/* Custom cursor */}
-                <CursorFollower isDark={isDark} />
-                <AvatarCursor
-                    isActive={isHoveringGreeting}
-                    avatarSrc="/images/avatar.jpeg"
-                />
+                <SquirrelChaseCursor isDark={isDark} />
 
                 {/* UI Components */}
                 <ScrollProgress isDark={isDark} />
@@ -332,9 +326,7 @@ export default function Home() {
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8, delay: 0.1 }}
-                            className={`text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight ${textPrimary} cursor-pointer`}
-                            onMouseEnter={() => setIsHoveringGreeting(true)}
-                            onMouseLeave={() => setIsHoveringGreeting(false)}
+                            className={`text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight ${textPrimary}`}
                         >
                             Hi, I&apos;m{" "}
                             <span

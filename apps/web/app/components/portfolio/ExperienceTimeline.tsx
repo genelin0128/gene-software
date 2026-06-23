@@ -347,7 +347,7 @@ export default function ExperienceTimeline({ experiences, isDark }: ExperienceTi
                         {/* Experience card */}
                         <motion.button
                             type="button"
-                            className={`group relative block w-full appearance-none p-0 text-left font-[inherit] ${exp.slug ? "cursor-pointer" : "cursor-default"}`}
+                            className={`timeline-surface group relative block w-full appearance-none p-0 text-left font-[inherit] ${exp.slug ? "cursor-pointer" : "cursor-default"}`}
                             onClick={() => exp.slug && setActiveSlug(exp.slug)}
                             whileHover={{ x: exp.slug ? 8 : 0 }}
                             transition={{ duration: 0.3 }}
