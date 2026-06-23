@@ -62,7 +62,8 @@ function getFloorY() {
 }
 
 function isPortfolioModalOpen() {
-    return document.body.classList.contains("portfolio-modal-open") || Boolean(document.querySelector('[role="dialog"][aria-modal="true"]'));
+    return document.body.classList.contains("portfolio-modal-open") ||
+        Boolean(document.querySelector('[role="dialog"][aria-modal="true"], .portfolio-modal'));
 }
 
 function getSuspensionAnchorY(pointerY: number, spiderY: number, floorY: number) {
@@ -446,6 +447,13 @@ export default function SpiderChaseCursor({ isDark }: SpiderChaseCursorProps) {
         const ay = anchorY.get();
         return `M ${sx} ${sy} L ${ax} ${ay}`;
     });
+    const threadTrailPath = useTransform(() => {
+        const sx = renderedSpiderX.get();
+        const sy = renderedSpiderY.get();
+        const px = threadProjectileX.get();
+        const py = threadProjectileY.get();
+        return `M ${sx} ${sy} L ${px} ${py}`;
+    });
     const spiderVelocityX = useVelocity(spiderX);
     const spiderTilt = useTransform(spiderVelocityX, [-1000, 0, 1000], [-13, 0, 13], { clamp: true });
 
@@ -584,8 +592,8 @@ export default function SpiderChaseCursor({ isDark }: SpiderChaseCursorProps) {
                 threadProjectileControlsRef.current?.stop();
                 threadProgress.set(0);
                 threadProjectileControlsRef.current = animate(threadProgress, 1, {
-                    duration: plan.mode === "strike" ? 0.18 : 0.3,
-                    ease: [0.05, 0.82, 0.2, 1],
+                    duration: plan.mode === "strike" ? 0.16 : 0.26,
+                    ease: [0.08, 0.86, 0.18, 1],
                 });
                 threadAttachRef.current = window.setTimeout(() => {
                     threadAttachRef.current = null;
@@ -782,8 +790,32 @@ export default function SpiderChaseCursor({ isDark }: SpiderChaseCursorProps) {
     const threadGlow = isDark ? "rgba(202, 255, 248, 0.13)" : "rgba(64, 105, 96, 0.09)";
 
     return (
-        <div className="pointer-events-none fixed inset-0 z-[10000]" aria-hidden="true" data-portfolio-spider-cursor="" data-thread-phase={threadPhase}>
+        <div className="pointer-events-none fixed inset-0 z-[70]" aria-hidden="true" data-portfolio-spider-cursor="" data-thread-phase={threadPhase}>
             <svg className="absolute inset-0 h-full w-full overflow-visible">
+                <motion.path
+                    key={`thread-trail-glow-${threadShotId}`}
+                    data-testid="spider-thread-trail-glow"
+                    d={threadTrailPath}
+                    fill="none"
+                    stroke={threadGlow}
+                    strokeWidth="4.6"
+                    strokeLinecap="round"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: threadPhase === "firing" ? [0, 0.9, 0.35] : 0 }}
+                    transition={{ duration: 0.24, ease: "easeOut" }}
+                />
+                <motion.path
+                    key={`thread-trail-${threadShotId}`}
+                    data-testid="spider-thread-trail"
+                    d={threadTrailPath}
+                    fill="none"
+                    stroke={threadColor}
+                    strokeWidth="1.15"
+                    strokeLinecap="round"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: threadPhase === "firing" ? [0, 1, 0.72] : 0 }}
+                    transition={{ duration: 0.24, ease: "easeOut" }}
+                />
                 <motion.path
                     key={threadShotId}
                     data-testid="spider-thread"
@@ -794,12 +826,12 @@ export default function SpiderChaseCursor({ isDark }: SpiderChaseCursorProps) {
                     strokeLinecap="round"
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{
-                        pathLength: threadPhase === "firing" || threadPhase === "attached" ? 1 : 0,
-                        opacity: threadPhase === "firing" || threadPhase === "attached" ? 1 : 0,
+                        pathLength: threadPhase === "attached" ? 1 : 0,
+                        opacity: threadPhase === "attached" ? 1 : 0,
                     }}
                     transition={{
-                        pathLength: { duration: 0.2, ease: [0.06, 0.76, 0.18, 1] },
-                        opacity: { duration: threadPhase === "firing" || threadPhase === "attached" ? 0.08 : 0.12 },
+                        pathLength: { duration: 0.14, ease: [0.12, 0.78, 0.2, 1] },
+                        opacity: { duration: threadPhase === "attached" ? 0.1 : 0.12 },
                     }}
                 />
                 <motion.path
@@ -812,12 +844,12 @@ export default function SpiderChaseCursor({ isDark }: SpiderChaseCursorProps) {
                     strokeLinecap="round"
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{
-                        pathLength: threadPhase === "firing" || threadPhase === "attached" ? 1 : 0,
-                        opacity: threadPhase === "firing" || threadPhase === "attached" ? 1 : 0,
+                        pathLength: threadPhase === "attached" ? 1 : 0,
+                        opacity: threadPhase === "attached" ? 1 : 0,
                     }}
                     transition={{
-                        pathLength: { duration: 0.16, ease: [0.06, 0.76, 0.18, 1] },
-                        opacity: { duration: threadPhase === "firing" || threadPhase === "attached" ? 0.08 : 0.12 },
+                        pathLength: { duration: 0.1, ease: [0.12, 0.78, 0.2, 1] },
+                        opacity: { duration: threadPhase === "attached" ? 0.08 : 0.12 },
                     }}
                 />
                 <motion.path
@@ -831,11 +863,11 @@ export default function SpiderChaseCursor({ isDark }: SpiderChaseCursorProps) {
                     strokeDasharray="1 12"
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{
-                        pathLength: threadPhase === "firing" || threadPhase === "attached" ? 1 : 0,
-                        opacity: threadPhase === "firing" ? 0.82 : threadPhase === "attached" ? 0.45 : 0,
+                        pathLength: threadPhase === "attached" ? 1 : 0,
+                        opacity: threadPhase === "attached" ? 0.42 : 0,
                     }}
                     transition={{
-                        pathLength: { duration: 0.18, ease: [0.06, 0.76, 0.18, 1] },
+                        pathLength: { duration: 0.14, ease: [0.12, 0.78, 0.2, 1] },
                         opacity: { duration: 0.12 },
                     }}
                 />
@@ -880,7 +912,7 @@ export default function SpiderChaseCursor({ isDark }: SpiderChaseCursorProps) {
             </motion.div>
             <motion.div
                 data-testid="spider-thread-dart"
-                className={`absolute z-[9] h-[3px] w-5 rounded-full shadow-[0_0_12px_rgba(232,255,249,0.8)] ${isDark ? "bg-[#f5fffd]" : "bg-[#1f433d]"}`}
+                className={`absolute z-[9] h-2 w-2 rounded-full shadow-[0_0_14px_rgba(232,255,249,0.88)] ${isDark ? "bg-[#f5fffd]" : "bg-[#1f433d]"}`}
                 style={{
                     x: threadProjectileX,
                     y: threadProjectileY,
@@ -891,9 +923,9 @@ export default function SpiderChaseCursor({ isDark }: SpiderChaseCursorProps) {
                 }}
                 animate={{
                     opacity: threadPhase === "firing" ? [0, 1, 1, 0] : 0,
-                    scale: threadPhase === "firing" ? [0.6, 1.35, 1.05, 0.78] : 0.5,
+                    scale: threadPhase === "firing" ? [0.45, 1.25, 0.85] : 0.45,
                 }}
-                transition={{ duration: 0.3, ease: [0.05, 0.82, 0.2, 1] }}
+                transition={{ duration: 0.26, ease: [0.08, 0.86, 0.18, 1] }}
             />
 
             <motion.div
