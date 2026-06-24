@@ -31,11 +31,13 @@ const TONGUE_RETRACT_MS = 210;
 const TONGUE_CATCH_MS = 260;
 const FLY_RESPAWN_MS = 90;
 const TONGUE_HIT_RADIUS = 38;
-const FROG_MOUTH_OFFSET_Y = 27;
+const FROG_MOUTH_OFFSET_X = -1;
+const FROG_MOUTH_OFFSET_Y = 27.2;
 
 const frogSprites = {
     idle: "/cursors/frog-idle.png",
     blink: "/cursors/frog-blink.png",
+    open: "/cursors/frog-open.png",
     hop: {
         ready: {
             left: "/cursors/frog-hop-ready-left.png",
@@ -99,7 +101,7 @@ function limitTongueTarget(mouth: Point, target: Point) {
 
 function getMouthPoint(frogX: number, frogY: number, frogHop: number): Point {
     return {
-        x: frogX,
+        x: frogX + FROG_MOUTH_OFFSET_X,
         y: frogY + frogHop - FROG_MOUTH_OFFSET_Y,
     };
 }
@@ -161,7 +163,7 @@ function FrogSprite({ phase, direction }: { phase: FrogPhase; direction: FrogDir
                 alt=""
                 draggable="false"
                 className={frogImageClass}
-                animate={{ opacity: isHopping ? 0 : 1 }}
+                animate={{ opacity: isHopping || mouthOpen ? 0 : 1 }}
                 transition={{ duration: 0.08 }}
             />
             <motion.img
@@ -172,43 +174,14 @@ function FrogSprite({ phase, direction }: { phase: FrogPhase; direction: FrogDir
                 animate={{ opacity: mouthOpen || isHopping ? 0 : [0, 0, 1, 1, 0, 0] }}
                 transition={{ duration: 4.4, repeat: Infinity, times: [0, 0.8, 0.84, 0.88, 0.92, 1], ease: "easeInOut" }}
             />
-            <motion.svg
-                viewBox="0 0 512 512"
-                aria-hidden="true"
-                className="absolute inset-0 h-full w-full"
-                initial={false}
+            <motion.img
+                src={frogSprites.open}
+                alt=""
+                draggable="false"
+                className={frogImageClass}
                 animate={{ opacity: mouthOpen && !isHopping ? 1 : 0 }}
-                transition={{ duration: mouthOpen ? 0.1 : 0.08, ease: "easeOut" }}
-            >
-                <defs>
-                    <radialGradient id="frog-mouth-depth" cx="50%" cy="34%" r="75%">
-                        <stop offset="0%" stopColor="#5f101b" />
-                        <stop offset="68%" stopColor="#2a050b" />
-                        <stop offset="100%" stopColor="#170205" />
-                    </radialGradient>
-                    <linearGradient id="frog-mouth-lip" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#fff6dc" stopOpacity="0.9" />
-                        <stop offset="100%" stopColor="#cf7a69" stopOpacity="0.62" />
-                    </linearGradient>
-                </defs>
-                <path
-                    d="M177 255 C199 225 313 225 335 255 C323 304 188 304 177 255 Z"
-                    fill="url(#frog-mouth-depth)"
-                    stroke="url(#frog-mouth-lip)"
-                    strokeWidth="9"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                />
-                <path
-                    d="M212 272 C235 292 281 292 304 272"
-                    fill="none"
-                    stroke="#f08c91"
-                    strokeWidth="10"
-                    strokeLinecap="round"
-                    opacity="0.56"
-                />
-                <ellipse cx="256" cy="252" rx="44" ry="12" fill="#941c2b" opacity="0.58" />
-            </motion.svg>
+                transition={{ duration: mouthOpen ? 0.08 : 0.06, ease: "easeOut" }}
+            />
             <motion.img
                 src={directedSprite(frogSprites.hop.ready, direction)}
                 alt=""
@@ -384,13 +357,33 @@ export default function FrogTongueCursor({ isDark }: FrogTongueCursorProps) {
             hasPointerRef.current = false;
         };
 
+        const pauseForModal = () => {
+            clearTimers();
+            stopTongue();
+            hopControlsRef.current?.stop();
+            frogMoveControlsRef.current?.stop();
+            frogHop.set(0);
+            resetTongueToMouth();
+            setPhase("idle");
+            setFly("free");
+
+            const pointer = pointerRef.current;
+            const pointerIsInViewport = pointer.x > 0 && pointer.y > 0 && pointer.x < window.innerWidth && pointer.y < window.innerHeight;
+            hasPointerRef.current = pointerIsInViewport;
+            setHasPointer(pointerIsInViewport);
+            if (pointerIsInViewport) {
+                flyX.set(pointer.x);
+                flyY.set(pointer.y);
+            }
+        };
+
         const syncSuppression = () => {
             const nextSuppressed = isPortfolioModalOpen();
             if (isSuppressedRef.current === nextSuppressed) return nextSuppressed;
 
             isSuppressedRef.current = nextSuppressed;
             setIsSuppressed(nextSuppressed);
-            if (nextSuppressed) reset();
+            if (nextSuppressed) pauseForModal();
             if (!nextSuppressed) {
                 resetTongueToMouth();
                 setPhase("idle");
@@ -608,14 +601,20 @@ export default function FrogTongueCursor({ isDark }: FrogTongueCursorProps) {
         };
     }, [canUseCursor, flyX, flyY, frogHop, frogX, frogY, tongueEndX, tongueEndY]);
 
-    if (!canUseCursor || isSuppressed) return null;
+    if (!canUseCursor) return null;
 
     const tongueColor = isDark ? "#ff8fb4" : "#d94c73";
     const tongueHighlight = isDark ? "rgba(255,220,232,0.9)" : "rgba(255,198,214,0.86)";
 
     return (
-        <div className="pointer-events-none fixed inset-0 z-[70]" aria-hidden="true" data-portfolio-frog-cursor="" data-frog-phase={frogPhase}>
-            <svg className="absolute inset-0 z-[12] h-full w-full overflow-visible">
+        <div
+            className={`pointer-events-none fixed inset-0 ${isSuppressed ? "z-[90]" : "z-[70]"}`}
+            aria-hidden="true"
+            data-portfolio-frog-cursor=""
+            data-frog-phase={frogPhase}
+            data-frog-suppressed={isSuppressed ? "true" : "false"}
+        >
+            {!isSuppressed && <svg className="absolute inset-0 z-[12] h-full w-full overflow-visible">
                 <motion.path
                     key={`tongue-shadow-${tongueShotId}`}
                     data-testid="frog-tongue-shadow"
@@ -661,9 +660,9 @@ export default function FrogTongueCursor({ isDark }: FrogTongueCursorProps) {
                     }}
                     transition={{ pathLength: { duration: 0.14, ease: [0.08, 0.86, 0.18, 1] }, opacity: { duration: 0.08 } }}
                 />
-            </svg>
+            </svg>}
 
-            <motion.div
+            {!isSuppressed && <motion.div
                 data-testid="frog-tongue-tip"
                 className={`absolute z-[18] h-4 w-4 rounded-full shadow-[0_0_16px_rgba(255,126,164,0.34)] ${isDark ? "bg-[#ffd7e5]" : "bg-[#e95f86]"}`}
                 style={{
@@ -679,7 +678,7 @@ export default function FrogTongueCursor({ isDark }: FrogTongueCursorProps) {
                     scale: frogPhase === "shoot" || frogPhase === "catch" ? [0.55, 1.12, 0.92] : 0.5,
                 }}
                 transition={{ duration: 0.18, ease: [0.08, 0.86, 0.18, 1] }}
-            />
+            />}
 
             <motion.div
                 data-testid="fly-cursor"
@@ -706,7 +705,7 @@ export default function FrogTongueCursor({ isDark }: FrogTongueCursorProps) {
                 <FlyIcon isDark={isDark} />
             </motion.div>
 
-            <motion.div
+            {!isSuppressed && <motion.div
                 data-testid="frog-hunter"
                 data-frog-state={frogPhase}
                 data-frog-facing={facing === -1 ? "left" : "right"}
@@ -725,7 +724,7 @@ export default function FrogTongueCursor({ isDark }: FrogTongueCursorProps) {
                 transition={{ opacity: { duration: 0.18 } }}
             >
                 <FrogSprite phase={frogPhase} direction={facing} />
-            </motion.div>
+            </motion.div>}
         </div>
     );
 }
